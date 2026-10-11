@@ -30,3 +30,15 @@ def test_environment_overrides_dotenv_and_unknown_keys_are_ignored(tmp_path, mon
 def test_invalid_settings_fail_early(invalid):
     with pytest.raises(ValidationError):
         Settings(_env_file=None, **invalid)
+
+
+def test_infrastructure_aliases_and_secret_values(monkeypatch):
+    monkeypatch.setenv("DATABASE_URL", "postgresql+psycopg://user:private-db-password@localhost/db")
+    monkeypatch.setenv("REDIS_URL", "redis://:private-redis-password@localhost:6379/0")
+    monkeypatch.setenv("S3_ENDPOINT", "http://localhost:9000")
+    monkeypatch.setenv("S3_SECRET_KEY", "private-storage-password")
+    settings = Settings(_env_file=None)
+    assert "private-db-password" in settings.database_url.get_secret_value()
+    assert settings.s3_endpoint == "http://localhost:9000"
+    assert "private-" not in repr(settings)
+    assert "private-" not in settings.model_dump_json()

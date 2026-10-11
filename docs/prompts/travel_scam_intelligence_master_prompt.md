@@ -3,6 +3,25 @@
 
 Read this entire document before changing code.
 
+## Confirmed Project Decisions — 2026-10-11
+
+These decisions take precedence over conflicting examples elsewhere in this document.
+
+- Plan all 38 PRs, with detailed implementation planning beginning at PR 01. Implement one numbered PR at a time and preserve the review gates.
+- Create each PR branch from the latest `develop` and target `develop`. Use `codex/pr-NN-short-description`, for example `codex/pr-01-repository-foundation`.
+- Use Serper.dev for search discovery. Request its API key when real integration validation requires it.
+- Store local credentials in an untracked `.env`; commit only placeholder values in `.env.example`.
+- Replace OpenAI inference with Sarvam 105B (`sarvam-105b`) for relevance classification, structured claim extraction, hypothesis generation, and semantic resolution.
+- Use a separate embedding model/provider to generate vectors stored in pgvector. Its selection remains open for implementation planning; Sarvam chat inference is not the embedding dependency.
+- Research English-language content initially. Create provisional records for previously unknown locations and preserve unresolved or ambiguous geography.
+- Keep hypotheses location-specific and link related patterns across locations rather than combining their evidence into one global hypothesis.
+- A Source represents an individual article, thread, or report; Documents represent acquired versions of that source. Normalize traveler reports into Documents while retaining their UserReport lineage.
+- Expose ordinary low-confidence candidates with clear labels. Exclude sensitive allegations from public results and public scoring until approved through the admin dashboard. Keep them pending until that dashboard is available in PR 35.
+- Public reads and report submissions are anonymous. Protect admin operations with one admin token configured through `.env` initially.
+- Return partial intelligence and research status when interactive research reaches its limit or the location is already being researched. Successful research with no findings must say no reports were found in the sources checked; never invent scams. Distinguish provider failure from no findings.
+- Defer monetary spending caps and their numerical defaults for now. Retain bounded per-request/per-job work, usage tracking, and configurable scheduler resource limits; do not block planning on a daily spending cap.
+- Choose routine tooling during planning. Create modules as their functionality arrives, rather than scaffolding empty future modules. Introduce essential fetch protections with ingestion and processing-version metadata with the relevant processing features.
+
 You are implementing the backend and ChatGPT integration for a travel-scam intelligence system.
 
 The system converts public travel content and traveler reports into an evidence-backed database of tourist scam patterns. It must preserve provenance, distinguish claims from facts, discount duplicated/correlated reporting, maintain confidence separately from prevalence and recency, and improve its knowledge base over time.
@@ -131,7 +150,7 @@ Design accordingly.
 
 Do **not** attempt to pre-research every country, city, neighborhood, attraction, airport, or station in advance.
 
-The world is too large, most locations will be queried rarely, and precomputing everything would waste Search API calls, OpenAI usage, storage, and developer effort.
+The world is too large, most locations will be queried rarely, and precomputing everything would waste Search API calls, Sarvam/embedding usage, storage, and developer effort.
 
 The system should use **lazy/on-demand intelligence generation with caching and background enrichment**.
 
@@ -635,7 +654,7 @@ Do not create two separate ingestion pipelines. Both research types must feed th
 
 Automated research must be budget-constrained.
 
-Otherwise the system can burn Search API and OpenAI credits indefinitely.
+Otherwise the system can burn Search API and Sarvam/embedding credits indefinitely.
 
 Support configurable budgets such as:
 
@@ -649,7 +668,7 @@ per scheduler cycle
 daily
 - max search queries
 - max fetched documents
-- max OpenAI usage/spend
+- max LLM/embedding usage (monetary caps deferred)
 ```
 
 Do not hardcode expensive assumptions.
@@ -742,11 +761,11 @@ Preserve the distinction between where evidence was actually observed and where 
 
 # 16. Search API Is a First-Iteration Dependency
 
-For a meaningful end-to-end MVP, the system requires **two external APIs**:
+For a meaningful end-to-end MVP, the system requires search and LLM APIs plus a separate embedding model/provider:
 
 ```text
 Search API
-OpenAI API
+Sarvam API + separate embedding model/provider
 ```
 
 Everything else should run locally.
@@ -938,7 +957,7 @@ abstract base classes with one implementation
 If:
 
 ```python
-if provider == "openai":
+if provider == "sarvam":
     ...
 ```
 
@@ -1191,7 +1210,7 @@ Redis
 MinIO / S3-compatible storage
 pytest
 Docker Compose
-OpenAI API
+Sarvam API + separate embedding model/provider
 Search API
 MCP
 ```
@@ -1221,7 +1240,7 @@ Laptop
 │
 └── External APIs
     ├── Search API
-    └── OpenAI API
+    └── Sarvam API + separate embedding model/provider
 ```
 
 Docker Compose should eventually run approximately:
@@ -1241,9 +1260,9 @@ Do not attempt to emulate AWS locally.
 
 ---
 
-# 30. OpenAI Model Strategy
+# 30. Sarvam LLM and Separate Embedding Strategy
 
-Use OpenAI as the only required AI provider initially.
+Use Sarvam 105B as the inference model initially. Use a separate embedding model/provider for vector generation.
 
 Keep model names in configuration.
 
@@ -1252,16 +1271,17 @@ Do not scatter model identifiers through application code.
 Initial configuration:
 
 ```text
-LLM_RELEVANCE_MODEL=gpt-5.4-nano
-LLM_EXTRACTION_MODEL=gpt-5.4-nano
-LLM_RESOLVER_MODEL=gpt-5.4-mini
-LLM_HYPOTHESIS_MODEL=gpt-5.4-mini
-EMBEDDING_MODEL=text-embedding-3-small
+SARVAM_API_KEY=<local credential>
+LLM_RELEVANCE_MODEL=sarvam-105b
+LLM_EXTRACTION_MODEL=sarvam-105b
+LLM_RESOLVER_MODEL=sarvam-105b
+LLM_HYPOTHESIS_MODEL=sarvam-105b
+EMBEDDING_MODEL=<selected during planning>
 ```
 
-Use the cheaper model for high-volume structured extraction/classification.
+Use bounded Sarvam calls for structured extraction/classification.
 
-Use the stronger model for semantic decisions where bad output can damage the knowledge graph, such as SAME vs RELATED vs SUBTYPE vs NEW.
+Use Sarvam for semantic decisions where bad output can damage the knowledge graph, such as SAME vs RELATED vs SUBTYPE vs NEW. Validate outputs and preserve ambiguous decisions for review.
 
 Use embeddings for semantic candidate retrieval.
 
@@ -1341,7 +1361,7 @@ DATABASE_URL
 REDIS_URL
 S3_ENDPOINT / bucket config
 SEARCH_API_KEY
-OPENAI_API_KEY
+SARVAM_API_KEY
 ```
 
 Do not build Kubernetes/EKS.
@@ -1892,13 +1912,13 @@ Do not create distributed workflow orchestration or a DAG engine.
 
 ---
 
-# 44. PR 12 — OpenAI Client and Scam Relevance
+# 44. PR 12 — Sarvam Client and Scam Relevance
 
 ## Goal
 
 Introduce AI processing.
 
-Implement a minimal OpenAI wrapper.
+Implement a minimal Sarvam wrapper configured for `sarvam-105b`.
 
 Do not create a multi-provider AI framework.
 
@@ -2497,7 +2517,7 @@ HYPOTHESIS_RESEARCH
 
 Priority should allow first-time deep enrichment, active locations, new hypotheses, evidence bursts, and contradictory/uncertain hypotheses to outrank routine refreshes.
 
-Enforce per-cycle and daily budgets.
+Enforce configured per-cycle and daily resource limits. Monetary caps are deferred pending a later decision.
 
 Workers perform the actual research.
 
@@ -2761,7 +2781,7 @@ claims extracted
 new hypotheses
 resolver ambiguity
 corroboration success
-OpenAI usage
+Sarvam/embedding usage
 user reports
 moderation backlog
 interactive research latency
@@ -3182,22 +3202,22 @@ fetch only promising pages
        ↓
 cheap deterministic filtering
        ↓
-GPT nano extraction/classification
+Sarvam 105B extraction/classification
        ↓
 small embedding candidate set
        ↓
-GPT mini only for harder semantic decisions
+Sarvam 105B for harder semantic decisions
 ```
 
 Do not send every discovered page to an LLM.
 
 Do not send every hypothesis in the database to an LLM.
 
-Do not use the stronger model when deterministic code or the cheaper model is sufficient.
+Do not call the LLM when deterministic code is sufficient.
 
 Do not make multiple LLM calls when one structured call can reliably return the required information.
 
-The research scheduler must respect explicit cost budgets.
+The research scheduler must respect configured resource limits; monetary caps are deferred pending a later decision.
 
 ---
 

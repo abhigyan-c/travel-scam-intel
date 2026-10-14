@@ -7,6 +7,7 @@ from redis.asyncio import Redis
 from sqlalchemy.ext.asyncio import async_sessionmaker
 from starlette.exceptions import HTTPException
 
+from app.api.locations import router as locations_router
 from app.api.routes import router
 from app.core.config import Settings
 from app.core.errors import http_error_handler, validation_error_handler
@@ -46,6 +47,7 @@ def create_app(settings: Settings | None = None) -> FastAPI:
     application.add_exception_handler(HTTPException, http_error_handler)
     application.add_exception_handler(RequestValidationError, validation_error_handler)
     application.include_router(router)
+    application.include_router(locations_router)
     return application
 
 

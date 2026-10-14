@@ -45,6 +45,7 @@ copy `.env.example` to `.env`, and run:
 docker compose up -d --build --wait postgres redis minio
 uv sync --locked
 uv run --locked alembic upgrade head
+uv run --locked python -m app.db.seed
 uv run --locked python -m app.integrations.storage
 uv run --locked uvicorn app.main:app --reload --no-access-log --loop asyncio:SelectorEventLoop
 ```
@@ -57,6 +58,28 @@ from `.python-version` and the committed lockfile. No Search or LLM API keys are
 - `GET /ready`: HTTP 200 when PostgreSQL and its vector extension, Redis, and the storage bucket
   are available; otherwise HTTP 503. Returns each dependency's status without connection details.
 - `/docs`: interactive API documentation.
+
+## Locations and sources
+
+Startup seeds Thailand, Bangkok, Grand Palace, Wat Pho, Fiji, Nadi and Suva, plus the `BKK`
+alias for Bangkok. Repeat seeding with `uv run --locked python -m app.db.seed`; it is idempotent.
+
+- `GET /v1/locations?q=palace`: search canonical names and aliases; supports `country_code`,
+  direct `parent_id`, `limit` (1–100) and `offset`.
+- `GET /v1/locations/resolve?q=BKK`: exact normalized lookup, returning `resolved`, `ambiguous`
+  or `not_found`. Country/parent filters can disambiguate; responses include the total count
+  and at most 20 matches. Unknown queries do not create records yet.
+- `GET /v1/locations/{id}`: location fields, parent ID and aliases; HTTP 404 for an unknown ID.
+
+Canonical names and alias lookup keys use Unicode NFKC normalization, whitespace collapse and
+case folding. Display names retain their spelling. Locations have a parent hierarchy and a
+provisional flag; coordinates are optional and are not inferred. Provisional creation from
+research and deeper hierarchy validation arrive with location resolution in PR 14.
+
+Source records identify individual articles/threads/reports and retain platform, canonical URL,
+author, type, publication/retrieval times and JSON metadata. Canonical URLs are unique when
+present; traveler reports can have no public URL. The ORM field `source_metadata` maps to the
+database column `metadata`. Public source-write endpoints and document versions are deferred.
 
 Responses include `X-Request-ID`. A supplied ID is accepted only if it is 1–64 ASCII characters,
 starts with a letter or digit, and uses letters, digits, `.`, `_`, or `-`; otherwise a new ID is
@@ -98,4 +121,4 @@ uv run --locked alembic revision --autogenerate -m "describe the change"
 
 For the container stack, use `docker compose exec api alembic current`. New domain models must
 be imported in `migrations/env.py` so autogeneration sees their metadata. The first migration
-enables pgvector; domain tables arrive in PR 03 onward.
+enables pgvector; the second adds locations, aliases and source provenance.

@@ -15,4 +15,4 @@ RUN useradd --create-home --uid 10001 app
 USER app
 
 EXPOSE 8000
-CMD ["sh", "-c", "alembic upgrade head && python -m app.integrations.storage && exec uvicorn app.main:app --host 0.0.0.0 --port 8000 --no-access-log"]
+CMD ["sh", "-c", "alembic upgrade head && python -m app.db.seed && python -m app.integrations.storage && exec uvicorn app.main:app --host 0.0.0.0 --port 8000 --no-access-log"]

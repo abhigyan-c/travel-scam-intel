@@ -4,6 +4,8 @@ from uuid import uuid4
 
 import httpx
 import pytest
+from alembic.config import Config
+from alembic.script import ScriptDirectory
 from sqlalchemy import text
 
 from app.core.config import Settings
@@ -27,7 +29,8 @@ async def test_database_sessions_and_pgvector(application):
     async with application.state.db_sessions() as session:
         assert await session.scalar(text("SELECT 1")) == 1
         assert await session.scalar(text("SELECT '[1,0,0]'::vector <=> '[1,0,0]'::vector")) == 0
-        assert await session.scalar(text("SELECT version_num FROM alembic_version")) == "0001"
+        head = ScriptDirectory.from_config(Config("alembic.ini")).get_current_head()
+        assert await session.scalar(text("SELECT version_num FROM alembic_version")) == head
 
 
 async def test_redis_round_trip(application):

@@ -79,7 +79,27 @@ research and deeper hierarchy validation arrive with location resolution in PR 1
 Source records identify individual articles/threads/reports and retain platform, canonical URL,
 author, type, publication/retrieval times and JSON metadata. Canonical URLs are unique when
 present; traveler reports can have no public URL. The ORM field `source_metadata` maps to the
-database column `metadata`. Public source-write endpoints and document versions are deferred.
+database column `metadata`. Source writes remain internal.
+
+## Documents and provenance
+
+Documents represent acquired source versions. Each requires a source ID, a bucket-relative raw
+object key (`raw_object_path`), and a lowercase SHA-256 hash of the raw bytes (`content_hash`).
+The source foreign key is mandatory; deleting a source referenced by a document is rejected.
+URLs are optional for traveler reports and imported material. Document metadata uses the ORM
+field `document_metadata`, mapped to the database column `metadata`.
+
+Internal helpers in `app/db/documents.py` create, get, list, and update processing results.
+Creation reuses an existing `(source_id, content_hash)` version without overwriting its original
+acquisition fields or processing results. Changed bytes create a new version; identical bytes
+from different sources retain separate provenance. Reads eagerly load the source.
+
+`set_document_processing` changes only status, clean text, language and metadata. Metadata is
+merged at the top level, preserving unspecified keys. Statuses are `pending`, `processed` and
+`failed`. Repository helpers use the caller's transaction and do not commit. Raw acquisition
+fields are protected by the helper's interface; direct database writes remain an operator's
+responsibility. These helpers add no public endpoints. Acquisition and processing pipelines
+arrive in later PRs.
 
 Responses include `X-Request-ID`. A supplied ID is accepted only if it is 1–64 ASCII characters,
 starts with a letter or digit, and uses letters, digits, `.`, `_`, or `-`; otherwise a new ID is
@@ -121,4 +141,5 @@ uv run --locked alembic revision --autogenerate -m "describe the change"
 
 For the container stack, use `docker compose exec api alembic current`. New domain models must
 be imported in `migrations/env.py` so autogeneration sees their metadata. The first migration
-enables pgvector; the second adds locations, aliases and source provenance.
+enables pgvector; the second adds locations, aliases and source provenance; the third adds
+document versions and their required source links.

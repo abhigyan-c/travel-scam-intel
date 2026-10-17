@@ -6,13 +6,11 @@ import httpx
 import pytest
 from sqlalchemy import delete, func, select
 from sqlalchemy.exc import IntegrityError
-from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.api.locations import get_session
 from app.core.config import Settings
 from app.db.locations import find_locations, normalize_name
 from app.db.seed import SEED_LOCATIONS, seed_locations
-from app.db.session import create_database_engine
 from app.main import create_app
 from app.models.location import Location, LocationAlias, LocationType
 from app.models.source import Source, SourceType
@@ -21,25 +19,6 @@ pytestmark = [
     pytest.mark.integration,
     pytest.mark.skipif(os.getenv("RUN_INFRA_TESTS") != "1", reason="set RUN_INFRA_TESTS=1"),
 ]
-
-
-@pytest.fixture
-async def session():
-    engine = create_database_engine(Settings())
-    try:
-        async with engine.connect() as connection:
-            transaction = await connection.begin()
-            try:
-                async with AsyncSession(
-                    bind=connection,
-                    expire_on_commit=False,
-                    join_transaction_mode="create_savepoint",
-                ) as session:
-                    yield session
-            finally:
-                await transaction.rollback()
-    finally:
-        await engine.dispose()
 
 
 @pytest.fixture

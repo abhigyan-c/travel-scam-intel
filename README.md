@@ -253,6 +253,40 @@ hash, excluding the input document. Cross-source matches retain separate provena
 not merge Sources, attach evidence groups or calculate independence. Migration 0007 adds the
 clean hash and lookup indexes; existing documents acquire clean hashes when reprocessed.
 
+## Background jobs
+
+Compose starts an arq worker after the API completes migrations and storage initialization.
+The worker runs in Linux containers, including on Windows hosts. Its health check uses arq's
+Redis heartbeat. Run `docker compose logs worker` to inspect sanitized job failures.
+
+```powershell
+uv run --locked python -m app.jobs ingest https://example.org/article --key article-001
+uv run --locked python -m app.jobs process DOCUMENT_UUID --key process-001
+uv run --locked python -m app.jobs research Bangkok --key research-001
+uv run --locked python -m app.jobs status JOB_UUID
+uv run --locked python -m app.jobs dispatch
+```
+
+Submissions commit `ResearchJob` in PostgreSQL before Redis publication. Reusing a key with the
+same normalized payload returns the same job; a different payload is rejected. Explicit new keys
+request new work. The research handler currently performs discovery only and records candidates
+and usage; it does not run the later extraction/scoring pipeline or claim location-level freshness.
+
+PostgreSQL tracks queued/running/retry/succeeded/failed states, attempts, results, error type and
+an expiring lease with an ownership token. Four jobs run concurrently, each with a 55-second
+application deadline, a 60-second arq timeout, a 90-second lease and at most three actual attempts.
+Successful jobs ignore duplicate delivery. Domain changes and successful status commit together;
+failed document processing retains its explicit processing outcome. Redis job IDs deduplicate
+delivery, while database keys and existing ingestion constraints protect durable records.
+
+Worker startup dispatches up to 100 pending/retry/expired jobs. `dispatch` repeats that bounded
+recovery sweep when publication fails or Redis is restored; no periodic scheduler is added.
+Transient failures retry with short delays. Worker cancellation releases the lease for redelivery;
+abrupt process death leaves a lease that can be reclaimed after expiry. This provides retryable
+delivery, not exactly-once external calls: interrupted discovery may spend credits again, and raw
+uploads may outlive rolled-back database writes. Job result history is durable in PostgreSQL;
+Redis results are not retained. No public job API or distributed workflow engine is introduced.
+
 ## Checks
 
 ```powershell

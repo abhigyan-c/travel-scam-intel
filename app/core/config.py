@@ -28,3 +28,4 @@ class Settings(BaseSettings):
         default="travel-local-password", validation_alias="S3_SECRET_KEY"
     )
     readiness_timeout_seconds: float = Field(default=3, gt=0, le=30)
+    serper_api_key: SecretStr = Field(default="", validation_alias="SERPER_API_KEY")

@@ -28,6 +28,10 @@ class Document(Base):
         UniqueConstraint("source_id", "content_hash", name="uq_document_version"),
         CheckConstraint("length(trim(raw_object_path)) > 0", name="ck_document_raw_path"),
         CheckConstraint("content_hash ~ '^[0-9a-f]{64}$'", name="ck_document_content_hash"),
+        CheckConstraint(
+            "clean_text_hash IS NULL OR clean_text_hash ~ '^[0-9a-f]{64}$'",
+            name="ck_document_clean_text_hash",
+        ),
         CheckConstraint("url IS NULL OR length(trim(url)) > 0", name="ck_document_url"),
         CheckConstraint(
             "language IS NULL OR length(trim(language)) > 0", name="ck_document_language"
@@ -44,7 +48,8 @@ class Document(Base):
     raw_object_path: Mapped[str] = mapped_column(Text)
     clean_text: Mapped[str | None] = mapped_column(Text)
     language: Mapped[str | None] = mapped_column(String(35))
-    content_hash: Mapped[str] = mapped_column(String(64))
+    content_hash: Mapped[str] = mapped_column(String(64), index=True)
+    clean_text_hash: Mapped[str | None] = mapped_column(String(64), index=True)
     published_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
     retrieved_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True), server_default=func.now()

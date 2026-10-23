@@ -231,6 +231,28 @@ with the research worker. `empty` means successful searches returned no usable c
 creates Source records: ingestion records the underlying webpage/platform. No public endpoint
 or new external credentials are required for startup or fixture tests.
 
+## Document processing
+
+`app.db.processing.process_document(session, document_id, storage=client, bucket=bucket)` reads
+bounded raw content, verifies its SHA-256 hash, extracts article text with Trafilatura, and detects
+language with seeded langdetect. It uses the caller's transaction. It performs no crawling or
+LLM calls. HTML/XHTML and plain text are supported; scripts, navigation and common boilerplate
+are removed by the article extractor. This is heuristic extraction, not a browser renderer.
+
+Clean text and its SHA-256 hash are derived fields. Title, author, date and canonical URL, when
+found, are stored under `document_metadata.processing`; acquisition fields and Source identity
+are preserved. Reported canonical URLs are metadata hints and are never fetched automatically.
+HTML language declarations do not override detected language. At least 40 alphabetic characters
+and a language probability of 0.9 are required. Only detected English is eligible for extraction;
+non-English and uncertain-language text is retained for review. Those outcomes are `processed`,
+with `eligible_for_extraction=false`. Empty, blocked, unsupported, corrupt and unavailable raw
+content produce explicit failure outcomes. Captcha/title detection is heuristic and incomplete.
+
+`find_exact_duplicates` returns paginated documents sharing the raw hash or a non-null clean-text
+hash, excluding the input document. Cross-source matches retain separate provenance. This does
+not merge Sources, attach evidence groups or calculate independence. Migration 0007 adds the
+clean hash and lookup indexes; existing documents acquire clean hashes when reprocessed.
+
 ## Checks
 
 ```powershell

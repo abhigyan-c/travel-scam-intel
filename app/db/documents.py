@@ -1,7 +1,8 @@
+import hashlib
 from datetime import datetime
 from uuid import UUID
 
-from sqlalchemy import select, update
+from sqlalchemy import or_, select, update
 from sqlalchemy.dialects.postgresql import insert
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import joinedload
@@ -87,9 +88,32 @@ async def set_document_processing(
         .values(
             processing_status=processing_status,
             clean_text=clean_text,
+            clean_text_hash=hashlib.sha256(clean_text.encode()).hexdigest() if clean_text else None,
             language=language,
             document_metadata=Document.document_metadata.op("||")(document_metadata),
         )
         .returning(Document.id)
     )
     return await get_document(session, updated_id) if updated_id is not None else None
+
+
+async def find_exact_duplicates(
+    session: AsyncSession, document_id: UUID, *, limit: int = 20, offset: int = 0
+) -> list[Document]:
+    if not 1 <= limit <= 100 or offset < 0:
+        raise ValueError("limit must be 1–100 and offset must be non-negative")
+    document = await get_document(session, document_id)
+    if document is None:
+        return []
+    matches = [Document.content_hash == document.content_hash]
+    if document.clean_text_hash:
+        matches.append(Document.clean_text_hash == document.clean_text_hash)
+    return list(
+        await session.scalars(
+            select(Document)
+            .where(Document.id != document_id, or_(*matches))
+            .order_by(Document.created_at, Document.id)
+            .limit(limit)
+            .offset(offset)
+        )
+    )

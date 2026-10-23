@@ -1,7 +1,7 @@
 # Travel Scam Intelligence
 
 An evidence-backed travel scam intelligence backend. The repository currently provides the
-API and local infrastructure; domain models, research, and ChatGPT integration arrive in later PRs.
+API, local infrastructure and core domain models; research and ChatGPT integration arrive in later PRs.
 
 ## Local development
 
@@ -107,6 +107,24 @@ generated. Errors use `{"error":{"code":"...","message":"...","request_id":"..."
 with field locations/types added for validation failures. Logs are JSON and include request IDs,
 method, path, status and duration, without request bodies, headers or raw query strings.
 
+## Claims and hypotheses
+
+Claims retain their document ID and, through that document, their source provenance. A claim's
+location is optional while resolution is pending; unresolved place text can remain in
+`structured_data`. Claim processing statuses are `pending`, `processed` and `failed`.
+Claim type and hypothesis category are nonblank strings; extraction will define their taxonomy.
+
+Each hypothesis requires one primary location and starts as `candidate`. Other persisted statuses
+are `active`, `disputed` and `inactive`; lifecycle operations arrive later. Scores are optional
+values from 0 to 1, with null meaning unscored. Observation timestamps are either both absent or
+an ordered `first_seen`/`last_seen` pair. They are not inferred from record creation time.
+Foreign keys prevent deleting referenced documents or locations.
+
+Both models have nullable `vector(384)` embeddings for the planned separate
+`BAAI/bge-small-en-v1.5` embedding model. Sarvam 105B remains the LLM for semantic extraction.
+This PR adds persistence only; embedding generation, semantic matching, evidence attachments,
+scoring and public endpoints arrive in subsequent PRs. No API credentials are needed yet.
+
 ## Checks
 
 ```powershell
@@ -142,4 +160,5 @@ uv run --locked alembic revision --autogenerate -m "describe the change"
 For the container stack, use `docker compose exec api alembic current`. New domain models must
 be imported in `migrations/env.py` so autogeneration sees their metadata. The first migration
 enables pgvector; the second adds locations, aliases and source provenance; the third adds
-document versions and their required source links.
+document versions and their required source links; the fourth adds claims and location-specific
+hypotheses with pgvector columns. Models are registered through `app.models` in `migrations/env.py`.

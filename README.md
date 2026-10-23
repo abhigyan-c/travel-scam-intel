@@ -202,6 +202,35 @@ failure can leave an unreferenced raw object; retry reuses that key without over
 Object cleanup and redirect alias reconciliation are future maintenance work. Acquisition does
 not extract claims or infer publication dates.
 
+## Serper discovery
+
+Set `SERPER_API_KEY` in ignored `.env`, then run:
+
+```powershell
+uv run --locked python -m app.discovery "Bangkok" --queries 3
+```
+
+This calls the [Serper search API](https://serper.dev/) with English search settings. Six
+deterministic query templates cover tourist scams, common scams, tourist traps, taxi scams,
+tourist fraud and Reddit reports. Defaults execute the first three with a 25-second deadline
+and return up to 30 candidates. The provider has a ten-second socket timeout and no automatic
+retries. `--queries 1` makes a single-request smoke test.
+
+`SearchProvider` is a single search-method boundary. Serper results normalize into `SearchResult`,
+which can be passed directly to ingestion. Discovery canonicalizes URLs, excludes obvious local
+addresses and unsupported file types, deduplicates exact canonical URLs and ranks by search
+position, query order and URL. Query parameters remain intact. DNS safety is checked again by
+the fetcher. English settings do not guarantee that every returned page is English; document
+language filtering arrives in PR 10. Snippets are discovery hints, not evidence or extracted claims.
+
+Responses include per-query request counts, raw result counts, provider-reported credits when
+available and sanitized error codes. Counts describe attempts, not guaranteed billing; timed-out
+requests can still consume credits. Usage is returned per run; durable job accounting arrives
+with the research worker. `empty` means successful searches returned no usable candidates;
+`failed` and `partial` distinguish provider failures and incomplete work. The provider never
+creates Source records: ingestion records the underlying webpage/platform. No public endpoint
+or new external credentials are required for startup or fixture tests.
+
 ## Checks
 
 ```powershell

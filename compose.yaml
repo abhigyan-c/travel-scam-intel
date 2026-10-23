@@ -3,7 +3,7 @@ name: travel-scam-intel
 services:
   api:
     build: .
-    environment:
+    environment: &app_environment
       APP_NAME: ${APP_NAME:-Travel Scam Intelligence}
       APP_ENVIRONMENT: ${APP_ENVIRONMENT:-local}
       APP_LOG_LEVEL: ${APP_LOG_LEVEL:-INFO}
@@ -27,6 +27,20 @@ services:
       test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8000/ready', timeout=5)"]
       interval: 10s
       timeout: 6s
+      retries: 5
+      start_period: 20s
+
+  worker:
+    build: .
+    environment: *app_environment
+    command: ["arq", "app.worker.WorkerSettings"]
+    depends_on:
+      api:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "arq", "app.worker.WorkerSettings", "--check"]
+      interval: 15s
+      timeout: 5s
       retries: 5
       start_period: 20s
 

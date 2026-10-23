@@ -16,7 +16,7 @@ class JsonFormatter(logging.Formatter):
             "message": record.getMessage(),
             "request_id": request_id.get(),
         }
-        for field in ("method", "path", "status", "duration_ms", "error_type"):
+        for field in ("method", "path", "status", "duration_ms", "error_type", "job_id"):
             if hasattr(record, field):
                 payload[field] = getattr(record, field)
         return json.dumps(payload)

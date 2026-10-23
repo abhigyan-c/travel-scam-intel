@@ -122,8 +122,29 @@ Foreign keys prevent deleting referenced documents or locations.
 
 Both models have nullable `vector(384)` embeddings for the planned separate
 `BAAI/bge-small-en-v1.5` embedding model. Sarvam 105B remains the LLM for semantic extraction.
-This PR adds persistence only; embedding generation, semantic matching, evidence attachments,
+These models provide persistence; embedding generation, semantic matching,
 scoring and public endpoints arrive in subsequent PRs. No API credentials are needed yet.
+
+## Evidence and hypothesis relationships
+
+`Evidence` attaches one claim to one hypothesis with an explicit `supports`, `contradicts`,
+`related` or `uncertain` stance. A claim/hypothesis pair is unique regardless of stance;
+different claims can retain conflicting observations for the same hypothesis. Relationships
+provide the path from evidence through claim, document and source. Referenced claims and
+hypotheses cannot be deleted.
+
+Semantic match, source quality, independence and evidence weight are nullable values from 0 to 1.
+Null means not calculated; this schema does not calculate scores or collapse duplicate reports.
+`duplicate_group_id` is an optional UUID reserved for PR 07, which adds the DuplicateGroup
+table and its foreign key. Leave it null until that entity is available.
+
+`HypothesisRelation` links `source_hypothesis_id` to `target_hypothesis_id` using `SAME_AS`,
+`RELATED_TO`, `SUBTYPE_OF` or `CONTRADICTS`. Self-links and exact duplicates are rejected.
+The database also rejects reversed duplicates for symmetric types; `SUBTYPE_OF` preserves
+direction. Different relation types can coexist between a pair. Neither subtype cycles nor
+transitive equivalence are inferred or validated yet. Links retain their endpoints through
+restrictive foreign keys; they do not merge hypotheses or change confidence. These writes
+remain internal, with no new public endpoints.
 
 ## Checks
 
@@ -161,4 +182,5 @@ For the container stack, use `docker compose exec api alembic current`. New doma
 be imported in `migrations/env.py` so autogeneration sees their metadata. The first migration
 enables pgvector; the second adds locations, aliases and source provenance; the third adds
 document versions and their required source links; the fourth adds claims and location-specific
-hypotheses with pgvector columns. Models are registered through `app.models` in `migrations/env.py`.
+hypotheses with pgvector columns; the fifth adds evidence attachments and hypothesis relations.
+Models are registered through `app.models` in `migrations/env.py`.

@@ -7,6 +7,7 @@ from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.db.session import Base
 from app.models.claim import Claim
+from app.models.duplicate_group import DuplicateGroup
 from app.models.hypothesis import Hypothesis
 
 
@@ -43,8 +44,11 @@ class Evidence(Base):
     source_quality_score: Mapped[float | None] = mapped_column(Float)
     independence_score: Mapped[float | None] = mapped_column(Float)
     evidence_weight: Mapped[float | None] = mapped_column(Float)
-    # PR 07 adds the DuplicateGroup entity and its foreign key.
-    duplicate_group_id: Mapped[UUID | None] = mapped_column(index=True)
+    duplicate_group_id: Mapped[UUID | None] = mapped_column(
+        ForeignKey("duplicate_groups.id", ondelete="RESTRICT", name="fk_evidence_duplicate_group"),
+        index=True,
+    )
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
     hypothesis: Mapped[Hypothesis] = relationship(lazy="raise")
     claim: Mapped[Claim] = relationship(lazy="raise")
+    duplicate_group: Mapped[DuplicateGroup | None] = relationship(lazy="raise")

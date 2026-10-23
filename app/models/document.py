@@ -1,5 +1,4 @@
 from datetime import datetime
-from enum import StrEnum
 from uuid import UUID, uuid4
 
 from sqlalchemy import (
@@ -17,13 +16,10 @@ from sqlalchemy.dialects.postgresql import JSONB
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.db.session import Base
+from app.models.enums import ProcessingStatus
 from app.models.source import Source
 
-
-class DocumentStatus(StrEnum):
-    PENDING = "pending"
-    PROCESSED = "processed"
-    FAILED = "failed"
+DocumentStatus = ProcessingStatus
 
 
 class Document(Base):

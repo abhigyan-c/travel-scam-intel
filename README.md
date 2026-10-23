@@ -135,8 +135,8 @@ hypotheses cannot be deleted.
 
 Semantic match, source quality, independence and evidence weight are nullable values from 0 to 1.
 Null means not calculated; this schema does not calculate scores or collapse duplicate reports.
-`duplicate_group_id` is an optional UUID reserved for PR 07, which adds the DuplicateGroup
-table and its foreign key. Leave it null until that entity is available.
+`duplicate_group_id` optionally references a `DuplicateGroup`. Multiple evidence rows can share
+a group without losing their individual claims or stances. Referenced groups cannot be deleted.
 
 `HypothesisRelation` links `source_hypothesis_id` to `target_hypothesis_id` using `SAME_AS`,
 `RELATED_TO`, `SUBTYPE_OF` or `CONTRADICTS`. Self-links and exact duplicates are rejected.
@@ -145,6 +145,28 @@ direction. Different relation types can coexist between a pair. Neither subtype 
 transitive equivalence are inferred or validated yet. Links retain their endpoints through
 restrictive foreign keys; they do not merge hypotheses or change confidence. These writes
 remain internal, with no new public endpoints.
+
+## Reports, score history and schema review
+
+`UserReport` stores anonymous report text, an explicit `FIRST_HAND`, `WITNESSED` or `SECOND_HAND`
+provenance class, optional location/occurrence time and a required unique normalized document ID.
+The document retains the source link. Report submission and normalization arrive in PR 25;
+callers must create a source of type `user_report` and its document before attaching the report.
+The database enforces document existence and uniqueness, but does not enforce source type across
+tables. No user account or public submission endpoint is introduced here.
+
+`HypothesisScoreSnapshot` retains three scores (0–1), a scoring version, explanation, JSON
+components and creation time. New calculations should insert new snapshots; changing current
+hypothesis scores does not overwrite history. Direct database updates remain possible; append-only
+service behavior and score calculation arrive with the confidence engine. Referenced hypotheses
+cannot be deleted. Document and claim statuses now share `ProcessingStatus`; their existing
+import names and database constraint names remain compatible.
+
+PR 07 is the foundational schema review gate. Review the complete location → hypothesis →
+evidence → claim → document → source path, report lineage, duplicate membership and score history
+before starting PR 08. Integrity tests cover these links and deletion safeguards. Migration 0006
+adds the duplicate-group foreign key without inventing groups: any pre-existing dangling group
+IDs must be resolved before upgrading.
 
 ## Checks
 
@@ -184,3 +206,4 @@ enables pgvector; the second adds locations, aliases and source provenance; the 
 document versions and their required source links; the fourth adds claims and location-specific
 hypotheses with pgvector columns; the fifth adds evidence attachments and hypothesis relations.
 Models are registered through `app.models` in `migrations/env.py`.
+The sixth migration adds reports, duplicate groups, score snapshots and the evidence group link.

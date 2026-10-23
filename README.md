@@ -168,6 +168,40 @@ before starting PR 08. Integrity tests cover these links and deletion safeguards
 adds the duplicate-group foreign key without inventing groups: any pre-existing dangling group
 IDs must be resolved before upgrading.
 
+## URL ingestion
+
+After starting the stack, ingest a public article with:
+
+```powershell
+uv run --locked python -m app.ingest https://example.org/article
+```
+
+The command prints the persisted document UUID. Internal callers can pass a `DiscoveryResult`
+to `app.db.ingestion.ingest_url`, sharing a `Fetcher` across requests for per-host pacing.
+The helper uses the caller's transaction and does not commit. No public endpoint is added.
+
+URLs allow HTTP/HTTPS on standard ports, normalize hostname/default port/fragment and retain query
+order and parameters. Credentials and control characters are rejected. Every hop resolves and
+checks all addresses, rejects non-public destinations, and pins the checked address for the TCP
+connection while retaining the original hostname for Host and TLS verification. Redirects are
+limited to three and cannot downgrade HTTPS. Environment proxy settings are not used.
+
+Defaults are a 25-second overall deadline, five seconds per request, two attempts, 0.5-second
+spacing per host per Fetcher, and a 2 MB raw-body limit. Only HTML, XHTML and plain text with
+identity encoding are acquired. Transient connection errors and selected HTTP failures retry;
+other failures remain explicit. Limits are constructor options. Cancelled blocking socket work
+can finish in its worker thread within the request bounds. Share Fetcher instances within a
+worker; distributed host throttling arrives with worker coordination.
+
+Ingestion hashes raw bytes and conditionally writes a deterministic object key before creating
+source/document records. Source identity uses the requested canonical URL; the document retains
+the final URL after redirects. Unchanged bytes reuse the version and preserve processing results;
+changed bytes create a new version. Different requested URLs remain separate sources even if
+they redirect to the same page. Upload failure creates no source or document. A later database
+failure can leave an unreferenced raw object; retry reuses that key without overwriting it.
+Object cleanup and redirect alias reconciliation are future maintenance work. Acquisition does
+not extract claims or infer publication dates.
+
 ## Checks
 
 ```powershell

@@ -287,6 +287,37 @@ delivery, not exactly-once external calls: interrupted discovery may spend credi
 uploads may outlive rolled-back database writes. Job result history is durable in PostgreSQL;
 Redis results are not retained. No public job API or distributed workflow engine is introduced.
 
+## Sarvam relevance classification
+
+Set `SARVAM_API_KEY` in ignored `.env`. The same setting reaches API and worker containers.
+`app.integrations.sarvam.Sarvam` calls the fixed `sarvam-105b` model through Sarvam's
+[Chat Completion V1 endpoint](https://docs.sarvam.ai/api-reference/chat/chat-completions-v1).
+It requests strict JSON-schema output and validates it locally. No OpenAI SDK or embedding
+calls are involved. Reasoning is disabled, temperature is zero, and output is capped at 1,024
+tokens. Defaults allow two concurrent calls per client and 20 seconds including the semaphore
+wait. No automatic retries are made. As with acquisition, cancelled blocking socket work may
+continue until its socket operation finishes or times out.
+
+`app.relevance.classify_text(text, client)` classifies English cleaned text in overlapping
+passages, retaining original character offsets. Defaults are 4,000 characters per passage,
+200-character overlap, six passages, and a 45-second batch deadline. The result includes the
+`relevance-v1` prompt version and per-passage model, request count, provider token usage and
+request ID. Missing usage is unknown, not zero. Usage is returned to the caller; document/job
+pipeline persistence is added when these stages are connected in subsequent PRs.
+
+Each valid response contains `relevant`, `category`, `confidence` and an English `reason`.
+Confidence describes relevance classification, not the truth of an allegation. `relevant_passages`
+selects only validated positive passages for downstream extraction. Refusal, truncation, malformed
+JSON/schema violations, authentication, rate limits and transport failures have explicit error
+codes and never become negative relevance decisions. `complete=false` also marks empty input,
+unexamined tails and unfinished passage batches. Callers must preserve that incompleteness.
+
+Source content is sent as user-role JSON data under a fixed system instruction. It cannot define
+tools or application operations, and the API key is never included in the prompt. This reduces
+instruction-following risk; it does not guarantee semantic correctness against adversarial text.
+Use PR 10's English eligibility check before calling the classifier. This PR adds no new public
+endpoint, claim extraction or automatic research-stage calls.
+
 ## Checks
 
 ```powershell

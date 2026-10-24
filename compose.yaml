@@ -8,6 +8,7 @@ services:
       APP_ENVIRONMENT: ${APP_ENVIRONMENT:-local}
       APP_LOG_LEVEL: ${APP_LOG_LEVEL:-INFO}
       SERPER_API_KEY: ${SERPER_API_KEY:-}
+      SARVAM_API_KEY: ${SARVAM_API_KEY:-}
       DATABASE_URL: ${COMPOSE_DATABASE_URL:-postgresql+psycopg://${POSTGRES_USER:-travel}:${POSTGRES_PASSWORD:-travel-local}@postgres:5432/${POSTGRES_DB:-travel_scam_intel}}
       REDIS_URL: redis://redis:6379/0
       S3_ENDPOINT: http://minio:9000

@@ -269,8 +269,8 @@ uv run --locked python -m app.jobs dispatch
 
 Submissions commit `ResearchJob` in PostgreSQL before Redis publication. Reusing a key with the
 same normalized payload returns the same job; a different payload is rejected. Explicit new keys
-request new work. The research handler currently performs discovery only and records candidates
-and usage; it does not run the later extraction/scoring pipeline or claim location-level freshness.
+request new work. The research handler runs the bounded search-to-claims pipeline below and records partial results
+and usage. Hypothesis scoring and location-level freshness remain later stages.
 
 PostgreSQL tracks queued/running/retry/succeeded/failed states, attempts, results, error type and
 an expiring lease with an ownership token. Four jobs run concurrently, each with a 55-second
@@ -323,10 +323,10 @@ endpoint, claim extraction or automatic research-stage calls.
 `app.db.extraction.extract_document(session, document_id, relevance, client)` consumes PR 12
 relevance results for an English processed document. The relevance text hash and every passage
 slice must match the current clean text. Only validated positive passages reach Sarvam. Defaults
-bound work to six passages, three claims per passage and a 45-second batch deadline. Returned
+bound work to six passages, one claim per passage and a 45-second batch deadline. Returned
 `complete=false` preserves provider failures, relevance gaps and unfinished work.
 
-The strict `claims-v1` schema includes a claim summary, supporting quote, unresolved location,
+The strict `claims-v2` schema includes a claim summary, supporting quote, unresolved location,
 approach, methods, warning signs, named actors, occurrence text, first-hand classification,
 extraction confidence and sensitivity. Quotes must occur verbatim in the passage; structured
 details must occur in the quote. Missing information stays null/empty. This verifies textual
@@ -372,7 +372,45 @@ the new result is ambiguous or unresolved. Entity normalization adds display/nor
 using NFKC, whitespace collapse and case folding, and removes only exact normalized duplicates.
 It does not infer entity types, merge similar businesses or modify sensitivity/publication flags.
 All writes use the caller's transaction and do not commit. No new public endpoint, database schema
-or external service is introduced; the full research pipeline connects these helpers in PR 15.
+or external service is introduced by resolution; the research pipeline below connects these helpers.
+
+## First search-to-claims slice (PR 15)
+
+```powershell
+uv run --locked python -m app.research Bangkok --queries 1 --fetches 5 --documents 3 --llm-calls 6 --timeout 45
+```
+
+This accepts a location name and runs Serper discovery, safe fetching, raw storage, English
+cleaning, relevance, grounded extraction and contextual resolution. JSON includes document and
+claim IDs, stage failures, limits and provider usage. Defaults are three queries, 30 candidates,
+ten fetches, six English documents, six passages per document, twelve LLM calls and 25 seconds.
+Stages run sequentially on one database session, with savepoints isolating failed stages.
+The CLI and worker commit retained partial results; helpers leave commits to their caller.
+
+Relevance reserves half the remaining LLM allowance for extraction. Complete relevance decisions
+are reused only for the same text hash and prompt version; successful extraction checkpoints are
+also reused. Incomplete coverage, blocked pages and model failures remain explicit partial results.
+Only a completed search with no claims says "Nothing was found." A failed search never does.
+Unknown source locations remain unresolved: the requested destination is context, not evidence
+that a claim occurred there. No location type is guessed to create provisional records.
+
+Live testing exposed paraphrased evidence. `claims-v2` constrains the quote to literal source
+excerpts, requests one claim per passage, and still rejects any extracted detail absent from the
+selected quote. Missing details remain null/empty; this does not verify allegation truth.
+Earlier extraction versions remain stored and must not count as independent evidence.
+
+Controlled live validation on 2026-10-24 used the command above with only `Bangkok` as input.
+It persisted claim `73626afc-49cc-413b-a945-7a3cda2c2fc4`, describing reported tuk-tuk shopping
+detours for commissions, from the discovered
+[Your Thai Guide article](https://yourthaiguide.com/top-10-bangkok-scams-you-should-avoid/).
+Database inspection verified the exact quote against both the stored passage and clean-text
+offsets, its source/document/extraction links, Bangkok resolution and `unreviewed` status.
+The run correctly remained partial: Reddit produced empty text, the embassy page rejected the
+fetch, some extraction output failed grounding, and article coverage exceeded the bounded budget.
+No rejected claim was repaired or saved. Raw live artifacts and credentials remain ignored locally.
+
+PR 15 ends at the manual review gate. Hypotheses, embeddings, confidence scoring and the complete
+on-demand research lifecycle are outside this slice. Review the real results before starting PR 16.
 
 ## Checks
 

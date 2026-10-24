@@ -102,12 +102,19 @@ async def test_persistence_lineage_sensitive_hold_and_retry_checkpoint(session, 
     )
     run = await session.get(ClaimExtraction, stored.extraction_id)
     assert run.passage_text == document.clean_text and run.claim_count == 1
-    assert run.model == "sarvam-105b" and run.prompt_version == "claims-v1"
+    assert run.model == "sarvam-105b" and run.prompt_version == "claims-v2"
     assert run.usage["completion_tokens"] == 150
     repeated = await extract_document(session, document.id, decision, client)
     assert repeated.claim_ids == result.claim_ids and repeated.attempts[0]["cached"]
     client.complete.assert_awaited_once()
-    assert await session.scalar(select(func.count()).select_from(ClaimExtraction)) == 1
+    assert (
+        await session.scalar(
+            select(func.count())
+            .select_from(ClaimExtraction)
+            .where(ClaimExtraction.document_id == document.id)
+        )
+        == 1
+    )
 
 
 async def test_irrelevant_passages_make_no_extraction_calls(session, document):
@@ -124,7 +131,14 @@ async def test_empty_success_cached_but_provider_errors_retry(session, document)
     client.complete.return_value = Completion(error="rate_limited", requests=1)
     failed = await extract_document(session, document.id, relevance(document), client)
     assert not failed.complete and failed.claim_ids == []
-    assert await session.scalar(select(func.count()).select_from(ClaimExtraction)) == 0
+    assert (
+        await session.scalar(
+            select(func.count())
+            .select_from(ClaimExtraction)
+            .where(ClaimExtraction.document_id == document.id)
+        )
+        == 0
+    )
     client.complete.return_value = Completion(data=ClaimBatch(claims=[]), requests=1)
     empty = await extract_document(session, document.id, relevance(document), client)
     assert empty.complete and empty.claim_ids == []
@@ -158,7 +172,14 @@ async def test_document_changed_during_call_has_no_claim_writes(session, documen
     client.complete.side_effect = mutate
     with pytest.raises(ValueError, match="document_changed"):
         await extract_document(session, document.id, relevance(document), client)
-    assert await session.scalar(select(func.count()).select_from(ClaimExtraction)) == 0
+    assert (
+        await session.scalar(
+            select(func.count())
+            .select_from(ClaimExtraction)
+            .where(ClaimExtraction.document_id == document.id)
+        )
+        == 0
+    )
 
 
 async def test_relational_lineage_rejects_wrong_document_and_duplicate_indices(session, document):
@@ -235,4 +256,11 @@ async def test_changed_clean_text_creates_new_run_and_keeps_old_claims(session, 
     second = await extract_document(session, document.id, relevance(document), client)
     assert first.claim_ids != second.claim_ids
     assert await session.get(Claim, first.claim_ids[0]) is not None
-    assert await session.scalar(select(func.count()).select_from(ClaimExtraction)) == 2
+    assert (
+        await session.scalar(
+            select(func.count())
+            .select_from(ClaimExtraction)
+            .where(ClaimExtraction.document_id == document.id)
+        )
+        == 2
+    )

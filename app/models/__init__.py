@@ -1,4 +1,5 @@
 from app.models.claim import Claim
+from app.models.claim_extraction import ClaimExtraction
 from app.models.document import Document
 from app.models.duplicate_group import DuplicateGroup
 from app.models.evidence import Evidence
@@ -12,6 +13,7 @@ from app.models.user_report import UserReport
 
 __all__ = [
     "Claim",
+    "ClaimExtraction",
     "Document",
     "DuplicateGroup",
     "Evidence",

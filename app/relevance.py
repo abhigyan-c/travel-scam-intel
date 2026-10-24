@@ -1,4 +1,5 @@
 import asyncio
+import hashlib
 import json
 
 from pydantic import BaseModel, ConfigDict, Field, model_validator
@@ -45,6 +46,7 @@ class PassageAssessment(BaseModel):
 
 
 class RelevanceResult(BaseModel):
+    text_hash: str | None = None
     prompt_version: str = PROMPT_VERSION
     assessments: list[PassageAssessment]
     complete: bool
@@ -104,4 +106,8 @@ async def classify_text(
         bool(passages) and passages[-1].end == len(text) and len(assessments) == len(passages)
     )
     complete = complete and all(row.completion.error is None for row in assessments)
-    return RelevanceResult(assessments=assessments, complete=complete)
+    return RelevanceResult(
+        assessments=assessments,
+        complete=complete,
+        text_hash=hashlib.sha256(text.encode()).hexdigest(),
+    )

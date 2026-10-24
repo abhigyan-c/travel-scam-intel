@@ -1,0 +1,36 @@
+[
+  {
+    "name": "reported_fare_with_named_actor",
+    "text": "I was in Bangkok when Acme Tours demanded extra money after I agreed to a fixed fare on 2026-01-02T10:00:00+00:00.",
+    "claim": {
+      "claim": "A traveler reports that Acme Tours demanded extra money after a fixed fare agreement.",
+      "evidence_quote": "I was in Bangkok when Acme Tours demanded extra money after I agreed to a fixed fare on 2026-01-02T10:00:00+00:00.",
+      "location": "Bangkok",
+      "approach": ["agreed to a fixed fare"],
+      "methods": ["demanded extra money"],
+      "warning_signs": [],
+      "entities": ["Acme Tours"],
+      "occurred_at": "2026-01-02T10:00:00+00:00",
+      "first_hand": true,
+      "confidence": 0.9,
+      "sensitive": false
+    }
+  },
+  {
+    "name": "unresolved_place_and_unknown_provenance",
+    "text": "Travelers report that someone near the old station tells visitors the attraction is closed and asks them to visit a shop instead.",
+    "claim": {
+      "claim": "Travelers report a closed-attraction redirection to a shop.",
+      "evidence_quote": "Travelers report that someone near the old station tells visitors the attraction is closed and asks them to visit a shop instead.",
+      "location": "the old station",
+      "approach": ["the attraction is closed"],
+      "methods": ["visit a shop instead"],
+      "warning_signs": [],
+      "entities": [],
+      "occurred_at": null,
+      "first_hand": null,
+      "confidence": 0.8,
+      "sensitive": false
+    }
+  }
+]

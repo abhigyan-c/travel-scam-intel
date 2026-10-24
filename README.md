@@ -73,8 +73,8 @@ alias for Bangkok. Repeat seeding with `uv run --locked python -m app.db.seed`; 
 
 Canonical names and alias lookup keys use Unicode NFKC normalization, whitespace collapse and
 case folding. Display names retain their spelling. Locations have a parent hierarchy and a
-provisional flag; coordinates are optional and are not inferred. Provisional creation from
-research and deeper hierarchy validation arrive with location resolution in PR 14.
+provisional flag; coordinates are optional and are not inferred. Internal location resolution can
+create provisional records with explicit type and parent context; public lookup remains read-only.
 
 Source records identify individual articles/threads/reports and retain platform, canonical URL,
 author, type, publication/retrieval times and JSON metadata. Canonical URLs are unique when
@@ -342,12 +342,37 @@ the database uniqueness constraint. Changing the input hash or extraction versio
 run and retains prior claims. Overlapping passages can retain the same observation; they are not
 independent reports, and later duplicate/independence processing must account for that.
 
-Locations stay unresolved until PR 14. Occurrence text is preserved verbatim; a timestamp is
+Location text is retained for the resolver below. Occurrence text is preserved verbatim; a timestamp is
 populated only when it already contains an explicit ISO offset. Publication time is not substituted.
 Named-actor allegations and model-flagged sensitive claims carry `publication_status=held`; all
 others start `unreviewed`. These flags prepare the admin review flow and do not publish claims.
 They are an initial conservative check, not a complete sensitivity detector. No public claim
 endpoint or automatic full research pipeline is added in this PR.
+
+## Location and entity resolution
+
+`app.db.resolution.resolve_location` matches normalized canonical names and aliases exactly.
+`BKK` resolves to Bangkok; returned root-to-leaf paths include Thailand → Bangkok → Grand Palace
+and Fiji → Nadi. An optional `parent_id` scopes matching to its descendants and known
+ancestors; `country_code` can disambiguate across countries. Multiple matches remain ambiguous,
+with the total count and at most 20 candidate IDs. Known names outside the supplied context remain
+unresolved rather than generating guessed local copies. No fuzzy matching or geocoding is used.
+
+Unknown names can create provisional records only when an explicit `location_type` and a verified
+parent/country context are supplied. Repeated creation reuses the existing location identity.
+Coordinates remain absent; country codes come from the retained parent hierarchy. Insufficient
+context, missing text and ambiguous/unknown country records remain unresolved. New country roots
+require manual review. Helpers reject missing/cyclic/overly deep ancestry and conflicting country
+codes; points of interest cannot parent broader location types. Direct database edits remain the
+operator's responsibility. These helpers do not reparent existing locations or alter aliases.
+
+`resolve_claim` stores the selected location ID and versioned resolution details while retaining
+the original extracted location and entities. Explicit reruns recompute that link, clearing it when
+the new result is ambiguous or unresolved. Entity normalization adds display/normalized name pairs,
+using NFKC, whitespace collapse and case folding, and removes only exact normalized duplicates.
+It does not infer entity types, merge similar businesses or modify sensitivity/publication flags.
+All writes use the caller's transaction and do not commit. No new public endpoint, database schema
+or external service is introduced; the full research pipeline connects these helpers in PR 15.
 
 ## Checks
 

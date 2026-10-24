@@ -14,12 +14,13 @@ from app.db.ingestion import DiscoveryResult, ingest_url
 from app.db.jobs import dispatch_pending
 from app.db.processing import process_document
 from app.db.session import create_database_engine
-from app.discovery import discover
 from app.integrations.fetch import Fetcher
+from app.integrations.sarvam import Sarvam
 from app.integrations.serper import Serper
 from app.integrations.storage import create_storage_client
 from app.models.document import DocumentStatus
 from app.models.research_job import JobKind, JobStatus, ResearchJob
+from app.research import research_location
 
 logger = logging.getLogger("app.worker")
 
@@ -33,6 +34,7 @@ async def startup(ctx):
     ctx["bucket"] = settings.s3_bucket
     ctx["fetcher"] = Fetcher()
     ctx["provider"] = Serper(settings.serper_api_key)
+    ctx["llm"] = Sarvam(settings.sarvam_api_key)
     async with ctx["sessions"]() as session:
         await dispatch_pending(session, ctx["redis"])
 
@@ -74,10 +76,16 @@ async def _perform(ctx, kind, payload, session, identity, token):
             "document_id": str(document.id),
             "processing": document.document_metadata["processing"],
         }
-    discovery = await discover(payload["location"], ctx["provider"])
-    if discovery.status == "failed":
-        raise ValueError("discovery_failed")
-    return {"stage": "discovery", **discovery.model_dump(mode="json")}
+    result = await research_location(
+        session,
+        payload["location"],
+        provider=ctx["provider"],
+        fetcher=ctx["fetcher"],
+        llm=ctx["llm"],
+        storage=ctx["storage"],
+        bucket=ctx["bucket"],
+    )
+    return result.model_dump(mode="json")
 
 
 async def run_job(ctx, job_id: str):
@@ -118,11 +126,15 @@ async def run_job(ctx, job_id: str):
                     update(ResearchJob)
                     .where(ResearchJob.id == identity)
                     .values(
-                        status=JobStatus.SUCCEEDED,
+                        status=JobStatus.FAILED
+                        if kind == JobKind.RESEARCH and result.get("status") == "failed"
+                        else JobStatus.SUCCEEDED,
                         result=result,
                         run_token=None,
                         lease_expires_at=None,
-                        error_code=None,
+                        error_code="research_failed"
+                        if kind == JobKind.RESEARCH and result.get("status") == "failed"
+                        else None,
                     )
                 )
                 await session.commit()

@@ -22,7 +22,9 @@ async def test_grounded_regression_cases(case):
     assert result.data == batch and result.error is None
     sent = client.complete.call_args.kwargs
     assert json.loads(sent["user"])["passage"] == case["text"]
-    assert sent["schema"] is ClaimBatch
+    assert issubclass(sent["schema"], ClaimBatch)
+    with pytest.raises(ValidationError):
+        sent["schema"].model_validate({"claims": [{**case["claim"], "evidence_quote": "invented"}]})
 
 
 @pytest.mark.parametrize(

@@ -41,6 +41,7 @@ async def environment():
         "bucket": settings.s3_bucket,
         "fetcher": AsyncMock(),
         "provider": AsyncMock(),
+        "llm": AsyncMock(),
     }
     ctx["provider"].search.return_value = SearchResponse(usage=SearchUsage())
     jobs = []
@@ -131,7 +132,7 @@ async def test_redis_delivery_and_database_success_survive_redelivery(environmen
         await worker.close()
     job = await read(environment, identity)
     assert job.status == JobStatus.SUCCEEDED and job.attempts == 1
-    assert job.result["stage"] == "discovery" and job.result["status"] == "empty"
+    assert job.result["stage"] == "claims" and job.result["status"] == "empty"
     await run_job(ctx, str(identity))
     assert (await read(environment, identity)).attempts == 1
 

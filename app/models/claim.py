@@ -2,7 +2,19 @@ from datetime import datetime
 from uuid import UUID, uuid4
 
 from pgvector.sqlalchemy import Vector
-from sqlalchemy import CheckConstraint, DateTime, Enum, Float, ForeignKey, String, Text, func, text
+from sqlalchemy import (
+    CheckConstraint,
+    DateTime,
+    Enum,
+    Float,
+    ForeignKey,
+    ForeignKeyConstraint,
+    String,
+    Text,
+    UniqueConstraint,
+    func,
+    text,
+)
 from sqlalchemy.dialects.postgresql import JSONB
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
@@ -16,6 +28,18 @@ ClaimStatus = ProcessingStatus
 class Claim(Base):
     __tablename__ = "claims"
     __table_args__ = (
+        ForeignKeyConstraint(
+            ["extraction_id", "document_id"],
+            ["claim_extractions.id", "claim_extractions.document_id"],
+            ondelete="RESTRICT",
+            name="fk_claim_extraction_document",
+        ),
+        UniqueConstraint("extraction_id", "claim_index", name="uq_claim_extraction_index"),
+        CheckConstraint(
+            "(extraction_id IS NULL AND claim_index IS NULL) OR "
+            "(extraction_id IS NOT NULL AND claim_index IS NOT NULL AND claim_index >= 0)",
+            name="ck_claim_extraction_index",
+        ),
         CheckConstraint("length(trim(claim_text)) > 0", name="ck_claim_text"),
         CheckConstraint("length(trim(normalized_claim)) > 0", name="ck_claim_normalized"),
         CheckConstraint("length(trim(claim_type)) > 0", name="ck_claim_type"),
@@ -26,6 +50,8 @@ class Claim(Base):
     )
 
     id: Mapped[UUID] = mapped_column(primary_key=True, default=uuid4)
+    extraction_id: Mapped[UUID | None]
+    claim_index: Mapped[int | None]
     document_id: Mapped[UUID] = mapped_column(
         ForeignKey("documents.id", ondelete="RESTRICT"), index=True
     )

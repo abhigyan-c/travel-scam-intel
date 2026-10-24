@@ -318,6 +318,37 @@ instruction-following risk; it does not guarantee semantic correctness against a
 Use PR 10's English eligibility check before calling the classifier. This PR adds no new public
 endpoint, claim extraction or automatic research-stage calls.
 
+## Structured claim extraction
+
+`app.db.extraction.extract_document(session, document_id, relevance, client)` consumes PR 12
+relevance results for an English processed document. The relevance text hash and every passage
+slice must match the current clean text. Only validated positive passages reach Sarvam. Defaults
+bound work to six passages, three claims per passage and a 45-second batch deadline. Returned
+`complete=false` preserves provider failures, relevance gaps and unfinished work.
+
+The strict `claims-v1` schema includes a claim summary, supporting quote, unresolved location,
+approach, methods, warning signs, named actors, occurrence text, first-hand classification,
+extraction confidence and sensitivity. Quotes must occur verbatim in the passage; structured
+details must occur in the quote. Missing information stays null/empty. This verifies textual
+support, not semantic entailment or truth; source instructions remain untrusted prompt data.
+
+Each successful passage run stores its exact input text, offsets, clean-text hash, model/prompt
+versions, provider request ID and usage in `ClaimExtraction`. Claims retain quote offsets and
+the document/source path. Composite foreign keys prevent attaching claims to a run for another
+document. Run and claim writes share the caller's transaction and do not commit automatically.
+Retrying an already-persisted successful run reuses its claims without an extraction call, including
+zero-claim runs. Concurrent calls can still spend duplicate provider requests before one run wins
+the database uniqueness constraint. Changing the input hash or extraction version creates a new
+run and retains prior claims. Overlapping passages can retain the same observation; they are not
+independent reports, and later duplicate/independence processing must account for that.
+
+Locations stay unresolved until PR 14. Occurrence text is preserved verbatim; a timestamp is
+populated only when it already contains an explicit ISO offset. Publication time is not substituted.
+Named-actor allegations and model-flagged sensitive claims carry `publication_status=held`; all
+others start `unreviewed`. These flags prepare the admin review flow and do not publish claims.
+They are an initial conservative check, not a complete sensitivity detector. No public claim
+endpoint or automatic full research pipeline is added in this PR.
+
 ## Checks
 
 ```powershell

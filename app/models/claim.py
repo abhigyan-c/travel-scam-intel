@@ -67,6 +67,9 @@ class Claim(Base):
         JSONB, default=dict, server_default=text("'{}'::jsonb")
     )
     embedding: Mapped[list[float] | None] = mapped_column(Vector(384))
+    embedding_model: Mapped[str | None] = mapped_column(String(100))
+    embedding_revision: Mapped[str | None] = mapped_column(String(200))
+    embedding_input_hash: Mapped[str | None] = mapped_column(String(64))
     processing_status: Mapped[ClaimStatus] = mapped_column(
         Enum(
             ClaimStatus,

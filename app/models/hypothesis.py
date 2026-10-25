@@ -58,6 +58,9 @@ class Hypothesis(Base):
     first_seen: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
     last_seen: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
     embedding: Mapped[list[float] | None] = mapped_column(Vector(384))
+    embedding_model: Mapped[str | None] = mapped_column(String(100))
+    embedding_revision: Mapped[str | None] = mapped_column(String(200))
+    embedding_input_hash: Mapped[str | None] = mapped_column(String(64))
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
     updated_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True), server_default=func.now(), onupdate=func.now()

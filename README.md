@@ -412,6 +412,66 @@ No rejected claim was repaired or saved. Raw live artifacts and credentials rema
 PR 15 ends at the manual review gate. Hypotheses, embeddings, confidence scoring and the complete
 on-demand research lifecycle are outside this slice. Review the real results before starting PR 16.
 
+## Local embeddings and candidate search (PR 16)
+
+```powershell
+uv run --locked alembic upgrade head
+uv run --locked python -m app.embedding_cli preload --download
+uv run --locked python -m app.embedding_cli backfill --limit 100
+```
+
+FastEmbed 0.8.1 runs `BAAI/bge-small-en-v1.5` locally on CPU, using the quantized ONNX
+[Qdrant artifact](https://huggingface.co/Qdrant/bge-small-en-v1.5-onnx-Q) pinned to revision
+`aa8f8b060edb00e03bfdd08813a2949946c8ba55`. No embedding API key is needed. Downloads require
+the explicit `--download` flag; otherwise preload uses cached files only. The default ignored cache
+is `.tools/embedding-cache`; `--cache-dir` selects another location. Preload in each process before
+calling matching helpers. API and worker startup do not yet load the model or perform matching.
+Container callers should mount a persistent writable cache and pass its path; model weights are
+not included in the image. Sarvam remains the extraction/comparison LLM.
+
+`Embedder.embed` supports at most 16 texts per call, 4,000 characters and 512 tokens per text,
+including special tokens. Oversized inputs fail explicitly instead of silently truncating.
+Inference uses two ONNX CPU threads outside the event loop and one in-flight operation per
+embedder; overlapping work fails with `embedding_busy`. Cancellation cannot terminate an active
+CPU call, but the model lock remains held until that thread finishes. Vectors are validated as
+384 finite, nonzero dimensions and normalized. Claim matching uses the same unprefixed text
+representation for both sides of retrieval.
+
+Claims embed `claim_text`; hypotheses embed `title + "\n" + canonical_description`. Both retain
+the model name, artifact/FastEmbed/recipe revision and SHA-256 of the exact input. Legacy vectors
+without metadata remain stored but are excluded from search. Backfill updates missing, changed
+or incompatible vectors, skips current rows, and guards against edits made during generation.
+The limit applies separately to each entity type (1–1,000 rows); rerun to continue. Errors are
+returned with record IDs and do not replace previous vectors. Helpers do not commit; the CLI
+commits successful updates for both types together. Failed rows remain eligible for retry.
+
+`app.db.embeddings.search_candidates(session, text, location_id, embedder)` returns at most
+50 hypotheses ordered by pgvector cosine similarity and ID, with an optional minimum similarity.
+Search requires a known location and includes only its ancestors, itself and descendants;
+siblings and foreign locations are excluded. Current model/revision and current input hash are
+checked in SQL before ranking, so stale vectors never consume result slots. This is exact search;
+approximate indexes remain deferred until justified by measured scale. Similarity is a retrieval
+signal, not corroboration, truth or a merge decision. `search_claim_candidates` returns no
+candidates for an unresolved claim instead of falling back to a worldwide search. Hypothesis
+resolution and automatic pipeline matching follow in PR 17.
+
+Controlled CPU validation on 2026-10-25 retrieved the correct top result for four paraphrased
+mechanisms: taxi overcharging, a closed-temple shopping diversion, ATM skimming and gem fraud.
+Initial download/preload took 9.699 seconds; cached preload took 0.619 seconds, with warm
+embedding-plus-PostgreSQL searches taking 10–11 ms locally. These small fixtures establish an
+initial baseline, not broad retrieval quality. Geographic boundaries and stale-vector exclusion
+are also checked independently using deterministic vectors. Run the real model test explicitly:
+
+```powershell
+$env:RUN_INFRA_TESTS = '1'
+$env:RUN_EMBEDDING_TESTS = '1'
+uv run --locked pytest tests/integration/test_real_embeddings.py -q -s
+```
+
+`EMBEDDING_CACHE_DIR` selects the test cache; preload it before testing. Ordinary tests never
+download weights. Model, package or text-recipe changes require deliberate backfill; incompatible
+dimensions require a schema migration. Do not reuse old metadata for new weights.
+
 ## Checks
 
 ```powershell

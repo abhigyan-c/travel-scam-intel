@@ -453,7 +453,7 @@ checked in SQL before ranking, so stale vectors never consume result slots. This
 approximate indexes remain deferred until justified by measured scale. Similarity is a retrieval
 signal, not corroboration, truth or a merge decision. `search_claim_candidates` returns no
 candidates for an unresolved claim instead of falling back to a worldwide search. Hypothesis
-resolution and automatic pipeline matching follow in PR 17.
+decisions are recorded by the resolver below; lifecycle application and orchestration follow later.
 
 Controlled CPU validation on 2026-10-25 retrieved the correct top result for four paraphrased
 mechanisms: taxi overcharging, a closed-temple shopping diversion, ATM skimming and gem fraud.
@@ -471,6 +471,80 @@ uv run --locked pytest tests/integration/test_real_embeddings.py -q -s
 `EMBEDDING_CACHE_DIR` selects the test cache; preload it before testing. Ordinary tests never
 download weights. Model, package or text-recipe changes require deliberate backfill; incompatible
 dimensions require a schema migration. Do not reuse old metadata for new weights.
+
+## Hypothesis resolver and review gate (PR 17)
+
+```powershell
+uv run --locked alembic upgrade head
+uv run --locked python -m app.embedding_cli preload --download
+uv run --locked python -m app.embedding_cli backfill --limit 100
+uv run --locked python -m app.resolve_claim CLAIM_UUID
+```
+
+`app.db.hypothesis_resolution.resolve_hypothesis` records one claim's relationship to existing
+hypotheses. It uses PR 16's geographic and version-safe retrieval, then either a strict exact-text
+match or one structured `sarvam-105b` comparison. Defaults allow six candidates (maximum ten),
+a 25-second deadline and a 0.85 confidence review threshold. The comparison retains complete
+candidate descriptions; prompts over 30,000 characters fail for review instead of truncating
+conditions or negations. Preload the local model before calling the helper; the CLI uses cached
+weights and the existing `SARVAM_API_KEY`. `--cache-dir` selects a mounted/container cache.
+
+The decisions are `SAME`, `RELATED`, `SUBTYPE`, `CONTRADICTS` and `NEW`. `SUBTYPE` always means
+the claim is narrower than the target candidate. Shared vocabulary, vehicles, actors or locations
+do not establish `SAME`. A normal experience does not disprove that a scam sometimes occurs.
+`NEW` means no supplied candidate matches; it does not establish global novelty or allegation truth.
+Each non-NEW decision must reference a supplied candidate; invented or out-of-scope IDs fail closed.
+
+One byte-identical canonical description at the same location yields deterministic `SAME` without
+an LLM call. Multiple exact matches remain ambiguous. An empty geographic hypothesis scope yields
+`NEW`; missing/outdated vectors, unresolved geography, provider failures and deadlines do not.
+The resolver checks embedding coverage across the whole location scope before semantic matching.
+Low-confidence or ambiguous output, inactive targets, sensitivity flags and differing SAME location
+scopes carry explicit review reasons. Named-actor claims retain their publication hold.
+
+**All semantic decisions require review in this initial version**, including high-confidence SAME
+results. Live checks showed confidence alone was insufficient to prevent incorrect merges. The
+`hypothesis-v2` rubric distinguishes concrete tricks, umbrella patterns and logical opposition;
+the initial rubric passed only 3/8 synthetic cases, while the revised rubric passed 8/8 on
+2026-10-25. This small smoke test supports inspection, not unattended graph changes:
+
+| Case | Revised live decision |
+| --- | --- |
+| Equivalent taxi meter-refusal paraphrase | SAME |
+| Closure/shopping diversion versus surprise fare inflation | NEW |
+| Tampered meter under general deceptive fare inflation | SUBTYPE |
+| Open versus closed on the same specified date | CONTRADICTS |
+| ATM skimming versus gemstone investment fraud | NEW |
+| Normal taxi ride versus occasional meter-refusal pattern | RELATED |
+| Broad fare-inflation claim versus narrow meter refusal | RELATED |
+| ATM report containing instructions to force a taxi match | NEW |
+
+`HypothesisResolution` retains claim/document identity, input and candidate snapshots, geographic
+paths, retrieval coverage/similarities, model/resolver/embedding versions, confidence, reasoning,
+review reasons and provider usage/request ID. Successful outcomes are reused for the same inputs;
+the fingerprint changes with candidate content, scope coverage, versions or policy limits. Failures
+remain separate retryable audit records. Concurrent successful writes deduplicate, although two
+callers can spend provider requests before the database uniqueness constraint selects one record.
+Inputs are rechecked under locks after comparison; edits or newly observed candidates invalidate
+the result. A snapshot is not a permanent guarantee about future graph changes.
+
+The helper leaves commit ownership to its caller. The CLI commits the audit record and emits JSON;
+review rows can be inspected in PostgreSQL with `needs_review=true` until the admin tools in PR 35.
+Provider requests interrupted by a deadline may still consume credits; an unfinished request count
+is unknown. Model output and stored explanations remain untrusted data, never executable actions.
+This PR records decisions without creating/merging hypotheses, attaching evidence or changing
+publication state. Lifecycle work follows in PR 18; research orchestration remains a later step.
+Stop here for the planned resolver review gate.
+
+Ordinary tests mock semantic-provider boundaries. Paid regression checks are explicitly opt-in
+and roll back their synthetic database records:
+
+```powershell
+$env:RUN_INFRA_TESTS = '1'
+$env:RUN_EMBEDDING_TESTS = '1'
+$env:RUN_SARVAM_TESTS = '1'
+uv run --locked pytest tests/integration/test_live_hypothesis_resolver.py -q -s
+```
 
 ## Checks
 

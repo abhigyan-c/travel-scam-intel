@@ -19,6 +19,10 @@ class HypothesisStatus(StrEnum):
 class Hypothesis(Base):
     __tablename__ = "hypotheses"
     __table_args__ = (
+        CheckConstraint(
+            "merged_into_id IS NULL OR (merged_into_id <> id AND status = 'inactive')",
+            name="ck_hypothesis_merge_state",
+        ),
         CheckConstraint("length(trim(title)) > 0", name="ck_hypothesis_title"),
         CheckConstraint(
             "length(trim(canonical_description)) > 0", name="ck_hypothesis_description"
@@ -41,6 +45,10 @@ class Hypothesis(Base):
     title: Mapped[str] = mapped_column(Text)
     canonical_description: Mapped[str] = mapped_column(Text)
     category: Mapped[str] = mapped_column(String(100))
+    merged_into_id: Mapped[UUID | None] = mapped_column(
+        ForeignKey("hypotheses.id", ondelete="RESTRICT"),
+        index=True,
+    )
     status: Mapped[HypothesisStatus] = mapped_column(
         Enum(
             HypothesisStatus,

@@ -21,6 +21,11 @@ class EvidenceStance(StrEnum):
 class Evidence(Base):
     __tablename__ = "evidence"
     __table_args__ = (
+        CheckConstraint(
+            "(archived_at IS NULL AND superseded_by_id IS NULL) OR "
+            "(archived_at IS NOT NULL AND superseded_by_id IS NOT NULL AND superseded_by_id <> id)",
+            name="ck_evidence_archive_state",
+        ),
         UniqueConstraint("hypothesis_id", "claim_id", name="uq_evidence_attachment"),
         CheckConstraint("semantic_match_score BETWEEN 0 AND 1", name="ck_evidence_semantic_match"),
         CheckConstraint("source_quality_score BETWEEN 0 AND 1", name="ck_evidence_source_quality"),
@@ -44,6 +49,11 @@ class Evidence(Base):
     source_quality_score: Mapped[float | None] = mapped_column(Float)
     independence_score: Mapped[float | None] = mapped_column(Float)
     evidence_weight: Mapped[float | None] = mapped_column(Float)
+    archived_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
+    superseded_by_id: Mapped[UUID | None] = mapped_column(
+        ForeignKey("evidence.id", ondelete="RESTRICT"),
+        index=True,
+    )
     duplicate_group_id: Mapped[UUID | None] = mapped_column(
         ForeignKey("duplicate_groups.id", ondelete="RESTRICT", name="fk_evidence_duplicate_group"),
         index=True,

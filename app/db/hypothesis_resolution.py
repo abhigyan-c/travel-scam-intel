@@ -13,6 +13,7 @@ from app.embeddings import text_hash
 from app.hypothesis_resolution import SYSTEM_PROMPT, VERSION, Decision
 from app.integrations.sarvam import MODEL
 from app.models import Claim, Hypothesis, HypothesisResolution
+from app.models.hypothesis import HypothesisStatus
 
 
 def _claim_snapshot(claim):
@@ -53,9 +54,13 @@ def _candidate_snapshot(row):
 
 def _scope(location_id, path):
     descendants = _descendants(location_id)
-    return or_(
-        Hypothesis.primary_location_id.in_([row.id for row in path]),
-        Hypothesis.primary_location_id.in_(select(descendants.c.id)),
+    return and_(
+        Hypothesis.status != HypothesisStatus.INACTIVE,
+        Hypothesis.merged_into_id.is_(None),
+        or_(
+            Hypothesis.primary_location_id.in_([row.id for row in path]),
+            Hypothesis.primary_location_id.in_(select(descendants.c.id)),
+        ),
     )
 
 
@@ -87,6 +92,8 @@ async def _context(session, claim, embedder, limit):
             .where(
                 Hypothesis.primary_location_id == claim.location_id,
                 Hypothesis.canonical_description == claim.claim_text,
+                Hypothesis.status != HypothesisStatus.INACTIVE,
+                Hypothesis.merged_into_id.is_(None),
             )
             .order_by(Hypothesis.id)
             .limit(2)

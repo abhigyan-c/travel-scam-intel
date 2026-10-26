@@ -8,6 +8,7 @@ from sqlalchemy import func, or_, select, update
 from app.db.resolution import _descendants, get_location_path
 from app.embeddings import text_hash, validate_vector
 from app.models import Claim, Hypothesis
+from app.models.hypothesis import HypothesisStatus
 
 
 def input_expression(model):
@@ -46,6 +47,10 @@ async def backfill_embeddings(session, model, embedder, *, limit: int = 100) -> 
     cursor = None
     while result["examined"] < limit:
         query = select(model.id, expression.label("input")).where(stale)
+        if model is Hypothesis:
+            query = query.where(
+                model.status != HypothesisStatus.INACTIVE, model.merged_into_id.is_(None)
+            )
         if cursor is not None:
             query = query.where(model.id > cursor)
         rows = (
@@ -108,6 +113,8 @@ async def search_candidates(
         select(Hypothesis, distance.label("distance"))
         .where(
             *current_embedding(Hypothesis, embedder),
+            Hypothesis.status != HypothesisStatus.INACTIVE,
+            Hypothesis.merged_into_id.is_(None),
             or_(
                 Hypothesis.primary_location_id.in_([row.id for row in path]),
                 Hypothesis.primary_location_id.in_(select(descendants.c.id)),

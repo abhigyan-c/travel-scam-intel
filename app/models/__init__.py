@@ -4,6 +4,7 @@ from app.models.document import Document
 from app.models.duplicate_group import DuplicateGroup
 from app.models.evidence import Evidence
 from app.models.hypothesis import Hypothesis
+from app.models.hypothesis_lifecycle import HypothesisLifecycleEvent
 from app.models.hypothesis_relation import HypothesisRelation
 from app.models.hypothesis_resolution import HypothesisResolution
 from app.models.location import Location, LocationAlias
@@ -19,6 +20,7 @@ __all__ = [
     "DuplicateGroup",
     "Evidence",
     "Hypothesis",
+    "HypothesisLifecycleEvent",
     "HypothesisRelation",
     "HypothesisResolution",
     "HypothesisScoreSnapshot",

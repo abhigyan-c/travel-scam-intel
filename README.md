@@ -534,7 +534,7 @@ Provider requests interrupted by a deadline may still consume credits; an unfini
 is unknown. Model output and stored explanations remain untrusted data, never executable actions.
 This PR records decisions without creating/merging hypotheses, attaching evidence or changing
 publication state. Lifecycle work follows in PR 18; research orchestration remains a later step.
-Stop here for the planned resolver review gate.
+PR 17 ended at this resolver review gate; the lifecycle helpers below apply eligible decisions.
 
 Ordinary tests mock semantic-provider boundaries. Paid regression checks are explicitly opt-in
 and roll back their synthetic database records:
@@ -545,6 +545,92 @@ $env:RUN_EMBEDDING_TESTS = '1'
 $env:RUN_SARVAM_TESTS = '1'
 uv run --locked pytest tests/integration/test_live_hypothesis_resolver.py -q -s
 ```
+
+## Hypothesis lifecycle (PR 18)
+
+`app.db.hypothesis_lifecycle` provides candidate creation, reviewed metadata edits, merges, splits
+and relationship queries. These helpers share the caller's transaction and do not commit.
+Each action uses a savepoint: validation failures roll back the entire change and its audit
+reservation. Mutations have durable idempotency keys bound to the operation, arguments and
+review identity/reason; concurrent retries return the same completed event. Reusing a key for
+different intent fails. Lifecycle events record `lifecycle-v1`, affected IDs, before/after metadata
+and evidence transfer mappings. They preserve the resolver audit rather than modifying it.
+
+`apply_resolution(session, resolution_id, embedder=..., review=...)` applies a current recorded
+decision once. It rechecks the resolver version, embedding version, claim, candidate snapshots
+and geographic coverage. `hypothesis-v3` retains PR 17's comparison rubric and excludes inactive
+or merged hypotheses from retrieval, coverage and exact matching. Older decisions must be
+resolved again before application. Semantic and held decisions still require explicit review;
+an unresolved, failed or stale decision cannot be applied by approving it. A record with no selected
+decision must be resolved again.
+
+| Decision | Applied behavior |
+| --- | --- |
+| NEW | Create a location-specific candidate and supporting evidence. |
+| SAME | Attach supporting evidence to the existing hypothesis at the same location. |
+| RELATED | Create a distinct candidate and a symmetric RELATED_TO edge. |
+| SUBTYPE | Create a narrower candidate with a directed SUBTYPE_OF edge to its parent. |
+| CONTRADICTS | Attach contradictory evidence without creating a positive scam candidate. |
+
+Initial titles are bounded excerpts of the claim summary, canonical descriptions use its
+whitespace-normalized text, and categories reuse its extracted type. This is deterministic
+generation without another LLM call or invented details. All new hypotheses start as candidates;
+confidence/prevalence/recency scores remain unknown. Reviewed `Draft` metadata can replace these
+defaults through `update_hypothesis`, which clears stale embeddings and scores. Historical score
+snapshots remain intact. Review approves a lifecycle operation; it never clears claim publication
+holds or promotes a candidate to active status.
+Run embedding backfill after creating candidates or editing their descriptions before semantic retrieval.
+
+`first_seen`/`last_seen` track when currently supporting claims entered our database, using
+`Claim.created_at`. They are not incident dates or publication dates. Adding older/newer supporting
+claims expands the range; contradictory/related evidence does not establish a new observation of
+the scam. An empty supporting set has unknown dates. Actual occurrence timestamps stay on claims
+for PR 23's separate recency/frequency work.
+
+`merge_hypotheses(source_id, target_id, key=..., review=...)` requires the same primary location.
+It retains the source row as an inactive alias with `merged_into_id`, preserves existing relations
+and score snapshots, and copies its current evidence to the target. Original evidence rows retain
+their IDs, claims, scores, duplicate groups and timestamps, with `archived_at` and `superseded_by_id`
+recording the replacement. Same-claim/same-stance attachments reuse the target's existing record
+without combining scores; conflicting stances or an archived destination attachment reject the
+whole operation. The merge limit is 1,000 current attachments. Both hypotheses' cached scores are
+cleared for later recomputation.
+
+`split_hypothesis(source_id, evidence_ids, key=..., review=..., draft=...)` creates a new candidate
+from 1–100 selected current attachments, retaining and archiving the original links in the same
+way. At least one selected attachment must support the new pattern. Remaining source attachments
+stay current; a parent with no remaining support becomes inactive without redirecting to one child.
+The default relationship is RELATED_TO; an explicitly chosen SUBTYPE_OF points from child to parent.
+Source and child keep their separate identities and provenance.
+
+Manual edits, merges, splits and links require a `Review(actor=..., reason=...)` supplied by a
+trusted operator adapter. These internal functions do not authenticate arbitrary actor strings;
+protected admin endpoints arrive in PR 35. `link_hypotheses` preserves symmetric edge identity and
+checks directed subtype cycles. Subtype checks serialize with a transaction-level PostgreSQL
+advisory lock ([locking reference](https://www.postgresql.org/docs/17/explicit-locking.html#ADVISORY-LOCKS)).
+Commit promptly and retry transactions rejected for deadlock/serialization errors; keep provider
+calls and human review outside lifecycle transactions. No provider call occurs inside these helpers.
+
+`canonical_hypothesis` follows merge aliases with cycle/depth guards. `get_relationships` returns
+bounded, cursor-paginated original edges for the canonical hypothesis and its merged aliases;
+source/target IDs retain subtype direction and historical identity. It does not flatten historical
+edges. Retrieval/backfill skip merged or inactive hypotheses. **Current evidence queries must filter
+`Evidence.archived_at IS NULL`**; archived attachments are history, not extra reports. New duplicate,
+independence and scoring services must use that same filter.
+
+The trusted local CLI can preview an eligible resolution without keeping lifecycle writes:
+
+```powershell
+uv run --locked python -m app.resolve_claim CLAIM_UUID
+uv run --locked python -m app.lifecycle RESOLUTION_UUID --dry-run
+uv run --locked python -m app.lifecycle RESOLUTION_UUID --reviewer operator --reason "Reviewed mechanism, geography and evidence" --dry-run
+```
+
+Remove `--dry-run` to commit. IDs printed by a preview are ephemeral. Resolution application uses
+the embedder's version metadata and requires no model download or embedding inference. Research
+orchestration and public/admin endpoints remain later PRs; PR 18 does not automatically apply the
+review backlog. Tests exercise real PostgreSQL, including simultaneous application retries,
+provenance through merge chains, split ownership, stance conflicts and stale-decision rejection.
 
 ## Checks
 

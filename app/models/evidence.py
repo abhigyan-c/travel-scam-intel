@@ -45,6 +45,9 @@ class Evidence(Base):
             name="ck_evidence_independence_components",
         ),
         CheckConstraint("evidence_weight BETWEEN 0 AND 1", name="ck_evidence_weight"),
+        CheckConstraint(
+            "jsonb_typeof(weight_components) = 'object'", name="ck_evidence_weight_components"
+        ),
     )
 
     id: Mapped[UUID] = mapped_column(primary_key=True, default=uuid4)
@@ -72,6 +75,13 @@ class Evidence(Base):
         JSONB, default=dict, server_default=text("'{}'::jsonb")
     )
     evidence_weight: Mapped[float | None] = mapped_column(Float)
+    weight_run_id: Mapped[UUID | None] = mapped_column(
+        ForeignKey("evidence_weight_runs.id", ondelete="RESTRICT", name="fk_evidence_weight_run"),
+        index=True,
+    )
+    weight_components: Mapped[dict] = mapped_column(
+        JSONB, default=dict, server_default=text("'{}'::jsonb")
+    )
     archived_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
     superseded_by_id: Mapped[UUID | None] = mapped_column(
         ForeignKey("evidence.id", ondelete="RESTRICT"),

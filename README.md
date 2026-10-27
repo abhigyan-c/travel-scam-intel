@@ -784,6 +784,89 @@ Tests cover anonymous reports, identity namespaces, repeated authors/discussions
 quotation overlap, directional references, publication timing, historical recalculation, lifecycle
 cache invalidation, concurrent retries and full CLI preview rollback against PostgreSQL.
 
+## Source quality and evidence weight (PR 21)
+
+```powershell
+uv run --locked alembic upgrade head
+uv run --locked python -m app.calculate_evidence_weights HYPOTHESIS_UUID --dry-run
+uv run --locked python -m app.calculate_evidence_weights HYPOTHESIS_UUID
+```
+
+`app.db.evidence_weight.calculate_evidence_weights` refreshes duplicate detection and independence,
+then calculates deterministic source usefulness and eligible evidence contribution. It uses the
+same bounded current cohort (100 attachments by default, maximum 200). No LLM truth score,
+external request, model download or new API credential is involved. Helpers leave commits to the
+caller; the CLI commits or rolls back all three scoring stages with `--dry-run`.
+
+The initial `evidence-weight-v1` rubric is a transparent metadata prior, not a calibrated truth
+probability. Source quality starts with the following source-type values:
+
+| Source type | Prior |
+| --- | --- |
+| Official advisory | 0.75 |
+| News | 0.65 |
+| Blog / forum / normalized user report | 0.50 |
+| Other | 0.35 |
+
+Adjustments are +0.15 for first-hand, +0.10 for witnessed, −0.10 for second-hand, or −0.05 for
+unknown observation provenance; +0.05 each for known author and publication metadata; +0.10 for
+an explicitly verified advisory; and +0.05 for an accepted normalized report. The result is clamped
+to 0–1. Missing identity is not a publication blocker: an anonymous processed first-hand report
+has quality 0.65 before other adjustments and can contribute with PR 20's partial independence credit.
+
+Linked `UserReport.provenance_class` is authoritative for first-hand/witnessed/second-hand labels,
+even when extraction disagrees. A linked report always uses the user-report source prior, so a
+source-type label cannot turn it into an official advisory. Otherwise, a strict Boolean
+`Claim.structured_data.first_hand` supplies first-/second-hand classification; unknown or malformed
+values stay unknown. Publication metadata comes from PR 20's explicit document/source date choice,
+never an occurrence, ingestion or retrieval date.
+
+The advisory bonus requires `Source.metadata.official_advisory_verified` to be exactly Boolean
+`true` and the effective source type to be `official_advisory`. This is trusted producer/operator
+metadata, not verification inferred from a hostname, source text or an LLM. Strings such as
+`"true"` do not qualify, and the flag cannot upgrade another source type.
+
+Public aggregation weight is `source_quality × independence`, rounded to six decimals, when all
+eligibility gates pass. Only SUPPORTS and CONTRADICTS receive weight; contradiction remains a
+nonnegative contribution for PR 22 to handle separately by stance. RELATED/UNCERTAIN receive zero.
+A duplicate may pass publication eligibility while receiving zero weight because its independent
+contribution is zero; eligible counts are not independent-report counts.
+
+Held, rejected, missing/unknown publication states, sensitive allegations and named-actor
+allegations receive zero public weight. Quality is retained for private inspection even when an
+item is excluded. This PR neither approves publication nor clears holds; sensitive/named-actor
+release remains part of the later authenticated review workflow. An arbitrary approval marker
+does not bypass those guards.
+
+`UserReport.moderation_status` supplies the minimal normalized state needed for grading:
+`pending`, `processed`, `needs_review`, `accepted`, or `rejected`, defaulting to pending (including
+existing records). Processed and accepted ordinary reports can contribute; pending/review/rejected
+reports cannot. A user-report source without its normalized report is excluded. The future report
+pipeline must mark successfully processed ordinary reports appropriately; this adds no report API,
+media upload, moderation interface or automatic acceptance operation.
+
+`EvidenceWeightRun` retains policy, input hash, independence-run linkage, input metadata, all scores
+and explanations. Current evidence stores source quality, evidence weight, `weight_run_id` and
+`weight_components` with adjustments, unknowns, provenance, eligibility and exclusion reasons.
+Unchanged runs are reused; provenance, verification, moderation or publication changes create new
+history without rewriting the old run. Partial independence/review flags propagate explicitly.
+
+Independence changes and lifecycle edits/transfers clear affected current weight pointers and
+components. Archived evidence and historical runs retain their old values. The source-quality
+scalar may be retained when only independence changes; scalar values without current run metadata
+must not be treated as validated weights. Recalculate after relevant metadata/claim/moderation
+changes and before aggregation. Updated inputs clear downstream hypothesis-score caches, while
+historical score snapshots and raw source/claim provenance remain intact.
+
+Transactions serialize per hypothesis and also lock linked normalized reports. Concurrent retries
+reuse a run; previews restore original scores, groups, run records and caches. Commit promptly and
+retry database deadlock/serialization failures normally. PR 22 adds the corroboration/confidence
+engine; these weights do not promote hypotheses, infer incident prevalence or publish allegations.
+
+Tests cover provenance overrides, anonymous reports, strict advisory verification, moderation gates,
+sensitivity/publication holds, duplicate zero-credit behavior, historical recalculation, lifecycle
+cache invalidation, concurrent retries and complete CLI rollback against PostgreSQL.
+
 ## Checks
 
 ```powershell

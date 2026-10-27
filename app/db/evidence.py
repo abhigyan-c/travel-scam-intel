@@ -3,6 +3,12 @@ from sqlalchemy import update
 from app.models import Evidence
 
 
+def clear_weight_cache(evidence):
+    evidence.evidence_weight = None
+    evidence.weight_run_id = None
+    evidence.weight_components = {}
+
+
 async def invalidate_independence(session, hypothesis_id) -> int:
     """Clear current versioned caches; immutable runs and archived attachments stay intact."""
     changed = await session.execute(
@@ -17,6 +23,8 @@ async def invalidate_independence(session, hypothesis_id) -> int:
             independence_run_id=None,
             independence_components={},
             evidence_weight=None,
+            weight_run_id=None,
+            weight_components={},
         )
         .execution_options(synchronize_session="fetch")
     )

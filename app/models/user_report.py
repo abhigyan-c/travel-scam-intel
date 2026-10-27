@@ -2,7 +2,7 @@ from datetime import datetime
 from enum import StrEnum
 from uuid import UUID, uuid4
 
-from sqlalchemy import CheckConstraint, DateTime, Enum, ForeignKey, Text, func
+from sqlalchemy import CheckConstraint, DateTime, Enum, ForeignKey, String, Text, func
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.db.session import Base
@@ -17,7 +17,13 @@ class ReportProvenance(StrEnum):
 
 class UserReport(Base):
     __tablename__ = "user_reports"
-    __table_args__ = (CheckConstraint("length(trim(report_text)) > 0", name="ck_user_report_text"),)
+    __table_args__ = (
+        CheckConstraint("length(trim(report_text)) > 0", name="ck_user_report_text"),
+        CheckConstraint(
+            "moderation_status IN ('pending','processed','needs_review','accepted','rejected')",
+            name="ck_user_report_moderation_status",
+        ),
+    )
 
     id: Mapped[UUID] = mapped_column(primary_key=True, default=uuid4)
     document_id: Mapped[UUID] = mapped_column(
@@ -27,6 +33,9 @@ class UserReport(Base):
         ForeignKey("locations.id", ondelete="RESTRICT"), index=True
     )
     report_text: Mapped[str] = mapped_column(Text)
+    moderation_status: Mapped[str] = mapped_column(
+        String(20), default="pending", server_default="pending"
+    )
     provenance_class: Mapped[ReportProvenance] = mapped_column(
         Enum(
             ReportProvenance,

@@ -8,6 +8,7 @@ from sqlalchemy import select
 from sqlalchemy.dialects.postgresql import insert
 
 from app.db.duplicates import _hash, _url, detect_duplicates
+from app.db.evidence import clear_weight_cache
 from app.independence import POLICY, VERSION, score_evidence
 from app.models import (
     Claim,
@@ -194,7 +195,7 @@ async def calculate_independence(
                 evidence.independence_run_id = run.id
                 evidence.independence_score = result["score"]
                 evidence.independence_components = result["components"]
-                evidence.evidence_weight = None
+                clear_weight_cache(evidence)
                 changed += 1
         if changed or created_run:
             hypothesis.confidence_score = hypothesis.prevalence_score = hypothesis.recency_score = (

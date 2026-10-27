@@ -9,7 +9,7 @@ from pydantic import BaseModel
 from sqlalchemy import case, func, select
 from sqlalchemy.dialects.postgresql import insert
 
-from app.db.evidence import invalidate_independence
+from app.db.evidence import clear_weight_cache, invalidate_independence
 from app.duplicates import POLICY, VERSION, compare, identity, normalize
 from app.embeddings import MODEL, REVISION, text_hash, validate_vector
 from app.integrations.fetch import canonicalize_url
@@ -301,6 +301,7 @@ async def detect_duplicates(session, hypothesis_id: UUID, *, limit: int = 100) -
             if evidence.duplicate_group_id != group_id:
                 evidence.duplicate_group_id = group_id
                 evidence.independence_score = evidence.evidence_weight = None
+                clear_weight_cache(evidence)
                 evidence.independence_run_id = None
                 evidence.independence_components = {}
                 changed += 1

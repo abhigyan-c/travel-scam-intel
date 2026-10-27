@@ -1,6 +1,7 @@
 from app.models.claim import Claim
 from app.models.claim_extraction import ClaimExtraction
 from app.models.document import Document
+from app.models.duplicate_detection import DuplicateAssessment, DuplicateDetectionRun
 from app.models.duplicate_group import DuplicateGroup
 from app.models.evidence import Evidence
 from app.models.hypothesis import Hypothesis
@@ -18,6 +19,8 @@ __all__ = [
     "ClaimExtraction",
     "Document",
     "DuplicateGroup",
+    "DuplicateAssessment",
+    "DuplicateDetectionRun",
     "Evidence",
     "Hypothesis",
     "HypothesisLifecycleEvent",

@@ -632,6 +632,77 @@ orchestration and public/admin endpoints remain later PRs; PR 18 does not automa
 review backlog. Tests exercise real PostgreSQL, including simultaneous application retries,
 provenance through merge chains, split ownership, stance conflicts and stale-decision rejection.
 
+## Duplicate detection (PR 19)
+
+```powershell
+uv run --locked alembic upgrade head
+uv run --locked python -m app.detect_duplicates HYPOTHESIS_UUID --dry-run
+uv run --locked python -m app.detect_duplicates HYPOTHESIS_UUID
+```
+
+`app.db.duplicates.detect_duplicates(session, hypothesis_id)` assesses current evidence for one
+current hypothesis. Defaults allow 100 attachments, configurable to 200. Exceeding the limit fails
+atomically rather than silently assessing a truncated cohort. Archived attachments, inactive
+hypotheses and merged aliases are excluded. The helper leaves commits to its caller; the CLI
+commits by default, or rolls back runs, groups and tags with `--dry-run`. Preview IDs are ephemeral.
+No provider request, embedding inference, model download or new API credential is needed.
+
+The deterministic `duplicates-v1` policy records three classifications:
+
+| Classification | Meaning and action |
+| --- | --- |
+| duplicate | Matching textual claims with sufficiently strong copy provenance; eligible for grouping. |
+| suspected | Similarity/correlation suggests a possible copy; retain for review without automatic grouping. |
+| no_match | This policy found insufficient copy signals; independence remains unknown. |
+
+Automatic confirmation requires identical normalized claim summaries and supporting quotations,
+with no conflicting known locations, occurrence dates/text, named actors or evidence stances.
+Normalization retains numbers, punctuation and negation. Quotes of at least 20 words additionally
+need a shared document/canonical URL, identical raw hash, verified current clean-text hash,
+platform-scoped author ID or explicit cross-post reference. Shorter quotes require matching
+offsets within the same verified clean-text version of one document. This avoids automatically
+collapsing short generic statements repeated by different travelers or elsewhere on a thread.
+Stored clean-text hashes are checked against the actual current text before use.
+
+Matching author/thread IDs, substantial five-word quotation overlap of at least 0.8, and embedding
+cosine similarity of at least 0.95 supply review signals. A matching topic, vehicle or author alone
+does not establish a duplicate. Author identifiers come only from `Source.author_identifier`,
+namespaced by platform; common anonymous/deleted placeholders remain unknown. Explicit string
+`Source.metadata.thread_id` and URL `Source.metadata.cross_post_of` are used when available.
+Display-name guesses and inferred thread identities are not introduced.
+
+Embedding similarity uses only finite, nonzero claim vectors with PR 16's current model/revision
+and an input hash matching the current claim text. Missing, stale or incompatible vectors leave
+similarity unknown. The detector does not require an embedding backfill to use other copy signals.
+Bounded pair comparison runs outside the event loop; cancellation can leave CPU work finishing,
+but the thread performs no database writes and the caller's savepoint rolls back cancelled work.
+
+Groups are hypothesis-scoped and deterministic. Every member must match every other member;
+an unknown-location bridge cannot transitively join conflicting known locations. UUID ordering
+makes conservative partitions repeatable. Confirmed pairs left across separate partitions are
+flagged for group review. Existing manual/legacy groups are preserved, and partial automatic
+assignment is reported with `complete=false` and explicit review reasons. Suspected pairs remain
+queryable in the assessment table until the admin review interface arrives in PR 35.
+
+`DuplicateDetectionRun` retains versioned policy thresholds, evidence/claim/document/source IDs
+and the full input snapshot. `DuplicateAssessment` records each pair's classification and signals.
+Group fingerprints preserve identity on unchanged reruns; changed inputs create new audit runs
+and recompute owned automatic tags. Old runs, assessments, groups, raw documents and claims remain
+intact. Concurrent runs for the same hypothesis serialize on its row and reuse the same audit/group
+records. Keep transactions short and retry database deadlock/serialization failures normally.
+
+Only current evidence tags are updated. Archived evidence and publication holds stay unchanged.
+Changing a tag clears its cached independence/evidence-weight values and the hypothesis's cached
+scores; source-quality values and historical score snapshots are retained. Rerun detection after
+claim/provenance edits and lifecycle transfers before consuming group assignments. Groups describe
+textual copies, not proof that two incidents are identical or that an allegation is true.
+
+PR 20 will estimate independence from these groups and other correlation signals; PR 21/22 will
+apply evidence weights and corroboration scoring. This PR does not assign arbitrary independence
+scores, merge hypotheses or remove reports. Review fixtures cover mirrored articles, extraction
+reruns, cross-posts, independent similar accounts, distinct claims on one page, conflicting dates,
+manual groups, archived attachments, stale vectors, concurrent retries and CLI rollback.
+
 ## Checks
 
 ```powershell

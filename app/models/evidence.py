@@ -2,7 +2,17 @@ from datetime import datetime
 from enum import StrEnum
 from uuid import UUID, uuid4
 
-from sqlalchemy import CheckConstraint, DateTime, Enum, Float, ForeignKey, UniqueConstraint, func
+from sqlalchemy import (
+    CheckConstraint,
+    DateTime,
+    Enum,
+    Float,
+    ForeignKey,
+    UniqueConstraint,
+    func,
+    text,
+)
+from sqlalchemy.dialects.postgresql import JSONB
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.db.session import Base
@@ -30,6 +40,10 @@ class Evidence(Base):
         CheckConstraint("semantic_match_score BETWEEN 0 AND 1", name="ck_evidence_semantic_match"),
         CheckConstraint("source_quality_score BETWEEN 0 AND 1", name="ck_evidence_source_quality"),
         CheckConstraint("independence_score BETWEEN 0 AND 1", name="ck_evidence_independence"),
+        CheckConstraint(
+            "jsonb_typeof(independence_components) = 'object'",
+            name="ck_evidence_independence_components",
+        ),
         CheckConstraint("evidence_weight BETWEEN 0 AND 1", name="ck_evidence_weight"),
     )
 
@@ -48,6 +62,15 @@ class Evidence(Base):
     semantic_match_score: Mapped[float | None] = mapped_column(Float)
     source_quality_score: Mapped[float | None] = mapped_column(Float)
     independence_score: Mapped[float | None] = mapped_column(Float)
+    independence_run_id: Mapped[UUID | None] = mapped_column(
+        ForeignKey(
+            "independence_runs.id", ondelete="RESTRICT", name="fk_evidence_independence_run"
+        ),
+        index=True,
+    )
+    independence_components: Mapped[dict] = mapped_column(
+        JSONB, default=dict, server_default=text("'{}'::jsonb")
+    )
     evidence_weight: Mapped[float | None] = mapped_column(Float)
     archived_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
     superseded_by_id: Mapped[UUID | None] = mapped_column(

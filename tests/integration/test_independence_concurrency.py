@@ -1,0 +1,198 @@
+import asyncio
+import json
+import os
+import subprocess
+import sys
+from uuid import uuid4
+
+import pytest
+from sqlalchemy import delete, func, select
+from sqlalchemy.ext.asyncio import async_sessionmaker
+
+from app.core.config import Settings
+from app.db.independence import calculate_independence
+from app.db.session import create_database_engine
+from app.models import (
+    Claim,
+    Document,
+    DuplicateAssessment,
+    DuplicateDetectionRun,
+    DuplicateGroup,
+    Evidence,
+    Hypothesis,
+    IndependenceRun,
+    Location,
+    Source,
+)
+from app.models.location import LocationType
+from app.models.source import SourceType
+
+pytestmark = [
+    pytest.mark.integration,
+    pytest.mark.skipif(os.getenv("RUN_INFRA_TESTS") != "1", reason="set RUN_INFRA_TESTS=1"),
+]
+QUOTE = (
+    "A driver at the station refused the meter and demanded a much higher fixed fare "
+    "before taking the traveler to a hotel late that evening."
+)
+
+
+@pytest.fixture
+async def committed_case():
+    engine = create_database_engine(Settings())
+    sessions = async_sessionmaker(engine, expire_on_commit=False)
+    location_id, source_id, document_id, hypothesis_id = [uuid4() for _ in range(4)]
+    claims = [uuid4(), uuid4()]
+    try:
+        async with sessions() as session, session.begin():
+            session.add_all(
+                [
+                    Location(
+                        id=location_id,
+                        name="Independence concurrency fixture",
+                        canonical_name=str(location_id),
+                        type=LocationType.CITY,
+                    ),
+                    Source(id=source_id, platform="fixture", source_type=SourceType.FORUM),
+                ]
+            )
+            await session.flush()
+            session.add_all(
+                [
+                    Document(
+                        id=document_id,
+                        source_id=source_id,
+                        raw_object_path="raw/independence-fixture",
+                        content_hash="e" * 64,
+                    ),
+                    Hypothesis(
+                        id=hypothesis_id,
+                        primary_location_id=location_id,
+                        title="Reported fares",
+                        canonical_description="Fare reports",
+                        category="transport",
+                        confidence_score=0.8,
+                    ),
+                ]
+            )
+            await session.flush()
+            session.add_all(
+                [
+                    Claim(
+                        id=identity,
+                        document_id=document_id,
+                        location_id=location_id,
+                        claim_text="Reported meter refusal",
+                        normalized_claim="meter refusal",
+                        claim_type="transport",
+                        structured_data={"evidence_quote": QUOTE},
+                    )
+                    for identity in claims
+                ]
+            )
+            await session.flush()
+            session.add_all(
+                [
+                    Evidence(
+                        hypothesis_id=hypothesis_id,
+                        claim_id=identity,
+                        stance="supports",
+                        evidence_weight=0.6,
+                    )
+                    for identity in claims
+                ]
+            )
+        yield sessions, hypothesis_id
+    finally:
+        try:
+            async with sessions() as session, session.begin():
+                await session.execute(
+                    delete(Evidence).where(Evidence.hypothesis_id == hypothesis_id)
+                )
+                await session.execute(
+                    delete(IndependenceRun).where(IndependenceRun.hypothesis_id == hypothesis_id)
+                )
+                runs = select(DuplicateDetectionRun.id).where(
+                    DuplicateDetectionRun.hypothesis_id == hypothesis_id
+                )
+                await session.execute(
+                    delete(DuplicateAssessment).where(DuplicateAssessment.run_id.in_(runs))
+                )
+                await session.execute(
+                    delete(DuplicateDetectionRun).where(
+                        DuplicateDetectionRun.hypothesis_id == hypothesis_id
+                    )
+                )
+                await session.execute(
+                    delete(DuplicateGroup).where(
+                        DuplicateGroup.detection_metadata["hypothesis_id"].astext
+                        == str(hypothesis_id)
+                    )
+                )
+                await session.execute(delete(Hypothesis).where(Hypothesis.id == hypothesis_id))
+                await session.execute(delete(Claim).where(Claim.id.in_(claims)))
+                await session.execute(delete(Document).where(Document.id == document_id))
+                await session.execute(delete(Source).where(Source.id == source_id))
+                await session.execute(delete(Location).where(Location.id == location_id))
+        finally:
+            await engine.dispose()
+
+
+async def test_concurrent_recalculation_reuses_one_historical_run(committed_case):
+    sessions, hypothesis_id = committed_case
+
+    async def calculate():
+        async with sessions() as session, session.begin():
+            return await calculate_independence(session, hypothesis_id)
+
+    one, two = await asyncio.wait_for(asyncio.gather(calculate(), calculate()), timeout=15)
+    assert one.run_id == two.run_id and one.duplicate_run_id == two.duplicate_run_id
+    assert sorted([one.changed, two.changed]) == [0, 2]
+    assert one.total_credit == two.total_credit == 0.5
+    async with sessions() as session:
+        assert (
+            await session.scalar(
+                select(func.count())
+                .select_from(IndependenceRun)
+                .where(IndependenceRun.hypothesis_id == hypothesis_id)
+            )
+            == 1
+        )
+
+
+async def test_cli_preview_rolls_back_scores_groups_runs_and_cached_confidence(committed_case):
+    sessions, hypothesis_id = committed_case
+    result = await asyncio.to_thread(
+        subprocess.run,
+        [sys.executable, "-m", "app.calculate_independence", str(hypothesis_id), "--dry-run"],
+        capture_output=True,
+        text=True,
+        timeout=15,
+        check=False,
+    )
+    assert result.returncode == 0, result.stderr
+    output = json.loads(result.stdout)
+    assert output["dry_run"] and output["total_credit"] == 0.5
+    async with sessions() as session:
+        assert (
+            await session.scalar(
+                select(func.count())
+                .select_from(IndependenceRun)
+                .where(IndependenceRun.hypothesis_id == hypothesis_id)
+            )
+            == 0
+        )
+        assert (
+            await session.scalar(
+                select(func.count())
+                .select_from(DuplicateDetectionRun)
+                .where(DuplicateDetectionRun.hypothesis_id == hypothesis_id)
+            )
+            == 0
+        )
+        evidence = await session.scalar(
+            select(Evidence).where(Evidence.hypothesis_id == hypothesis_id)
+        )
+        assert evidence.independence_score is None and evidence.independence_run_id is None
+        assert evidence.evidence_weight == 0.6
+        assert (await session.get(Hypothesis, hypothesis_id)).confidence_score == 0.8

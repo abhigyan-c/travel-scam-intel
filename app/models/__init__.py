@@ -8,6 +8,7 @@ from app.models.hypothesis import Hypothesis
 from app.models.hypothesis_lifecycle import HypothesisLifecycleEvent
 from app.models.hypothesis_relation import HypothesisRelation
 from app.models.hypothesis_resolution import HypothesisResolution
+from app.models.independence_run import IndependenceRun
 from app.models.location import Location, LocationAlias
 from app.models.research_job import ResearchJob
 from app.models.score_snapshot import HypothesisScoreSnapshot
@@ -28,6 +29,7 @@ __all__ = [
     "HypothesisResolution",
     "HypothesisScoreSnapshot",
     "Location",
+    "IndependenceRun",
     "LocationAlias",
     "ResearchJob",
     "Source",

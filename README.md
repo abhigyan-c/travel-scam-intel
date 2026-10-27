@@ -703,6 +703,87 @@ scores, merge hypotheses or remove reports. Review fixtures cover mirrored artic
 reruns, cross-posts, independent similar accounts, distinct claims on one page, conflicting dates,
 manual groups, archived attachments, stale vectors, concurrent retries and CLI rollback.
 
+## Evidence independence (PR 20)
+
+```powershell
+uv run --locked alembic upgrade head
+uv run --locked python -m app.calculate_independence HYPOTHESIS_UUID --dry-run
+uv run --locked python -m app.calculate_independence HYPOTHESIS_UUID
+```
+
+`app.db.independence.calculate_independence` refreshes PR 19 duplicate provenance, then assigns
+each current attachment a deterministic 0–1 contribution score. It uses the same bounded cohort
+(100 attachments by default, maximum 200), current-hypothesis checks and transactional locks.
+No LLM, model download, embedding inference or external request is involved. The helper leaves
+commits to its caller; CLI previews roll back duplicate runs/groups, scoring runs, scores and caches.
+
+Scores represent **marginal corroboration credit within this cohort**, rather than truth,
+source quality or a calibrated probability of independence. Missing author identity starts at 0.5;
+an identified author starts at 0.75; an identified author with a known publication context and date
+starts at 1.0. Publication context means a stable URL or discussion ID. A value of 1 means the
+current policy found no applicable reduction, not that independence has been proven.
+
+The versioned `independence-v1` policy applies the strongest relevant cap; correlated signals are
+not multiplied together:
+
+| Signal | Contribution cap |
+| --- | --- |
+| Additional member of the same duplicate group | 0 |
+| Shared platform-scoped author | 0.25 |
+| Shared platform-scoped discussion | 0.35 |
+| Shared publication origin/URL | 0.25 |
+| Substantial quotation overlap ≥0.8 | 0.35 |
+| Confirmed copy pair awaiting group review | 0.25 |
+| Explicit upstream evidence reference | 0.40 |
+| Declared cross-post | 0.15 |
+| Invalid reference metadata | 0.50 |
+| Same platform | 0.90 |
+| Same platform with publication times within six hours | 0.80 |
+
+One representative receives the group's available credit; additional copies receive zero.
+Representatives prefer reports not explicitly marked as cross-posts, then earlier publication
+times, falling back to claim ingestion time only for ordering, with evidence ID as the stable tie
+breaker. This choice does not identify the most credible report; PR 21/22 handle quality and
+corroboration separately. Semantic embedding similarity alone does not reduce independence.
+
+Publication dates use `Document.published_at`, then `Source.published_at`; both original values
+and the chosen basis are stored. Missing dates stay unknown. Retrieval/ingestion/occurrence dates
+never stand in for publication dates. Timing compares known publication times to each other,
+without a current-clock dependency, so unchanged inputs produce unchanged results.
+
+`Source.metadata.reference_urls` is an optional list of up to 20 explicit upstream evidence URLs,
+not every navigation link on a page. URLs are canonicalized without following them. References
+reduce the citing report's credit even if the original is ordered later or lies outside this cohort;
+the latter remains explicitly unknown. Links to the current publication do not create artificial
+upstream dependence. PR 19's `cross_post_of` field supplies the declared-copy signal; a self-crosspost
+is invalid metadata. Malformed URLs produce conservative partial scores and review reasons;
+exceeding the reference limit fails atomically. No missing original report is invented or fetched.
+
+`IndependenceRun` preserves the policy, input hash, duplicate-run link, publication/reference inputs
+and all scored components. Current evidence stores `independence_score`, `independence_run_id`
+and an explanation object containing baseline, caps, unknowns, group representative and pair
+signals. Unchanged recalculation reuses the historical run; changed inputs retain the old run and
+produce another. Concurrent recalculations for one hypothesis serialize and return one run.
+`total_credit` is the sum of heuristic contributions, not an integer report or incident count.
+
+Manual groups are preserved. Pending duplicate/group review flags propagate with `complete=false`,
+while conservative scores remain available; they do not become automatic merge decisions.
+Historical runs and archived evidence components stay intact. A refreshed duplicate cohort or
+lifecycle edit/transfer invalidates affected current versioned caches; replacement attachments do
+not inherit a versioned score from another hypothesis. Changed scoring inputs clear downstream
+evidence-weight and hypothesis-score caches, while source-quality values and score snapshots are
+retained. Legacy scalar scores without run provenance remain unversioned until recalculation.
+
+Recalculate after publication/reference/provenance edits and before weighting or aggregation;
+an old scalar alone is not proof that its inputs are current. All policy thresholds are stored with
+the run, and future rule changes must update the version. PR 21 adds source quality/evidence weights,
+PR 22 adds confidence, and PR 23 handles observed frequency and recency. Independence scoring never
+clears publication holds, promotes hypotheses, removes reports or changes incident dates.
+
+Tests cover anonymous reports, identity namespaces, repeated authors/discussions, copied reports,
+quotation overlap, directional references, publication timing, historical recalculation, lifecycle
+cache invalidation, concurrent retries and full CLI preview rollback against PostgreSQL.
+
 ## Checks
 
 ```powershell

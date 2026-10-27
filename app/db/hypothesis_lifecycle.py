@@ -8,6 +8,7 @@ from pydantic import BaseModel, ConfigDict, Field
 from sqlalchemy import func, or_, select
 from sqlalchemy.dialects.postgresql import insert
 
+from app.db.evidence import invalidate_independence
 from app.db.hypothesis_resolution import _unchanged
 from app.embeddings import text_hash
 from app.hypothesis_resolution import VERSION
@@ -141,6 +142,7 @@ def _reset_scores(row):
 
 async def _refresh_dates(session, row):
     await session.flush()
+    await invalidate_independence(session, row.id)
     row.first_seen, row.last_seen = (
         await session.execute(
             select(
@@ -358,6 +360,7 @@ async def update_hypothesis(
             None
         )
         _reset_scores(row)
+        await invalidate_independence(session, row.id)
         event.source_id = event.target_id = row.id
         event.details = {"version": LIFECYCLE_VERSION, "before": before, "after": _snapshot(row)}
         await session.flush()
@@ -365,21 +368,24 @@ async def update_hypothesis(
 
 
 async def _transfer(session, evidence, target_id):
+    scores = {
+        key: getattr(evidence, key)
+        for key in (
+            "semantic_match_score",
+            "source_quality_score",
+            "independence_score",
+            "evidence_weight",
+            "duplicate_group_id",
+        )
+    }
+    if evidence.independence_run_id is not None:
+        scores["independence_score"] = scores["evidence_weight"] = None
     copied = await _attach(
         session,
         target_id,
         evidence.claim_id,
         evidence.stance,
-        **{
-            key: getattr(evidence, key)
-            for key in (
-                "semantic_match_score",
-                "source_quality_score",
-                "independence_score",
-                "evidence_weight",
-                "duplicate_group_id",
-            )
-        },
+        **scores,
     )
     evidence.archived_at, evidence.superseded_by_id = datetime.now(UTC), copied.id
     return {

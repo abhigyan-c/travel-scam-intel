@@ -867,6 +867,30 @@ Tests cover provenance overrides, anonymous reports, strict advisory verificatio
 sensitivity/publication holds, duplicate zero-credit behavior, historical recalculation, lifecycle
 cache invalidation, concurrent retries and complete CLI rollback against PostgreSQL.
 
+## Confidence engine (PR 22)
+
+Refresh eligible evidence and save a deterministic corroboration snapshot:
+
+```powershell
+uv run alembic upgrade head
+uv run python -m app.calculate_confidence <hypothesis-uuid> --dry-run
+uv run python -m app.calculate_confidence <hypothesis-uuid>
+```
+
+The CLI accepts `--limit` (1–200, default 100) and fails on larger cohorts rather
+than scoring a truncated subset. Preview rolls back snapshots and all upstream changes.
+The database helper does not commit; callers own the transaction.
+
+Confidence combines eligible independent support, contradictions, semantic/location
+agreement and bounded source diversity with diminishing returns. It is an internal
+heuristic, not a truth probability. Components, explanations and upstream run links
+are preserved in versioned snapshots; unchanged inputs reuse a snapshot. Ordinary
+low-confidence candidates retain their status and remain queryable. Recency and
+prevalence remain separate and unknown in these snapshots.
+
+See the [scoring policy and hand-built review scenarios](docs/pr-22-scoring-review.md).
+**PR 22 is a manual scoring review gate before PR 23.**
+
 ## Checks
 
 ```powershell

@@ -10,6 +10,7 @@ from sqlalchemy import delete, func, select
 from sqlalchemy.ext.asyncio import async_sessionmaker
 
 from app.core.config import Settings
+from app.db.confidence import calculate_confidence
 from app.db.evidence_weight import calculate_evidence_weights
 from app.db.session import create_database_engine
 from app.models import (
@@ -21,6 +22,7 @@ from app.models import (
     Evidence,
     EvidenceWeightRun,
     Hypothesis,
+    HypothesisScoreSnapshot,
     IndependenceRun,
     Location,
     Source,
@@ -114,6 +116,11 @@ async def committed_case():
         try:
             async with sessions() as session, session.begin():
                 await session.execute(
+                    delete(HypothesisScoreSnapshot).where(
+                        HypothesisScoreSnapshot.hypothesis_id == hypothesis_id
+                    )
+                )
+                await session.execute(
                     delete(Evidence).where(Evidence.hypothesis_id == hypothesis_id)
                 )
                 await session.execute(
@@ -170,6 +177,49 @@ async def test_concurrent_weighting_reuses_one_history_run(committed_case):
             )
             == 1
         )
+
+
+async def test_concurrent_confidence_reuses_one_snapshot(committed_case):
+    sessions, hypothesis_id = committed_case
+
+    async def calculate():
+        async with sessions() as session, session.begin():
+            return await calculate_confidence(session, hypothesis_id)
+
+    one, two = await asyncio.wait_for(asyncio.gather(calculate(), calculate()), timeout=15)
+    assert one.snapshot_id == two.snapshot_id
+    assert one.score == two.score > 0
+    assert sorted([one.created, two.created]) == [False, True]
+
+
+async def test_confidence_cli_preview_rolls_back_snapshots_and_upstream_runs(committed_case):
+    sessions, hypothesis_id = committed_case
+    result = await asyncio.to_thread(
+        subprocess.run,
+        [sys.executable, "-m", "app.calculate_confidence", str(hypothesis_id), "--dry-run"],
+        capture_output=True,
+        text=True,
+        timeout=15,
+        check=False,
+    )
+    assert result.returncode == 0, result.stderr
+    assert json.loads(result.stdout)["score"] > 0
+    async with sessions() as session:
+        for model in (
+            HypothesisScoreSnapshot,
+            EvidenceWeightRun,
+            IndependenceRun,
+            DuplicateDetectionRun,
+        ):
+            assert (
+                await session.scalar(
+                    select(func.count())
+                    .select_from(model)
+                    .where(model.hypothesis_id == hypothesis_id)
+                )
+                == 0
+            )
+        assert (await session.get(Hypothesis, hypothesis_id)).confidence_score == 0.8
 
 
 async def test_cli_preview_rolls_back_all_scoring_stages_and_original_caches(committed_case):

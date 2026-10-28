@@ -3,6 +3,7 @@ import json
 import os
 import subprocess
 import sys
+from datetime import UTC, datetime
 from uuid import uuid4
 
 import pytest
@@ -12,6 +13,7 @@ from sqlalchemy.ext.asyncio import async_sessionmaker
 from app.core.config import Settings
 from app.db.confidence import calculate_confidence
 from app.db.evidence_weight import calculate_evidence_weights
+from app.db.frequency import calculate_recency_and_frequency
 from app.db.session import create_database_engine
 from app.models import (
     Claim,
@@ -190,6 +192,72 @@ async def test_concurrent_confidence_reuses_one_snapshot(committed_case):
     assert one.snapshot_id == two.snapshot_id
     assert one.score == two.score > 0
     assert sorted([one.created, two.created]) == [False, True]
+
+
+async def test_concurrent_frequency_reuses_one_temporal_snapshot(committed_case):
+    sessions, hypothesis_id = committed_case
+    as_of = datetime(2026, 10, 28, 12, tzinfo=UTC)
+
+    async def calculate():
+        async with sessions() as session, session.begin():
+            return await calculate_recency_and_frequency(session, hypothesis_id, as_of=as_of)
+
+    one, two = await asyncio.wait_for(asyncio.gather(calculate(), calculate()), timeout=15)
+    assert one.snapshot_id == two.snapshot_id
+    assert one.confidence_snapshot_id == two.confidence_snapshot_id
+    assert sorted([one.created, two.created]) == [False, True]
+    assert one.components["all_time"] == {
+        "raw_report_count": 1,
+        "independence_weighted_report_count": 0.5,
+    }
+    async with sessions() as session:
+        snapshots = (
+            await session.scalars(
+                select(HypothesisScoreSnapshot).where(
+                    HypothesisScoreSnapshot.hypothesis_id == hypothesis_id
+                )
+            )
+        ).all()
+        assert {row.scoring_version for row in snapshots} == {"confidence-v1", "frequency-v1"}
+
+
+async def test_frequency_cli_preview_rolls_back_temporal_snapshots_and_current_caches(
+    committed_case,
+):
+    sessions, hypothesis_id = committed_case
+    result = await asyncio.to_thread(
+        subprocess.run,
+        [sys.executable, "-m", "app.calculate_frequency", str(hypothesis_id), "--dry-run"],
+        capture_output=True,
+        text=True,
+        timeout=15,
+        check=False,
+    )
+    assert result.returncode == 0, result.stderr
+    output = json.loads(result.stdout)
+    assert output["dry_run"] and output["components"]["all_time"]["raw_report_count"] == 1
+    async with sessions() as session:
+        for model in (
+            HypothesisScoreSnapshot,
+            EvidenceWeightRun,
+            IndependenceRun,
+            DuplicateDetectionRun,
+        ):
+            assert (
+                await session.scalar(
+                    select(func.count())
+                    .select_from(model)
+                    .where(model.hypothesis_id == hypothesis_id)
+                )
+                == 0
+            )
+        hypothesis = await session.get(Hypothesis, hypothesis_id)
+        assert hypothesis.confidence_score == 0.8
+        assert hypothesis.recency_score is hypothesis.prevalence_score is None
+        attachment = await session.scalar(
+            select(Evidence).where(Evidence.hypothesis_id == hypothesis_id)
+        )
+        assert attachment.evidence_weight == 0.6 and attachment.weight_run_id is None
 
 
 async def test_confidence_cli_preview_rolls_back_snapshots_and_upstream_runs(committed_case):

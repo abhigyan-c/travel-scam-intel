@@ -891,6 +891,29 @@ prevalence remain separate and unknown in these snapshots.
 See the [scoring policy and hand-built review scenarios](docs/pr-22-scoring-review.md).
 **PR 22 is a manual scoring review gate before PR 23.**
 
+## Recency and observed reporting frequency (PR 23)
+
+```powershell
+uv run python -m app.calculate_frequency <hypothesis-uuid> --dry-run
+uv run python -m app.calculate_frequency <hypothesis-uuid>
+uv run python -m app.calculate_frequency <hypothesis-uuid> --as-of 2026-10-28T12:00:00Z --dry-run
+```
+
+Calculations expose raw and independence-weighted report counts for 30/90/365 days
+and all time, occurrence-based decay/recency, a bounded observed-frequency prevalence
+score, and simple dataset trends. Multiple claims and versions of one source count
+once. Publication/submission-based counts are a separate series; missing occurrence
+dates remain unknown. Held or ineligible evidence does not enter these counts.
+
+The current-time command refreshes confidence and temporal caches. Explicit `--as-of`
+calculations save reproducible snapshots without replacing current temporal caches;
+they measure the current dataset at that reference date, not historical database state.
+Preview rolls back all stages. The existing cohort bound and snapshot schema apply;
+no new migration or provider credentials are required.
+
+See [date semantics, formulas and trend rules](docs/recency-and-frequency.md).
+Observed reporting frequency is not population incidence or traveler risk.
+
 ## Checks
 
 ```powershell

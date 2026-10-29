@@ -14,6 +14,7 @@ from app.core.logging import configure_logging
 from app.db.ingestion import DiscoveryResult, ingest_url
 from app.db.jobs import dispatch_pending
 from app.db.processing import process_document
+from app.db.reports import process_report
 from app.db.session import create_database_engine
 from app.embeddings import Embedder
 from app.integrations.fetch import Fetcher
@@ -22,6 +23,7 @@ from app.integrations.serper import Serper
 from app.integrations.storage import create_storage_client
 from app.models.document import DocumentStatus
 from app.models.research_job import JobKind, JobStatus, ResearchJob
+from app.models.user_report import UserReport
 from app.research import research_location
 
 logger = logging.getLogger("app.worker")
@@ -49,6 +51,10 @@ async def shutdown(ctx):
 
 
 async def _perform(ctx, kind, payload, session, identity, token):
+    if kind == JobKind.REPORT:
+        return await process_report(
+            session, UUID(payload["report_id"]), client=ctx["llm"], embedder=ctx["embedder"]
+        )
     if kind == JobKind.INGEST:
         document = await ingest_url(
             session,
@@ -113,6 +119,17 @@ async def run_job(ctx, job_id: str):
             if job.attempts >= 3:
                 job.status, job.run_token, job.lease_expires_at = JobStatus.FAILED, None, None
                 job.error_code = "attempts_exhausted"
+                if job.kind == JobKind.REPORT:
+                    report = await session.get(UserReport, UUID(job.payload["report_id"]))
+                    if report is not None and report.processing_status not in {
+                        "processed",
+                        "needs_review",
+                    }:
+                        report.processing_status = "failed"
+                        report.processing_details = {
+                            **report.processing_details,
+                            "error_code": "attempts_exhausted",
+                        }
                 return
             job.attempts += 1
             job.status, job.run_token = JobStatus.RUNNING, token
@@ -133,28 +150,52 @@ async def run_job(ctx, job_id: str):
                 if owned is None:
                     await session.rollback()
                     return
+                report_retry = kind == JobKind.REPORT and result.get("retry")
                 await session.execute(
                     update(ResearchJob)
                     .where(ResearchJob.id == identity)
                     .values(
-                        status=JobStatus.FAILED
-                        if kind == JobKind.RESEARCH and result.get("status") == "failed"
+                        status=JobStatus.RETRY
+                        if report_retry and attempt < 3
+                        else JobStatus.FAILED
+                        if report_retry
+                        or (kind == JobKind.RESEARCH and result.get("status") == "failed")
                         else JobStatus.SUCCEEDED,
                         result=result,
                         run_token=None,
                         lease_expires_at=None,
-                        error_code="research_failed"
+                        error_code="report_incomplete"
+                        if report_retry
+                        else "research_failed"
                         if kind == JobKind.RESEARCH and result.get("status") == "failed"
                         else None,
                     )
                 )
                 await session.commit()
+                if report_retry and attempt < 3:
+                    raise Retry(defer=attempt * 2)
                 return
+    except Retry:
+        raise
     except asyncio.CancelledError:
         error, cancelled = "cancelled", True
     except Exception as exc:
         error = type(exc).__name__
     async with ctx["sessions"]() as session:
+        if kind == JobKind.REPORT and attempt >= 3:
+            owned = await session.scalar(
+                select(ResearchJob.id)
+                .where(ResearchJob.id == identity, ResearchJob.run_token == token)
+                .with_for_update()
+            )
+            if owned is not None:
+                report = await session.get(UserReport, UUID(payload["report_id"]))
+                if report is not None and report.processing_status not in {
+                    "processed",
+                    "needs_review",
+                }:
+                    report.processing_status = "failed"
+                    report.processing_details = {**report.processing_details, "error_code": error}
         await session.execute(
             update(ResearchJob)
             .where(ResearchJob.id == identity, ResearchJob.run_token == token)
@@ -176,6 +217,7 @@ async def run_job(ctx, job_id: str):
 async def redispatch_jobs(ctx):
     async with ctx["sessions"]() as session:
         await dispatch_pending(session, ctx["redis"], kind=JobKind.LOCATION_RESEARCH)
+        await dispatch_pending(session, ctx["redis"], kind=JobKind.REPORT)
 
 
 class WorkerSettings:

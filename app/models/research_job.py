@@ -14,6 +14,7 @@ class JobKind(StrEnum):
     PROCESS = "process"
     RESEARCH = "research"
     LOCATION_RESEARCH = "location_research"
+    REPORT = "report"
 
 
 class JobStatus(StrEnum):

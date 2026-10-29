@@ -933,6 +933,23 @@ API/worker and mounts the preloaded embedding cache read-only. Redis outages lea
 jobs for the worker's periodic dispatch sweep. See [state, limits, recovery and operator
 usage](docs/on-demand-research.md). Full public API/MCP response contracts follow in later PRs.
 
+## Anonymous traveler reports (PR 25)
+
+`POST /v1/reports` accepts English narrative, required `provenance_class` and optional
+resolved or contextual location/occurrence information. Send an `Idempotency-Key` UUID
+and reuse it with the same payload on retries. HTTP 202 confirms durable intake; worker
+processing continues through the same extraction, evidence and scoring pipeline as
+external sources. Concurrent retries create one receipt/document/job.
+
+Original submission fields remain in private immutable storage; normalized text is
+separate. Obvious PII and sensitive/ambiguous reports stay on hold. Anonymous submissions
+remain reports with unknown identity rather than automatically independent proof. Queue
+outages leave durable jobs; storage failures do not accept a submission. Apply migration
+0018 before running the updated API/worker.
+
+See [request/receipt fields, privacy, retry behavior and the convergence review](docs/user-reports.md).
+Media, full moderation and public read contracts follow in later PRs.
+
 ## Checks
 
 ```powershell

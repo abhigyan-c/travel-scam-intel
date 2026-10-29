@@ -13,6 +13,7 @@ class JobKind(StrEnum):
     INGEST = "ingest"
     PROCESS = "process"
     RESEARCH = "research"
+    LOCATION_RESEARCH = "location_research"
 
 
 class JobStatus(StrEnum):

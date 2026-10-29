@@ -14,6 +14,11 @@ def validate_payload(kind: JobKind, payload: dict) -> dict:
         return DiscoveryResult.model_validate(payload).model_dump(mode="json")
     if kind == JobKind.PROCESS:
         return {"document_id": str(UUID(payload["document_id"]))}
+    if kind == JobKind.LOCATION_RESEARCH:
+        phase = payload["phase"]
+        if phase not in {"initial", "enrichment", "refresh"}:
+            raise ValueError("invalid_location_research_phase")
+        return {"location_id": str(UUID(payload["location_id"])), "phase": phase}
     location = payload["location"]
     generate_queries(location)
     return {"location": " ".join(location.split())}
@@ -51,12 +56,14 @@ async def dispatch_pending(
     queue_name: str = "arq:queue",
     limit: int = 100,
     job_ids: list[UUID] | None = None,
+    kind: JobKind | None = None,
 ) -> int:
     if not 1 <= limit <= 1000:
         raise ValueError("invalid dispatch limit")
     jobs = await session.scalars(
         select(ResearchJob.id)
         .where(ResearchJob.id.in_(job_ids) if job_ids is not None else True)
+        .where(ResearchJob.kind == kind if kind is not None else True)
         .where(
             or_(
                 ResearchJob.status.in_([JobStatus.QUEUED, JobStatus.RETRY]),

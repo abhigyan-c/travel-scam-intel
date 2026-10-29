@@ -1,5 +1,6 @@
 import argparse
 import asyncio
+from uuid import UUID
 
 from pydantic import BaseModel, ConfigDict, Field
 from sqlalchemy.ext.asyncio import async_sessionmaker
@@ -28,6 +29,7 @@ class ResearchLimits(BaseModel):
     passages: int = Field(default=6, ge=1, le=6)
     llm_calls: int = Field(default=12, ge=1, le=24)
     timeout: float = Field(default=25, gt=0, le=45)
+    llm_concurrency: int = Field(default=2, ge=1, le=4)
 
 
 class ResearchResult(BaseModel):
@@ -44,14 +46,25 @@ class ResearchResult(BaseModel):
     claim_ids: list[str]
     errors: list[dict]
     usage: dict
+    hypothesis_ids: list[str] = Field(default_factory=list)
+    pending_resolution_ids: list[str] = Field(default_factory=list)
+
+
+class ResearchLeaseLost(Exception):
+    pass
 
 
 class _LimitedClient:
-    def __init__(self, client, limit):
+    def __init__(self, client, limit, concurrency=2):
         self.client, self.limit, self.calls = client, limit, 0
         self.usage = []
+        self.semaphore = asyncio.Semaphore(concurrency)
 
     async def complete(self, **kwargs):
+        async with self.semaphore:
+            return await self._complete(**kwargs)
+
+    async def _complete(self, **kwargs):
         if self.calls >= self.limit:
             return Completion(error="request_limit")
         self.calls += 1
@@ -74,13 +87,23 @@ async def research_location(
     storage,
     bucket: str,
     limits: ResearchLimits | None = None,
+    target_location_id: UUID | None = None,
+    checkpoint=None,
+    on_claim=None,
+    on_hypothesis=None,
 ) -> ResearchResult:
     limits = limits or ResearchLimits()
     generate_queries(location)
-    target = await resolve_location(session, location, create_provisional=False)
+    target = (
+        await resolve_location(session, location, create_provisional=False)
+        if target_location_id is None
+        else None
+    )
+    target_id = target_location_id or target.location_id
     deadline = asyncio.get_running_loop().time() + limits.timeout
     errors, documents, claim_ids = [], [], []
-    budget = _LimitedClient(llm, limits.llm_calls)
+    budget = _LimitedClient(llm, limits.llm_calls, limits.llm_concurrency)
+    hypothesis_ids, pending_ids = [], []
     discovery = await discover(
         location,
         provider,
@@ -99,7 +122,12 @@ async def research_location(
         try:
             async with session.begin_nested():
                 async with asyncio.timeout(remaining):
-                    return await operation()
+                    value = await operation()
+            if checkpoint is not None:
+                await checkpoint(session)
+            return value
+        except ResearchLeaseLost:
+            raise
         except Exception as exc:
             code = type(exc).__name__
             if isinstance(exc, TimeoutError):
@@ -118,7 +146,7 @@ async def research_location(
             return None
 
     fetched, eligible = 0, 0
-    limited = False
+    limited = len(discovery.results) >= limits.candidates
     for candidate in discovery.results:
         if (
             fetched >= limits.fetches
@@ -237,13 +265,35 @@ async def research_location(
                 "resolution",
                 candidate.url,
                 lambda identity=identity: resolve_claim(
-                    session, identity, parent_id=target.location_id, create_provisional=False
+                    session, identity, parent_id=target_id, create_provisional=False
                 ),
             )
             if resolution is not None:
                 resolutions.append(
                     {"claim_id": str(identity), **resolution.model_dump(mode="json")}
                 )
+                if on_claim is not None:
+                    outcome = await stage(
+                        "hypothesis",
+                        candidate.url,
+                        lambda identity=identity: on_claim(session, identity, budget),
+                    )
+                    if outcome:
+                        hypothesis_ids.extend(outcome.get("hypothesis_ids", []))
+                        pending_ids.extend(outcome.get("pending_resolution_ids", []))
+                        if outcome.get("error"):
+                            errors.append({"stage": "hypothesis", "code": outcome["error"]})
+                        if on_hypothesis is not None:
+                            for hypothesis_id in outcome.get("hypothesis_ids", []):
+                                embedded = await stage(
+                                    "embedding",
+                                    candidate.url,
+                                    lambda hypothesis_id=hypothesis_id: on_hypothesis(
+                                        session, UUID(hypothesis_id)
+                                    ),
+                                )
+                                if embedded and embedded.get("error"):
+                                    errors.append({"stage": "embedding", "code": embedded["error"]})
         row["resolutions"] = resolutions
     if limited:
         errors.append({"stage": "research", "code": "resource_limit_or_deadline"})
@@ -260,7 +310,7 @@ async def research_location(
     return ResearchResult(
         limits=limits.model_dump(),
         location=location,
-        location_id=str(target.location_id) if target.location_id else None,
+        location_id=str(target_id) if target_id else None,
         status=status,
         message=message,
         complete=complete,
@@ -274,6 +324,8 @@ async def research_location(
             "llm": budget.usage,
             "llm_calls": budget.calls,
         },
+        hypothesis_ids=list(dict.fromkeys(hypothesis_ids)),
+        pending_resolution_ids=list(dict.fromkeys(pending_ids)),
     )
 
 

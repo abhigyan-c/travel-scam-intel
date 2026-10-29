@@ -79,6 +79,7 @@ Public evidence responses show appropriate excerpts and provenance, never privat
 - Concurrent callers share the active location job. Return available results and explicit in-progress state; do not start duplicate research.
 - Expired leases and unfinished work can be reclaimed after crashes. Queue delivery is retryable; database uniqueness and stage checkpoints protect domain records.
 - Start with a configurable 25-second interactive deadline, 3 search queries, 30 ranked candidates, at most 10 fetches and 6 relevant documents, fetch concurrency 4, and LLM concurrency 2. These are benchmark starting points, not a promised SLA.
+- PR 24 implements serial stage/fetch execution with a shared LLM concurrency cap (default 2); fetching stays below the benchmark concurrency ceiling. Completed scoring commits before separate embedding work. Enrichment reuses cached stages under a second bounded run, while semantic/sensitive applications keep their existing review requirements.
 - Bound individual calls and stop scheduling new expensive work as the deadline approaches. Persist completed outputs and leave unfinished stages for background continuation.
 - Successful research with no relevant findings is READY with zero findings and an honest message. A failed provider or unusable acquisition is not a successful empty search. Partial results include failure/incompleteness metadata.
 - Introduce conservative stale eligibility before the full scheduler, configurable rather than tied to confidence. PR 30 adds demand tiers and prioritization.

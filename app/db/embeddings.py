@@ -32,7 +32,9 @@ def current_embedding(model, embedder):
     )
 
 
-async def backfill_embeddings(session, model, embedder, *, limit: int = 100) -> dict:
+async def backfill_embeddings(
+    session, model, embedder, *, limit: int = 100, ids: list[UUID] | None = None
+) -> dict:
     """Bound total work; failed items are reported and retained for a later retry. No commit."""
     if not 1 <= limit <= 1000:
         raise ValueError("embedding_backfill_limit_must_be_1_to_1000")
@@ -43,6 +45,8 @@ async def backfill_embeddings(session, model, embedder, *, limit: int = 100) -> 
         model.embedding_revision.is_distinct_from(embedder.revision),
         model.embedding_input_hash.is_distinct_from(input_hash_expression(model)),
     )
+    if ids is not None:
+        stale = stale & model.id.in_(ids)
     result = {"examined": 0, "updated": 0, "changed": 0, "errors": []}
     cursor = None
     while result["examined"] < limit:

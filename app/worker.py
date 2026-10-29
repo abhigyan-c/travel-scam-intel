@@ -5,6 +5,7 @@ from uuid import UUID, uuid4
 
 from arq import Retry
 from arq.connections import RedisSettings
+from arq.cron import cron
 from sqlalchemy import select, update
 from sqlalchemy.ext.asyncio import async_sessionmaker
 
@@ -14,6 +15,7 @@ from app.db.ingestion import DiscoveryResult, ingest_url
 from app.db.jobs import dispatch_pending
 from app.db.processing import process_document
 from app.db.session import create_database_engine
+from app.embeddings import Embedder
 from app.integrations.fetch import Fetcher
 from app.integrations.sarvam import Sarvam
 from app.integrations.serper import Serper
@@ -27,6 +29,8 @@ logger = logging.getLogger("app.worker")
 
 async def startup(ctx):
     settings = Settings()
+    ctx["settings"] = settings
+    ctx["embedder"] = Embedder(settings.embedding_cache_dir)
     configure_logging(settings.log_level)
     ctx["engine"] = create_database_engine(settings)
     ctx["sessions"] = async_sessionmaker(ctx["engine"], expire_on_commit=False)
@@ -90,6 +94,13 @@ async def _perform(ctx, kind, payload, session, identity, token):
 
 async def run_job(ctx, job_id: str):
     identity, token = UUID(job_id), uuid4()
+    async with ctx["sessions"]() as session:
+        kind = await session.scalar(select(ResearchJob.kind).where(ResearchJob.id == identity))
+    if kind == JobKind.LOCATION_RESEARCH:
+        from app.on_demand import run_location_job
+
+        await run_location_job(ctx, job_id)
+        return
     async with ctx["sessions"]() as session:
         async with session.begin():
             job = await session.scalar(
@@ -162,6 +173,11 @@ async def run_job(ctx, job_id: str):
         raise Retry(defer=attempt * 2)
 
 
+async def redispatch_jobs(ctx):
+    async with ctx["sessions"]() as session:
+        await dispatch_pending(session, ctx["redis"], kind=JobKind.LOCATION_RESEARCH)
+
+
 class WorkerSettings:
     functions = [run_job]
     on_startup = startup
@@ -172,3 +188,4 @@ class WorkerSettings:
     max_tries = 10
     keep_result = 0
     health_check_interval = 10
+    cron_jobs = [cron(redispatch_jobs, second={0, 15, 30, 45}, run_at_startup=True)]

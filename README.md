@@ -914,6 +914,25 @@ no new migration or provider credentials are required.
 See [date semantics, formulas and trend rules](docs/recency-and-frequency.md).
 Observed reporting frequency is not population incidence or traveler risk.
 
+## On-demand location research (PR 24)
+
+```powershell
+uv run alembic upgrade head
+uv run python -m app.research_on_demand Fiji
+uv run python -m app.research_on_demand Fiji --no-wait
+```
+
+Fresh locations return stored intelligence; stale locations return it while one refresh
+is queued. The first query reserves a durable location lease, runs bounded initial research
+through the existing pipeline, retains partial successes and queues enrichment. Concurrent
+callers share the job. Successful empty results remain distinct from provider failures and
+review-pending findings. Semantic/sensitive resolutions retain their existing review gates.
+
+Limits and freshness/cooldown settings are in `.env.example`. Compose supplies them to the
+API/worker and mounts the preloaded embedding cache read-only. Redis outages leave durable
+jobs for the worker's periodic dispatch sweep. See [state, limits, recovery and operator
+usage](docs/on-demand-research.md). Full public API/MCP response contracts follow in later PRs.
+
 ## Checks
 
 ```powershell

@@ -1,6 +1,7 @@
 import asyncio
 from contextlib import AsyncExitStack, asynccontextmanager
 
+from arq.connections import ArqRedis
 from fastapi import FastAPI
 from fastapi.exceptions import RequestValidationError
 from redis.asyncio import Redis
@@ -8,6 +9,7 @@ from sqlalchemy.ext.asyncio import async_sessionmaker
 from starlette.exceptions import HTTPException
 
 from app.api.locations import router as locations_router
+from app.api.reports import router as reports_router
 from app.api.routes import router
 from app.core.config import Settings
 from app.core.errors import http_error_handler, validation_error_handler
@@ -34,6 +36,9 @@ async def lifespan(application: FastAPI):
         application.state.db_engine = engine
         application.state.db_sessions = async_sessionmaker(engine, expire_on_commit=False)
         application.state.redis = redis
+        report_queue = ArqRedis(connection_pool=redis.connection_pool)
+        cleanup.push_async_callback(report_queue.aclose)
+        application.state.report_queue = report_queue
         application.state.storage = storage
         yield
 
@@ -48,6 +53,7 @@ def create_app(settings: Settings | None = None) -> FastAPI:
     application.add_exception_handler(RequestValidationError, validation_error_handler)
     application.include_router(router)
     application.include_router(locations_router)
+    application.include_router(reports_router)
     return application
 
 

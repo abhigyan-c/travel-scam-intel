@@ -12,10 +12,7 @@ from sqlalchemy import select
 from sqlalchemy.dialects.postgresql import insert
 
 from app.core.config import Settings
-from app.db.embeddings import backfill_embeddings
-from app.db.frequency import calculate_recency_and_frequency
-from app.db.hypothesis_lifecycle import apply_resolution
-from app.db.hypothesis_resolution import _scope, resolve_hypothesis
+from app.db.claim_pipeline import apply_and_score_claim, embed_hypothesis
 from app.db.jobs import create_job, dispatch_pending
 from app.db.resolution import _descendants, get_location_path
 from app.discovery import generate_queries
@@ -348,40 +345,12 @@ async def run_location_job(ctx, job_id: str):
         await session.commit()
 
     async def on_claim(session, claim_id, budget):
-        claim = await session.get(Claim, claim_id)
-        if claim.location_id is not None:
-            path = await get_location_path(session, claim.location_id)
-            existing = await session.scalar(
-                select(Hypothesis.id).where(_scope(claim.location_id, path)).limit(1)
-            )
-            if existing is not None:
-                try:
-                    await ctx["embedder"].preload()
-                except (ValueError, RuntimeError, OSError):
-                    pass  # The resolver records missing coverage/model errors without guessing.
-        resolved = await resolve_hypothesis(
+        return await apply_and_score_claim(
             session, claim_id, embedder=ctx["embedder"], client=budget
         )
-        if resolved.error or resolved.needs_review:
-            return {
-                "pending_resolution_ids": [str(resolved.id)],
-                "error": resolved.error or "review_required",
-            }
-        event = await apply_resolution(session, resolved.id, embedder=ctx["embedder"])
-        await calculate_recency_and_frequency(session, event.target_id)
-        return {"hypothesis_ids": [str(event.target_id)]}
 
     async def on_hypothesis(session, hypothesis_id):
-        # Scope embedding writes to this pipeline's entity, never a global backfill.
-        try:
-            await ctx["embedder"].preload()
-            embedded = await backfill_embeddings(
-                session, Hypothesis, ctx["embedder"], ids=[hypothesis_id]
-            )
-            error = "embedding_unavailable" if embedded["errors"] else None
-        except (ValueError, RuntimeError, OSError):
-            error = "embedding_unavailable"
-        return {"error": error}
+        return await embed_hypothesis(session, hypothesis_id, embedder=ctx["embedder"])
 
     try:
         async with asyncio.timeout(limits.timeout):

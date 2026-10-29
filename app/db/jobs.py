@@ -14,6 +14,8 @@ def validate_payload(kind: JobKind, payload: dict) -> dict:
         return DiscoveryResult.model_validate(payload).model_dump(mode="json")
     if kind == JobKind.PROCESS:
         return {"document_id": str(UUID(payload["document_id"]))}
+    if kind == JobKind.REPORT:
+        return {"report_id": str(UUID(payload["report_id"]))}
     if kind == JobKind.LOCATION_RESEARCH:
         phase = payload["phase"]
         if phase not in {"initial", "enrichment", "refresh"}:

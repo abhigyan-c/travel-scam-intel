@@ -30,6 +30,7 @@ class Settings(BaseSettings):
     readiness_timeout_seconds: float = Field(default=3, gt=0, le=30)
     serper_api_key: SecretStr = Field(default="", validation_alias="SERPER_API_KEY")
     sarvam_api_key: SecretStr = Field(default="", validation_alias="SARVAM_API_KEY")
+    admin_api_token: SecretStr = Field(default="", validation_alias="ADMIN_API_TOKEN")
     embedding_cache_dir: str = ".tools/embedding-cache"
     research_max_search_queries: int = Field(default=3, ge=1, le=6)
     research_max_search_results: int = Field(default=30, ge=1, le=100)

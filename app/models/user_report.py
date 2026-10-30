@@ -30,6 +30,7 @@ class UserReport(Base):
     __tablename__ = "user_reports"
     __table_args__ = (
         UniqueConstraint("submission_key_hash", name="uq_report_submission_key"),
+        CheckConstraint("moderation_revision >= 0", name="ck_report_moderation_revision"),
         CheckConstraint(
             "submission_key_hash ~ '^[0-9a-f]{64}$' AND submission_hash ~ '^[0-9a-f]{64}$'",
             name="ck_report_submission_hashes",
@@ -60,6 +61,7 @@ class UserReport(Base):
         ForeignKey("locations.id", ondelete="RESTRICT"), index=True
     )
     report_text: Mapped[str] = mapped_column(Text)
+    moderation_revision: Mapped[int] = mapped_column(default=0, server_default="0")
     submission_key_hash: Mapped[str | None] = mapped_column(String(64))
     submission_hash: Mapped[str | None] = mapped_column(String(64))
     processing_job_id: Mapped[UUID | None] = mapped_column(

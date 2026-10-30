@@ -950,6 +950,19 @@ outages leave durable jobs; storage failures do not accept a submission. Apply m
 See [request/receipt fields, privacy, retry behavior and the convergence review](docs/user-reports.md).
 Media, full moderation and public read contracts follow in later PRs.
 
+## Private media and moderation (PR 26)
+
+Append JPEG/PNG bytes to `POST /v1/reports/{id}/attachments` with the MIME type, original
+key in `Report-Submission-Key`, and a new upload `Idempotency-Key`. Limits: 5 MiB, 10 million
+pixels, one frame, four files per report. Originals stay private; normalized review images
+strip metadata. Uploads hold the report and refresh public weights, including previously
+accepted reports.
+
+Admin-token endpoints provide private review and auditable ordinary-report accept/reject/
+hold decisions with revision checks. Configure `ADMIN_API_TOKEN` in `.env` to enable them.
+Sensitive release remains blocked until the dashboard workflow. Apply migration 0019.
+See [upload, privacy and moderation contracts](docs/media-and-moderation.md).
+
 ## Checks
 
 ```powershell

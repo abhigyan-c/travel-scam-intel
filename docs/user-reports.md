@@ -33,8 +33,8 @@ Location may also be omitted so extraction can resolve geography from the narrat
 If a grounded claim contains no place, an explicit resolved submission location can
 provide context. Conflicting or still-unresolved claim geography requires review.
 
-The receipt contains only `report_id`, processing `status`, `replayed`, `queue_pending`
-and a short message. It never returns the narrative, contact information, private raw
+The receipt contains `report_id`, processing `status`, `replayed`, `queue_pending`,
+moderation status/revision (added in PR 26) and a short message. It never returns the narrative, contact information, private raw
 object path, model prompts, internal job ID or sensitive hypothesis IDs. Processing
 status can be `queued`, `processed`, `partial`, `needs_review` or `failed`.
 `processed` means pipeline processing completed, not that an allegation was verified.
@@ -112,7 +112,8 @@ no-op. The 15-second outbox sweep now dispatches report jobs as well as location
 including missed queue delivery and expired leases. New candidate reports do not start
 additional location research in this PR; later orchestration/scheduling can request it.
 
-Files, attachments and the full moderation workflow remain PR 26 work. Client-supplied
+PR 26 adds [private image attachments and ordinary-report moderation](media-and-moderation.md).
+Sensitive release remains deferred to the dashboard. Client-supplied
 moderation states, evidence weights and arbitrary extra fields are rejected.
 
 ## Migration and review gate

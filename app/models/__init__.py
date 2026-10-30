@@ -12,6 +12,7 @@ from app.models.hypothesis_resolution import HypothesisResolution
 from app.models.independence_run import IndependenceRun
 from app.models.location import Location, LocationAlias
 from app.models.location_research import LocationResearchState
+from app.models.report_media import ReportAttachment, ReportModerationEvent
 from app.models.research_job import ResearchJob
 from app.models.score_snapshot import HypothesisScoreSnapshot
 from app.models.source import Source
@@ -36,6 +37,8 @@ __all__ = [
     "IndependenceRun",
     "LocationAlias",
     "ResearchJob",
+    "ReportAttachment",
+    "ReportModerationEvent",
     "Source",
     "UserReport",
 ]

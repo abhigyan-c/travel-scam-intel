@@ -9,6 +9,7 @@ from sqlalchemy.ext.asyncio import async_sessionmaker
 from starlette.exceptions import HTTPException
 
 from app.api.locations import router as locations_router
+from app.api.report_media import router as report_media_router
 from app.api.reports import router as reports_router
 from app.api.routes import router
 from app.core.config import Settings
@@ -54,6 +55,7 @@ def create_app(settings: Settings | None = None) -> FastAPI:
     application.include_router(router)
     application.include_router(locations_router)
     application.include_router(reports_router)
+    application.include_router(report_media_router)
     return application
 
 

@@ -17,7 +17,15 @@ from app.db.jobs import create_job
 from app.db.resolution import get_location_path, resolve_claim, resolve_location
 from app.embeddings import text_hash
 from app.integrations.fetch import FetchedPage
-from app.models import Claim, Document, Evidence, Source, UserReport
+from app.models import (
+    Claim,
+    Document,
+    Evidence,
+    ReportAttachment,
+    ReportModerationEvent,
+    Source,
+    UserReport,
+)
 from app.models.research_job import JobKind
 from app.processing import PROCESSING_VERSION, process_bytes
 from app.relevance import PROMPT_VERSION, RelevanceResult, classify_text
@@ -144,11 +152,33 @@ async def process_report(session, report_id: UUID, *, client, embedder):
     )
     if report is None:
         raise ValueError("report_not_found")
-    if report.processing_status in {"processed", "needs_review"} or report.moderation_status in {
-        "needs_review",
-        "rejected",
-    }:
+    details = report.processing_details
+    media_only = (
+        bool(details.get("media_hold"))
+        and not details.get("flags")
+        and not details.get("text_hold")
+    )
+    if (
+        report.processing_status == "processed"
+        or report.moderation_status == "rejected"
+        or (
+            report.processing_status == "needs_review"
+            and not (media_only and not details.get("text_complete"))
+        )
+        or (report.moderation_status == "needs_review" and not media_only)
+    ):
         return {"status": report.processing_status, "retry": False}
+    previous_status = report.moderation_status
+    media_pending = (
+        await session.scalar(
+            select(ReportAttachment.id)
+            .where(
+                ReportAttachment.report_id == report.id, ReportAttachment.status == "needs_review"
+            )
+            .limit(1)
+        )
+        is not None
+    )
     document = await session.get(Document, report.document_id)
     deadline = asyncio.get_running_loop().time() + 40
     budget = _LimitedClient(client, 8, concurrency=1)
@@ -196,13 +226,18 @@ async def process_report(session, report_id: UUID, *, client, embedder):
             await session.refresh(claim)
         held |= claim.location_id is None
     report.moderation_status = (
-        "needs_review" if held else "processed" if claims or extraction.complete else "pending"
+        "needs_review"
+        if held or media_pending
+        else "processed"
+        if claims or extraction.complete
+        else "pending"
     )
     report.processing_status = (
         "needs_review" if held else "processed" if extraction.complete else "partial"
     )
     await session.flush()
     outcomes = []
+    text_hold = held
     processing_errors = set()
     retry = not extraction.complete
     if not held:
@@ -242,16 +277,22 @@ async def process_report(session, report_id: UUID, *, client, embedder):
             report.processing_status = "needs_review" if pending_review else "partial"
             if pending_review:
                 report.moderation_status = "needs_review"
+                text_hold = True
         if retry and report.processing_status != "needs_review":
             report.processing_status = "partial"
-    if held or report.moderation_status == "needs_review":
+    if text_hold:
         for claim in claims:
             claim.structured_data = {**claim.structured_data, "publication_status": "held"}
+    text_complete = extraction.complete and not retry and not text_hold
+    if media_pending and text_complete:
+        report.processing_status = "needs_review"
     await session.flush()
     await _refresh_report_scores(session, document.id)
     report.processing_details = {
         **report.processing_details,
         "complete": report.processing_status == "processed",
+        "text_complete": text_complete,
+        "text_hold": text_hold,
         "claim_count": len(claims),
         "extraction_complete": extraction.complete,
         "error_codes": sorted(
@@ -262,5 +303,21 @@ async def process_report(session, report_id: UUID, *, client, embedder):
         ),
         "usage": {"llm_calls": budget.calls, "llm": budget.usage},
     }
+    report.moderation_revision += 1
+    session.add(
+        ReportModerationEvent(
+            report_id=report.id,
+            key_hash=text_hash(f"processing:{report.id}:{report.moderation_revision}"),
+            request_hash=text_hash(
+                f"{document.clean_text_hash}:{report.moderation_revision}:{report.moderation_status}"
+            ),
+            action="processing_completed",
+            actor="worker",
+            reason="Report text processing attempt completed",
+            previous_status=previous_status,
+            next_status=report.moderation_status,
+            revision=report.moderation_revision,
+        )
+    )
     await session.flush()
     return {"status": report.processing_status, "retry": report.processing_status == "partial"}

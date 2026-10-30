@@ -126,6 +126,7 @@ async def run_job(ctx, job_id: str):
                         "needs_review",
                     }:
                         report.processing_status = "failed"
+                        report.moderation_revision += 1
                         report.processing_details = {
                             **report.processing_details,
                             "error_code": "attempts_exhausted",
@@ -195,6 +196,7 @@ async def run_job(ctx, job_id: str):
                     "needs_review",
                 }:
                     report.processing_status = "failed"
+                    report.moderation_revision += 1
                     report.processing_details = {**report.processing_details, "error_code": error}
         await session.execute(
             update(ResearchJob)

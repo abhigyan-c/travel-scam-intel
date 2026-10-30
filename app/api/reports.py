@@ -47,6 +47,8 @@ async def submit_report(
     return ReportReceipt(
         report_id=report.id,
         status=report.processing_status,
+        moderation_status=report.moderation_status,
+        moderation_revision=report.moderation_revision,
         replayed=replayed,
         queue_pending=queue_pending,
         message="Report received for review."

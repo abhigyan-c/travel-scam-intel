@@ -42,6 +42,8 @@ class ReportCreate(BaseModel):
 class ReportReceipt(BaseModel):
     report_id: UUID
     status: str
+    moderation_status: str
+    moderation_revision: int
     replayed: bool
     queue_pending: bool
     message: str

@@ -963,6 +963,14 @@ hold decisions with revision checks. Configure `ADMIN_API_TOKEN` in `.env` to en
 Sensitive release remains blocked until the dashboard workflow. Apply migration 0019.
 See [upload, privacy and moderation contracts](docs/media-and-moderation.md).
 
+## Shared intelligence queries
+
+PR 27 adds `IntelligenceService` for public searches, evidence, recent patterns,
+related hypotheses, location summaries and local incident matching. Responses carry
+actual geographic scope, research state and separate confidence/temporal metrics.
+These read-only contracts will be shared by REST and MCP adapters.
+See [service contracts and review gate](docs/intelligence-services.md).
+
 ## Checks
 
 ```powershell

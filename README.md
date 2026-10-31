@@ -976,6 +976,11 @@ filters/pages, public provenance, incident matching and background research requ
 Use `research=false` for read-only location queries and polling. Visit `/docs` for
 OpenAPI, or see [public REST usage and research semantics](docs/public-rest-api.md).
 
+PR 29 adds private emerging-pattern assessments with separate dataset novelty,
+independent reporting growth, confidence and geographic hints. Candidates enter
+an admin review queue and receive no automatic public label. Apply migration 0020.
+See [detection policy and admin review](docs/emerging-patterns.md).
+
 ## Checks
 
 ```powershell

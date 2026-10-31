@@ -34,7 +34,7 @@ def public_url(value):
     return urlunsplit((parts.scheme, parts.netloc, parts.path, "", ""))
 
 
-def eligible(*, include_archived=False):
+def eligible(*, include_archived=False, verify_document=True):
     held_media = (
         select(ReportAttachment.id)
         .where(ReportAttachment.report_id == UserReport.id, ReportAttachment.status != "accepted")
@@ -51,12 +51,18 @@ def eligible(*, include_archived=False):
         metadata["entities"] == [],
         Document.processing_status == "processed",
         Document.language == "en",
-        Document.clean_text_hash
-        == func.encode(func.sha256(func.convert_to(Document.clean_text, "UTF8")), "hex"),
+        (
+            Document.clean_text_hash
+            == func.encode(func.sha256(func.convert_to(Document.clean_text, "UTF8")), "hex")
+        )
+        if verify_document
+        else True,
         metadata["extraction"]["clean_text_hash"].astext == Document.clean_text_hash,
         func.jsonb_typeof(metadata["evidence_quote"]) == "string",
         func.length(metadata["evidence_quote"].astext).between(1, 3000),
-        func.strpos(Document.clean_text, metadata["evidence_quote"].astext) > 0,
+        (func.strpos(Document.clean_text, metadata["evidence_quote"].astext) > 0)
+        if verify_document
+        else True,
         or_(
             and_(UserReport.id.is_(None), Source.source_type != "user_report"),
             and_(

@@ -3,6 +3,8 @@ from typing import Literal
 from pydantic import Field, SecretStr
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
+from app.scheduling import SchedulerPolicy
+
 
 class Settings(BaseSettings):
     model_config = SettingsConfigDict(
@@ -41,3 +43,4 @@ class Settings(BaseSettings):
     research_max_total_seconds: float = Field(default=25, gt=0, le=45)
     research_fresh_seconds: int = Field(default=86400, ge=60, le=2592000)
     research_retry_seconds: int = Field(default=300, ge=1, le=86400)
+    scheduler: SchedulerPolicy = Field(default_factory=SchedulerPolicy)

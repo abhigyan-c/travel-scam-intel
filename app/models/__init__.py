@@ -15,11 +15,23 @@ from app.models.location import Location, LocationAlias
 from app.models.location_research import LocationResearchState
 from app.models.report_media import ReportAttachment, ReportModerationEvent
 from app.models.research_job import ResearchJob
+from app.models.scheduler import (
+    HypothesisResearchState,
+    LocationDemandHour,
+    SchedulerCycle,
+    SchedulerDailyBudget,
+    SchedulerReservation,
+)
 from app.models.score_snapshot import HypothesisScoreSnapshot
 from app.models.source import Source
 from app.models.user_report import UserReport
 
 __all__ = [
+    "LocationDemandHour",
+    "SchedulerDailyBudget",
+    "SchedulerReservation",
+    "HypothesisResearchState",
+    "SchedulerCycle",
     "EmergingAssessment",
     "EmergingReview",
     "EmergingReviewDecision",

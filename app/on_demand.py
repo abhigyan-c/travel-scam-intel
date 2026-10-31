@@ -13,6 +13,7 @@ from sqlalchemy.dialects.postgresql import insert
 
 from app.core.config import Settings
 from app.db.claim_pipeline import apply_and_score_claim, embed_hypothesis
+from app.db.demand import record_demand
 from app.db.jobs import create_job, dispatch_pending
 from app.db.resolution import _descendants, get_location_path
 from app.discovery import generate_queries
@@ -58,12 +59,16 @@ def search_label(path):
     return label
 
 
-async def _new_job(session, state, phase):
+async def _new_job(session, state, phase, *, scheduler_limits=None):
     generation = uuid4()
     job = await create_job(
         session,
         kind=JobKind.LOCATION_RESEARCH,
-        payload={"location_id": str(state.location_id), "phase": phase},
+        payload={
+            "location_id": str(state.location_id),
+            "phase": phase,
+            **({"scheduler_limits": scheduler_limits.model_dump()} if scheduler_limits else {}),
+        },
         idempotency_key=f"location:{state.location_id}:{generation}",
     )
     state.status, state.active_job_id = "researching", job.id
@@ -75,6 +80,7 @@ async def _new_job(session, state, phase):
 async def _reserve(ctx, location_id):
     async with ctx["sessions"]() as session, session.begin():
         await get_location_path(session, location_id)  # Validate identity and parent graph.
+        await record_demand(session, location_id)
         await session.execute(
             insert(LocationResearchState).values(location_id=location_id).on_conflict_do_nothing()
         )
@@ -311,6 +317,8 @@ async def _finish(ctx, identity, token, summary):
             state.initial_completed_at = now
             await _new_job(session, state, "enrichment")
         else:
+            if complete and state.initial_completed_at is None:
+                state.initial_completed_at = now
             state.status = (
                 "ready" if complete else "stale" if state.initial_completed_at else "failed"
             )
@@ -340,11 +348,23 @@ async def _retry(ctx, identity, token, error):
 
 async def run_location_job(ctx, job_id: str):
     identity, token = UUID(job_id), uuid4()
+    from app.db.scheduler import SchedulerBudgetDeferred, ensure_execution_budget
+
+    if not await ensure_execution_budget(ctx, identity):
+        return
     payload = await _take(ctx, identity, token)
     if payload is None:
         return
+    if "scheduler_limits" in payload:
+        from app.db.scheduler import guarded_context
+
+        ctx = guarded_context(ctx, identity, token=token)
     settings = ctx.get("settings") or Settings()
-    limits = limits_for(settings, payload["phase"])
+    limits = (
+        ResearchLimits.model_validate(payload["scheduler_limits"])
+        if "scheduler_limits" in payload
+        else limits_for(settings, payload["phase"])
+    )
 
     async def checkpoint(session):
         job, state = await _owned(session, identity, token)
@@ -382,6 +402,12 @@ async def run_location_job(ctx, job_id: str):
                 )
                 await checkpoint(session)
                 summary = result.model_dump(mode="json")
+    except SchedulerBudgetDeferred:
+        try:
+            await _retry(ctx, identity, token, "daily_scheduler_limit")
+        except ResearchLeaseLost:
+            pass
+        return
     except ResearchLeaseLost:
         return
     except TimeoutError:

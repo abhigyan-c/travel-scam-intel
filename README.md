@@ -981,6 +981,11 @@ independent reporting growth, confidence and geographic hints. Candidates enter
 an admin review queue and receive no automatic public label. Apply migration 0020.
 See [detection policy and admin review](docs/emerging-patterns.md).
 
+PR 30 adds an opt-in 15-minute deterministic scheduler, anonymous demand windows,
+configurable refresh tiers, targeted hypothesis research and persistent resource
+reservations. Apply migration 0021; configure `APP_SCHEDULER` to enable proactive work.
+See [scheduler policy, limits and recovery](docs/research-scheduler.md).
+
 ## Checks
 
 ```powershell

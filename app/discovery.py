@@ -38,10 +38,25 @@ class DiscoveryResponse(BaseModel):
     status: str
 
 
-def generate_queries(location: str) -> list[str]:
+def generate_queries(location: str, *, topic: str | None = None) -> list[str]:
     location = " ".join(unicodedata.normalize("NFKC", location).split())
     if not location or len(location) > 200 or any(ord(c) < 32 for c in location):
         raise ValueError("location must contain 1–200 printable characters")
+    if topic is not None:
+        topic = " ".join(unicodedata.normalize("NFKC", topic).split())
+        if not topic or len(topic) > 120 or any(ord(c) < 32 for c in topic):
+            raise ValueError("topic must contain 1–120 printable characters")
+        return [
+            f"{location} {topic} {suffix}"
+            for suffix in (
+                "traveler reports",
+                "tourist warnings",
+                "scams",
+                "travel experiences",
+                "fraud",
+                "Reddit",
+            )
+        ]
     return [
         f"{location} {suffix}"
         for suffix in (
@@ -79,10 +94,11 @@ async def discover(
     max_queries: int = 3,
     max_results: int = 30,
     timeout: float = 25,
+    topic: str | None = None,
 ) -> DiscoveryResponse:
     if not 1 <= max_queries <= 6 or not 1 <= max_results <= 100 or timeout <= 0:
         raise ValueError("invalid discovery limits")
-    queries = generate_queries(location)[:max_queries]
+    queries = generate_queries(location, topic=topic)[:max_queries]
     found: dict[str, tuple[int, SearchResult]] = {}
     usage = []
     deadline = asyncio.get_running_loop().time() + timeout

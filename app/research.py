@@ -91,6 +91,7 @@ async def research_location(
     checkpoint=None,
     on_claim=None,
     on_hypothesis=None,
+    topic: str | None = None,
 ) -> ResearchResult:
     limits = limits or ResearchLimits()
     generate_queries(location)
@@ -110,6 +111,7 @@ async def research_location(
         max_queries=limits.queries,
         max_results=limits.candidates,
         timeout=min(25, limits.timeout),
+        **({"topic": topic} if topic is not None else {}),
     )
     if discovery.status in {"failed", "partial"}:
         errors.append({"stage": "discovery", "code": discovery.status})

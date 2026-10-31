@@ -20,7 +20,25 @@ def validate_payload(kind: JobKind, payload: dict) -> dict:
         phase = payload["phase"]
         if phase not in {"initial", "enrichment", "refresh"}:
             raise ValueError("invalid_location_research_phase")
-        return {"location_id": str(UUID(payload["location_id"])), "phase": phase}
+        result = {"location_id": str(UUID(payload["location_id"])), "phase": phase}
+        if "scheduler_limits" in payload:
+            from app.research import ResearchLimits
+
+            if phase == "initial":
+                raise ValueError("scheduled_initial_requires_explicit_continuation_budget")
+            result["scheduler_limits"] = ResearchLimits.model_validate(
+                payload["scheduler_limits"]
+            ).model_dump()
+        return result
+    if kind == JobKind.HYPOTHESIS_RESEARCH:
+        from app.research import ResearchLimits
+
+        return {
+            "hypothesis_id": str(UUID(payload["hypothesis_id"])),
+            "scheduler_limits": ResearchLimits.model_validate(
+                payload["scheduler_limits"]
+            ).model_dump(),
+        }
     location = payload["location"]
     generate_queries(location)
     return {"location": " ".join(location.split())}

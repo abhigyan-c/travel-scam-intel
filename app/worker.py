@@ -51,6 +51,10 @@ async def shutdown(ctx):
 
 
 async def _perform(ctx, kind, payload, session, identity, token):
+    if kind == JobKind.HYPOTHESIS_RESEARCH:
+        from app.hypothesis_research import perform_hypothesis_research
+
+        return await perform_hypothesis_research(ctx, payload, session, identity, token)
     if kind == JobKind.REPORT:
         return await process_report(
             session, UUID(payload["report_id"]), client=ctx["llm"], embedder=ctx["embedder"]
@@ -107,6 +111,11 @@ async def run_job(ctx, job_id: str):
 
         await run_location_job(ctx, job_id)
         return
+    if kind == JobKind.HYPOTHESIS_RESEARCH:
+        from app.db.scheduler import ensure_execution_budget
+
+        if not await ensure_execution_budget(ctx, identity):
+            return
     async with ctx["sessions"]() as session:
         async with session.begin():
             job = await session.scalar(
@@ -119,6 +128,12 @@ async def run_job(ctx, job_id: str):
             if job.attempts >= 3:
                 job.status, job.run_token, job.lease_expires_at = JobStatus.FAILED, None, None
                 job.error_code = "attempts_exhausted"
+                if job.kind == JobKind.HYPOTHESIS_RESEARCH:
+                    from app.hypothesis_research import finish_hypothesis_state
+
+                    await finish_hypothesis_state(
+                        session, job.payload, identity, ctx["settings"], complete=False
+                    )
                 if job.kind == JobKind.REPORT:
                     report = await session.get(UserReport, UUID(job.payload["report_id"]))
                     if report is not None and report.processing_status not in {
@@ -136,6 +151,10 @@ async def run_job(ctx, job_id: str):
             job.status, job.run_token = JobStatus.RUNNING, token
             job.lease_expires_at = datetime.now(UTC) + timedelta(seconds=90)
             kind, payload, attempt = job.kind, job.payload, job.attempts
+    if kind == JobKind.HYPOTHESIS_RESEARCH:
+        from app.db.scheduler import guarded_context
+
+        ctx = guarded_context(ctx, identity, token=token)
     error = None
     cancelled = False
     try:
@@ -160,7 +179,10 @@ async def run_job(ctx, job_id: str):
                         if report_retry and attempt < 3
                         else JobStatus.FAILED
                         if report_retry
-                        or (kind == JobKind.RESEARCH and result.get("status") == "failed")
+                        or (
+                            kind in {JobKind.RESEARCH, JobKind.HYPOTHESIS_RESEARCH}
+                            and result.get("status") == "failed"
+                        )
                         else JobStatus.SUCCEEDED,
                         result=result,
                         run_token=None,
@@ -168,10 +190,21 @@ async def run_job(ctx, job_id: str):
                         error_code="report_incomplete"
                         if report_retry
                         else "research_failed"
-                        if kind == JobKind.RESEARCH and result.get("status") == "failed"
+                        if kind in {JobKind.RESEARCH, JobKind.HYPOTHESIS_RESEARCH}
+                        and result.get("status") == "failed"
                         else None,
                     )
                 )
+                if kind == JobKind.HYPOTHESIS_RESEARCH:
+                    from app.hypothesis_research import finish_hypothesis_state
+
+                    await finish_hypothesis_state(
+                        session,
+                        payload,
+                        identity,
+                        ctx["settings"],
+                        complete=bool(result.get("complete")),
+                    )
                 await session.commit()
                 if report_retry and attempt < 3:
                     raise Retry(defer=attempt * 2)
@@ -183,6 +216,19 @@ async def run_job(ctx, job_id: str):
     except Exception as exc:
         error = type(exc).__name__
     async with ctx["sessions"]() as session:
+        if kind == JobKind.HYPOTHESIS_RESEARCH and attempt >= 3:
+            from app.hypothesis_research import finish_hypothesis_state
+
+            # Only the current fenced attempt may update target state.
+            owned = await session.scalar(
+                select(ResearchJob.id)
+                .where(ResearchJob.id == identity, ResearchJob.run_token == token)
+                .with_for_update()
+            )
+            if owned is not None:
+                await finish_hypothesis_state(
+                    session, payload, identity, ctx["settings"], complete=False
+                )
         if kind == JobKind.REPORT and attempt >= 3:
             owned = await session.scalar(
                 select(ResearchJob.id)
@@ -220,6 +266,13 @@ async def redispatch_jobs(ctx):
     async with ctx["sessions"]() as session:
         await dispatch_pending(session, ctx["redis"], kind=JobKind.LOCATION_RESEARCH)
         await dispatch_pending(session, ctx["redis"], kind=JobKind.REPORT)
+        await dispatch_pending(session, ctx["redis"], kind=JobKind.HYPOTHESIS_RESEARCH)
+
+
+async def schedule_research(ctx):
+    from app.db.scheduler import scheduler_cycle
+
+    return await scheduler_cycle(ctx)
 
 
 class WorkerSettings:
@@ -232,4 +285,7 @@ class WorkerSettings:
     max_tries = 10
     keep_result = 0
     health_check_interval = 10
-    cron_jobs = [cron(redispatch_jobs, second={0, 15, 30, 45}, run_at_startup=True)]
+    cron_jobs = [
+        cron(redispatch_jobs, second={0, 15, 30, 45}, run_at_startup=True),
+        cron(schedule_research, minute={0, 15, 30, 45}, second=5),
+    ]

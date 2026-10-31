@@ -8,6 +8,7 @@ from redis.asyncio import Redis
 from sqlalchemy.ext.asyncio import async_sessionmaker
 from starlette.exceptions import HTTPException
 
+from app.api.intelligence import router as intelligence_router
 from app.api.locations import router as locations_router
 from app.api.report_media import router as report_media_router
 from app.api.reports import router as reports_router
@@ -17,6 +18,7 @@ from app.core.errors import http_error_handler, validation_error_handler
 from app.core.logging import configure_logging
 from app.core.middleware import RequestContextMiddleware
 from app.db.session import create_database_engine
+from app.embeddings import Embedder
 from app.integrations.storage import create_storage_client
 
 
@@ -49,11 +51,13 @@ def create_app(settings: Settings | None = None) -> FastAPI:
     configure_logging(settings.log_level)
     application = FastAPI(title=settings.name, version="0.1.0", lifespan=lifespan)
     application.state.settings = settings
+    application.state.embedder = Embedder(settings.embedding_cache_dir)
     application.add_middleware(RequestContextMiddleware)
     application.add_exception_handler(HTTPException, http_error_handler)
     application.add_exception_handler(RequestValidationError, validation_error_handler)
     application.include_router(router)
     application.include_router(locations_router)
+    application.include_router(intelligence_router)
     application.include_router(reports_router)
     application.include_router(report_media_router)
     return application

@@ -34,7 +34,7 @@ def public_url(value):
     return urlunsplit((parts.scheme, parts.netloc, parts.path, "", ""))
 
 
-def eligible():
+def eligible(*, include_archived=False):
     held_media = (
         select(ReportAttachment.id)
         .where(ReportAttachment.report_id == UserReport.id, ReportAttachment.status != "accepted")
@@ -43,7 +43,7 @@ def eligible():
     )
     metadata = Claim.structured_data
     return and_(
-        Evidence.archived_at.is_(None),
+        True if include_archived else Evidence.archived_at.is_(None),
         Claim.location_id == Hypothesis.primary_location_id,
         metadata["publication_status"].astext.in_(["unreviewed", "approved"]),
         func.jsonb_typeof(metadata["sensitive"]) == "boolean",

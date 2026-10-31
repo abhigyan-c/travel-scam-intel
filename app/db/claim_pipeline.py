@@ -3,6 +3,7 @@
 from sqlalchemy import select
 
 from app.db.embeddings import backfill_embeddings
+from app.db.emergence import detect_emergence
 from app.db.frequency import calculate_recency_and_frequency
 from app.db.hypothesis_lifecycle import apply_resolution
 from app.db.hypothesis_resolution import _scope, resolve_hypothesis
@@ -30,6 +31,7 @@ async def apply_and_score_claim(session, claim_id, *, embedder, client):
         }
     event = await apply_resolution(session, resolved.id, embedder=embedder)
     await calculate_recency_and_frequency(session, event.target_id)
+    await detect_emergence(session, event.target_id)
     return {"hypothesis_ids": [str(event.target_id)]}
 
 

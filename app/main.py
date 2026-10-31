@@ -8,6 +8,7 @@ from redis.asyncio import Redis
 from sqlalchemy.ext.asyncio import async_sessionmaker
 from starlette.exceptions import HTTPException
 
+from app.api.emergence import router as emergence_router
 from app.api.intelligence import router as intelligence_router
 from app.api.locations import router as locations_router
 from app.api.report_media import router as report_media_router
@@ -58,6 +59,7 @@ def create_app(settings: Settings | None = None) -> FastAPI:
     application.include_router(router)
     application.include_router(locations_router)
     application.include_router(intelligence_router)
+    application.include_router(emergence_router)
     application.include_router(reports_router)
     application.include_router(report_media_router)
     return application

@@ -107,6 +107,15 @@ async def _dispatch(ctx, job_id):
         return True
 
 
+async def request_location_research(ctx, location_id: UUID) -> bool:
+    """Reserve/dispatch shared research without running providers or reading internal cards.
+
+    Returns whether dispatch is pending; the durable outbox survives queue outages.
+    """
+    job_id, _ = await _reserve(ctx, location_id)
+    return await _dispatch(ctx, job_id)
+
+
 async def get_location_intelligence(ctx, location_id: UUID, *, wait_for_initial: bool = True):
     job_id, initial = await _reserve(ctx, location_id)
     if initial and wait_for_initial:

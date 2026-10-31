@@ -7,12 +7,31 @@ from app.api.locations import Session
 from app.db.jobs import dispatch_pending
 from app.db.reports import accept_report
 from app.reports import InvalidReport, ReportConflict
+from app.schemas.public_api import ErrorEnvelope
 from app.schemas.report import ReportCreate, ReportReceipt
 
 router = APIRouter(prefix="/v1/reports", tags=["reports"])
 
 
-@router.post("", status_code=202, response_model=ReportReceipt)
+@router.post(
+    "",
+    status_code=202,
+    response_model=ReportReceipt,
+    summary="Submit an anonymous traveler report",
+    description="Stores a normalized report and queues processing. "
+    "Retry with the same Idempotency-Key and content to retrieve the same receipt.",
+    responses={
+        409: {
+            "model": ErrorEnvelope,
+            "description": "Idempotency key reused for different content.",
+        },
+        422: {
+            "model": ErrorEnvelope,
+            "description": "Invalid report, location context or request.",
+        },
+        503: {"model": ErrorEnvelope, "description": "Report storage temporarily unavailable."},
+    },
+)
 async def submit_report(
     request: Request,
     payload: ReportCreate,

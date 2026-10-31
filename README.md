@@ -971,6 +971,11 @@ actual geographic scope, research state and separate confidence/temporal metrics
 These read-only contracts will be shared by REST and MCP adapters.
 See [service contracts and review gate](docs/intelligence-services.md).
 
+PR 28 exposes these contracts through the anonymous `/v1` REST API, with bounded
+filters/pages, public provenance, incident matching and background research requests.
+Use `research=false` for read-only location queries and polling. Visit `/docs` for
+OpenAPI, or see [public REST usage and research semantics](docs/public-rest-api.md).
+
 ## Checks
 
 ```powershell

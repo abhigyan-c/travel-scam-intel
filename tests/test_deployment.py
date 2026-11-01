@@ -39,6 +39,21 @@ def test_vault_export_requires_complete_unique_allowlisted_values():
             select_secrets(invalid, APP_KEYS)
 
 
+def test_r2_names_map_to_exported_storage_files():
+    payload = [
+        {"key": "R2_ACCESS", "value": "synthetic-access"},
+        {"key": "R2_SECRET", "value": "synthetic-secret"},
+        {"key": "R2_TOKEN", "value": "unused"},
+    ]
+    required = {"S3_ACCESS_KEY", "S3_SECRET_KEY"}
+    assert select_secrets(payload, required) == {
+        "S3_ACCESS_KEY": "synthetic-access",
+        "S3_SECRET_KEY": "synthetic-secret",
+    }
+    with pytest.raises(ValueError, match="duplicate_or_empty_secret"):
+        select_secrets(payload + [{"key": "S3_ACCESS_KEY", "value": "duplicate"}], required)
+
+
 @pytest.mark.parametrize(
     "values",
     [

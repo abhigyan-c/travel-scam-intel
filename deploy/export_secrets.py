@@ -21,12 +21,13 @@ APP_KEYS = {
     "POSTGRES_PASSWORD",
 }
 BACKUP_KEYS = {"S3_ACCESS_KEY", "S3_SECRET_KEY", "BACKUP_PASSPHRASE"}
+KEY_ALIASES = {"R2_ACCESS": "S3_ACCESS_KEY", "R2_SECRET": "S3_SECRET_KEY"}
 
 
 def select_secrets(payload, required):
     result = {}
     for item in payload:
-        key = item["key"]
+        key = KEY_ALIASES.get(item["key"], item["key"])
         if key not in required:
             continue
         if key in result or not isinstance(item["value"], str) or not item["value"].strip():

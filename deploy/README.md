@@ -23,6 +23,30 @@ In `prod-app`, use these exact secret keys:
 
 In `prod-backup`: `S3_ACCESS_KEY`, `S3_SECRET_KEY` for the backup bucket, and
 `BACKUP_PASSPHRASE`. Retain a recoverable copy of that passphrase off the VPS.
+
+### Existing local credential names (2026-11-01)
+
+The ignored local `.env` contains the following names; only names were inspected:
+
+| Local name | Deployment use |
+| --- | --- |
+| `SERPER_API_KEY` | Same key name in `prod-app` |
+| `SARVAM_API_KEY` | Same key name in `prod-app` |
+| `BITWARDEN_MACHINE_ACCESS_TOKEN` | Bootstrap machine token; install into the appropriate host token file after verifying its project scope |
+| `R2_ACCESS` | R2 S3 access-key ID; exporter maps it to `S3_ACCESS_KEY` |
+| `R2_SECRET` | R2 S3 secret access key; exporter maps it to `S3_SECRET_KEY` |
+| `R2_TOKEN` | Reserved for Cloudflare API management if needed; not consumed by application object access or the exporter |
+
+The R2 mapping assumes `R2_ACCESS`/`R2_SECRET` are the S3-compatible key pair;
+values and permissions have not been verified. Vault projects may use either the
+R2 aliases or canonical S3 names, but do not define both for the same credential:
+the exporter rejects ambiguous duplicates. The local R2 names are deployment
+references; local application/Compose storage settings continue to use `S3_*`.
+One local Bitwarden token name does not establish access to both projects. Verify
+its scope and supply the separately scoped backup token for the backup host file.
+Account endpoint, project UUIDs and per-bucket credential scopes remain to be
+provided/verified. Never copy bootstrap tokens into application secret mounts.
+
 The exporter validates required keys and duplicates before creating a new runtime
 directory. Application secret files are owned by uid 10001; the PostgreSQL password
 file is owned by the pinned image's postgres uid 999. Verify these IDs when upgrading

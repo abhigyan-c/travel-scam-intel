@@ -37,9 +37,14 @@ managed Redis, a load balancer or an additional server.
    verified known-hosts entry. The VPS needs no GitHub repository credentials or
    paid registry. Deployments are manually triggered, not automatic on merge.
 
-Readiness update (2026-11-01): the user confirmed R2 and Bitwarden projects/machine
-tokens are ready. VPS provisioning is expected in one day. Actual bucket permissions
-and vault retrieval still need live verification; credentials have not been inspected.
+Readiness update (2026-11-01): both R2 buckets passed live signed read/write,
+conditional-write and cleanup checks. Bitwarden project access and initialization
+passed: eight app secrets and three backup secrets were created with user approval
+and verified by readback. The supplied machine token accesses both projects and the
+R2 key pair accesses both buckets; separate scoped credentials are not yet in use.
+Return the machine account to read-only after initialization. Public-domain bucket
+settings still need dashboard confirmation because the Cloudflare management token
+cannot read them (HTTP 403). VPS provisioning remains pending.
 
 OVH API credentials are needed only if we automate VM/firewall provisioning with its
 API; an already-created VPS can be bootstrapped through SSH. DNS API credentials

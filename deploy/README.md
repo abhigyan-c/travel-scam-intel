@@ -26,7 +26,8 @@ In `prod-backup`: `S3_ACCESS_KEY`, `S3_SECRET_KEY` for the backup bucket, and
 
 ### Existing local credential names (2026-11-01)
 
-The ignored local `.env` contains the following names; only names were inspected:
+The ignored local `.env` contains the following names. Live checks load values
+programmatically without displaying them:
 
 | Local name | Deployment use |
 | --- | --- |
@@ -36,16 +37,52 @@ The ignored local `.env` contains the following names; only names were inspected
 | `R2_ACCESS` | R2 S3 access-key ID; exporter maps it to `S3_ACCESS_KEY` |
 | `R2_SECRET` | R2 S3 secret access key; exporter maps it to `S3_SECRET_KEY` |
 | `R2_TOKEN` | Reserved for Cloudflare API management if needed; not consumed by application object access or the exporter |
+| `R2_ENDPOINT` | Maps to host `S3_ENDPOINT` |
+| `PROD_APP_UUID` | Maps to host `BWS_APP_PROJECT_ID` |
+| `PROD_BACKUP_UUID` | Maps to host `BWS_BACKUP_PROJECT_ID` |
 
-The R2 mapping assumes `R2_ACCESS`/`R2_SECRET` are the S3-compatible key pair;
-values and permissions have not been verified. Vault projects may use either the
+The R2 key pair has now passed live read/write and conditional-write checks against
+both buckets. Vault projects may use either the
 R2 aliases or canonical S3 names, but do not define both for the same credential:
 the exporter rejects ambiguous duplicates. The local R2 names are deployment
 references; local application/Compose storage settings continue to use `S3_*`.
-One local Bitwarden token name does not establish access to both projects. Verify
-its scope and supply the separately scoped backup token for the backup host file.
-Account endpoint, project UUIDs and per-bucket credential scopes remain to be
-provided/verified. Never copy bootstrap tokens into application secret mounts.
+The user confirmed that the supplied Bitwarden token accesses both projects; live
+project reads confirmed this. This shared token can bootstrap both host token files.
+It grants broader access than the originally proposed separate project tokens.
+Likewise, the supplied R2 key pair accesses both buckets; separate per-bucket
+credentials have not been supplied. Never copy bootstrap tokens into application
+secret mounts. Use read/write machine access only for initialization and return to
+read-only for ordinary deployments after seeding is complete.
+
+### Live service setup
+
+Run `python -m deploy.check_services` explicitly to check project access/required
+secrets and upload/read/conditional-write/delete a unique synthetic object in each
+bucket. It also attempts read-only public-domain configuration inspection with
+`R2_TOKEN`. Provider output/values are captured, never printed. Temporary objects
+are deleted and absence verified. If cleanup fails, only the synthetic object key
+is reported for operator cleanup. This command is not run in CI.
+
+`python -m deploy.seed_vault` prints a dry-run list of missing key names. With
+`--apply`, it imports the supplied Serper/Sarvam/R2 credentials and generates the
+database password, admin token and backup passphrase, then verifies vault readback.
+It preserves existing values and can resume a partial run. A read-only machine
+account can list projects but cannot initialize secrets; grant `Can read, write`
+temporarily in both projects. A create request can return HTTP 404 in that situation.
+Retain the backup passphrase in the vault for recovery; it is not printed or saved
+to a plaintext local file by this script.
+
+Live results (2026-11-01): both buckets passed upload/download, atomic conditional
+write rejection, original-content preservation and temporary-object cleanup.
+Unauthenticated S3 requests returned HTTP 400. That only establishes denial at the
+S3 endpoint: inspection of `r2.dev` and custom-domain exposure returned HTTP 403
+with the supplied management token, so confirm those public-access toggles disabled
+in the Cloudflare dashboard before public release. Both Bitwarden projects were
+initially empty; after the user enabled write access, initialization created eight
+app secrets and three backup secrets and verified their values by vault readback.
+An idempotency dry run then proposed no changes. Real app secrets were exported
+inside a disposable network-isolated Linux container and loaded successfully by
+application uid 10001; PostgreSQL password ownership was verified as uid 999.
 
 The exporter validates required keys and duplicates before creating a new runtime
 directory. Application secret files are owned by uid 10001; the PostgreSQL password

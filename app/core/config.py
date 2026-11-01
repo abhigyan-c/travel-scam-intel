@@ -1,3 +1,4 @@
+import os
 from typing import Literal
 
 from pydantic import Field, SecretStr
@@ -13,6 +14,7 @@ class Settings(BaseSettings):
         env_file_encoding="utf-8",
         extra="ignore",
         populate_by_name=True,
+        secrets_dir=os.environ.get("APP_SECRETS_DIR"),
     )
 
     name: str = Field(default="Travel Scam Intelligence", min_length=1)
@@ -34,6 +36,9 @@ class Settings(BaseSettings):
     sarvam_api_key: SecretStr = Field(default="", validation_alias="SARVAM_API_KEY")
     admin_api_token: SecretStr = Field(default="", validation_alias="ADMIN_API_TOKEN")
     embedding_cache_dir: str = ".tools/embedding-cache"
+    worker_max_jobs: int = Field(default=4, ge=1, le=4)
+    database_pool_size: int = Field(default=5, ge=1, le=20)
+    database_max_overflow: int = Field(default=10, ge=0, le=20)
     research_max_search_queries: int = Field(default=3, ge=1, le=6)
     research_max_search_results: int = Field(default=30, ge=1, le=100)
     research_max_documents_to_fetch: int = Field(default=10, ge=1, le=20)

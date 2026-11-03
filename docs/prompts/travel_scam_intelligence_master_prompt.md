@@ -12,7 +12,8 @@ evidence architecture. The proposed Docker Compose/Caddy/private-R2 deployment,
 provider comparison, prerequisites and revised release sequencing are documented in
 [`docs/minimal-mvp-deployment.md`](../minimal-mvp-deployment.md).
 DigitalOcean is the user-selected provider as of 2026-11-03, superseding OVHcloud.
-R2/Bitwarden are provisioned; region and final Droplet size remain to be confirmed.
+R2/Bitwarden and the Bangalore 2-vCPU / 4-GiB / 80-GB-class Droplet are provisioned.
+Private Tailscale SSH and native integration preflight passed; see `docs/host-readiness.md`.
 See the measured sizing findings in `docs/digitalocean-sizing-experiment.md` before
 choosing 2 GiB or declaring the current implementation ready for public release.
 This override takes precedence over remaining historical AWS examples. PR 31 is

@@ -8,7 +8,8 @@ See [minimal MVP deployment decision](minimal-mvp-deployment.md) for the recomme
 Compose/Caddy/R2 design, current price comparisons, tradeoffs and outstanding choices.
 DigitalOcean is the selected provider as of 2026-11-03. R2/Bitwarden are provisioned.
 The [sizing experiment](digitalocean-sizing-experiment.md) makes 2 GiB conditional
-on safeguards; 4 GiB is safer for current code. Region and final plan await confirmation.
+on safeguards. The provisioned 2-vCPU / 4-GiB / 80-GB-class Bangalore Droplet and
+Tailscale administration passed [host preflight](host-readiness.md) on 2026-11-03.
 
 ## Delivery workflow
 
@@ -40,7 +41,7 @@ on safeguards; 4 GiB is safer for current code. Region and final plan await conf
 | CI | GitHub Actions | Locked install, Ruff, tests; add real PostgreSQL integration checks when persistence arrives. |
 | ChatGPT | MCP endpoint mounted alongside REST; supported ChatGPT app UI | Shared intelligence services. Select and pin the supported SDKs at PR 31/33 rather than scaffolding them early. |
 | Admin | Bearer token from `ADMIN_API_TOKEN`; server-rendered minimal dashboard | One operator, no consumer accounts; PR 35. |
-| Deployment | One DigitalOcean Basic Regular x86 Droplet, Docker Compose, Caddy HTTPS; minimal Terraform/cloud-init | Selected 2026-11-03; 4 GiB safer for current code, 2 GiB conditional on measured safeguards. No load balancer, managed database or managed Redis. Region/final plan pending; PR 38. |
+| Deployment | One DigitalOcean x86 Droplet, Docker Compose, trusted HTTPS; minimal Terraform/cloud-init | Provisioned Bangalore 2-vCPU / 4-GiB / 80-GB class; private Tailscale SSH verified. Private CI runner access/public MCP route and deployment remain PR 38 work. No load balancer or managed database/Redis. |
 
 Dependency versions are resolved and locked when introduced, rather than guessed during planning. Validate the embedding model on scam-matching fixtures at PR 16/17; change it if retrieval quality is inadequate. Model changes require compatible dimensions and deliberate backfill, never mixed incompatible vectors.
 

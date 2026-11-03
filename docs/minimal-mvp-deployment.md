@@ -3,8 +3,10 @@
 Status: the single-server/no-load-balancer cost constraint is confirmed. On
 2026-11-03 the user selected **DigitalOcean**, superseding the earlier OVHcloud
 VPS-1/VPS-2 choices because they already use DigitalOcean. Region, final allocation
-and billing total remain to be confirmed. On 2026-11-01 the user
-confirmed R2 and Bitwarden resources ready; VPS provisioning is pending.
+and billing total were initially pending. The Droplet is now provisioned and
+validated in Bangalore (`blr1`), 2 vCPUs / 4-GiB / 80-GB class, Ubuntu 24.04.5 LTS.
+Billing was not inspected. R2/Bitwarden and native provider checks passed; see
+[host and tailnet readiness](host-readiness.md).
 This supersedes the original multi-service AWS release target. It authorizes planning,
 not provisioning, spending, exposing the local machine, or declaring a release complete.
 
@@ -132,6 +134,15 @@ use a DNS hostname pointing directly to the same VPS with trusted HTTPS. A domai
 purchase is conditional on that outcome, not a prerequisite to starting PR 38.
 [ChatGPT connection guide](https://developers.openai.com/plugins/deploy/connect-chatgpt).
 
+Networking update (2026-11-03): the user requested Tailscale administration. The
+Droplet has joined the existing tailnet; private SSH, host-key pinning, firewall
+restriction of public SSH and reboot recovery have been verified. Use the local
+`ssh travel-scam-prod` alias. Public IP certificates remain a historical endpoint
+option, not a requirement for private administration. The ChatGPT-facing route
+still needs selection: public HTTPS (for example, a separately authorized Funnel
+hostname) or a supported Secure MCP Tunnel. No public Funnel was enabled. GitHub
+hosted runners must join the tailnet before the private SSH push deployment works.
+
 Only HTTPS/HTTP and restricted SSH should be reachable publicly. PostgreSQL and
 Redis stay on the private Compose network. R2 buckets stay private; media continues
 through authorized application routes. The proposed production secrets-manager
@@ -233,5 +244,5 @@ Historical OVH comparison: the configurator URL visible when that provider was s
 `pricing=upfront12`. Provider selection does not itself confirm a 12-month upfront
 purchase. Check the selected billing term and renewal total before ordering.
 
-Before provisioning, confirm the DigitalOcean plan and billing total, region, the IP-first HTTPS test plan, the
-single-server downtime/recovery tradeoff and the initial provider-usage policy.
+Before public release, confirm the billing total, ChatGPT endpoint route,
+single-server downtime/recovery tradeoff and initial provider-usage policy.

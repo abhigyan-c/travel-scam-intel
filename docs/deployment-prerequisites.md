@@ -11,9 +11,12 @@ managed Redis, a load balancer or an additional server.
    Use x86-64 and plain Ubuntu Server 24.04 LTS. The 4 GiB / 2 vCPU / 80 GiB plan
    is the tested safer current-code choice; the $12 2-GiB plan remains conditional
    on memory/concurrency safeguards and retesting. See [the sizing experiment](digitalocean-sizing-experiment.md).
-   Confirm datacenter, actual allocation and billing total. Install an
+   Provisioned host validated 2026-11-03: Bangalore, 2 vCPUs, 4-GiB/80-GB class,
+   Ubuntu 24.04.5 LTS. Billing total was not inspected. Install an
    SSH public key and verify access from the deployment machine. Record public IP,
    SSH username and sudo access; keep the SSH private key on the deployment machine.
+   Administration now uses Tailscale and the local alias `ssh travel-scam-prod`;
+   public SSH is blocked. See [host readiness](host-readiness.md).
 2. **Public HTTPS endpoint (IP-first):** hold off buying a domain. First configure
    `https://<VPS-IP>/mcp` with a publicly trusted certificate valid for that IP and
    automated renewal, then test adding the connection in ChatGPT. ChatGPT acceptance
@@ -46,8 +49,10 @@ passed: eight app secrets and three backup secrets were created with user approv
 and verified by readback. The supplied machine token accesses both projects and the
 R2 key pair accesses both buckets; separate scoped credentials are not yet in use.
 Return the machine account to read-only after initialization. Public-domain bucket
-settings still need dashboard confirmation because the Cloudflare management token
-cannot read them (HTTP 403). VPS provisioning remains pending.
+settings were confirmed private by the user on 2026-11-03; the Cloudflare management
+token cannot independently read them (HTTP 403). Native Droplet checks passed for
+Bitwarden, R2, Serper and Sarvam. Private GitHub-runner connectivity must be set up
+as part of PR 38 before the automated deployment can run.
 
 DigitalOcean API credentials are needed only if we automate VM/firewall provisioning with its
 API; an already-created VPS can be bootstrapped through SSH. DNS API credentials

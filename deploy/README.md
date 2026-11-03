@@ -1,7 +1,8 @@
 # PR 38 hosting foundation
 
-Status (2026-11-01): implemented for local review; VPS provisioning is pending.
-R2 buckets and Bitwarden projects/machine tokens are ready per the user. This is
+Status (2026-11-03): the Droplet, private Tailscale administration and native service
+preflight are ready; actual application deployment remains pending. See
+[host readiness](../docs/host-readiness.md). This is
 the early hosting slice of PR 38, not the final release or the deferred MCP adapter.
 
 ## Configuration
@@ -106,6 +107,10 @@ sudo docker run --rm --entrypoint python \
 
 ## IP-based HTTPS
 
+This is the earlier public-IP endpoint option. Administration now uses Tailscale;
+choose the ChatGPT-facing public HTTPS/tunnel route before issuing an IP certificate.
+No public endpoint is enabled by the host preflight.
+
 Install Caddy as a host service and Certbot **5.4 or newer** with webroot support
 for IP certificates. Use `Caddyfile.bootstrap` first: it serves only ACME challenges
 on port 80 and returns 503 elsewhere. Create `/var/lib/travel-scam/acme` readable
@@ -143,7 +148,9 @@ console before saving it; do not trust an unauthenticated `ssh-keyscan` result a
 The dedicated deployment user needs write access under `/opt/travel-scam/releases`
 and passwordless sudo for activation and Docker image loading. This is privileged
 deployment access; restrict repository/workflow writers accordingly. Host bootstrap
-and access restrictions are still pending the VPS. No deployment runs on merge.
+and private CI access remain part of PR 38. The operator's private SSH and firewall
+restriction have passed preflight. GitHub hosted runners need their own scoped
+Tailscale identity before targeting the private host. No deployment runs on merge.
 
 Activation exports fresh secrets into `/run`, starts private dependencies, stops
 the old application, migrates/seeds, and waits for API/worker health. Failure exits

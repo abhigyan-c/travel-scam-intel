@@ -1,15 +1,17 @@
 # PR 38 deployment prerequisites
 
-This checklist uses the selected OVHcloud provider and the recommended R2/Bitwarden
+This checklist uses the selected DigitalOcean provider and the provisioned R2/Bitwarden
 services. Deployment code can be started before all items are ready; the live VPS
 rollout needs the access and resources below. Do not provision managed databases,
 managed Redis, a load balancer or an additional server.
 
 ## User-provided resources and access
 
-1. **OVHcloud VPS-2:** selected on 2026-11-03 because VPS-1 availability is limited.
-   Use x86-64 and plain Ubuntu Server 24.04 LTS. Record the actual CPU, RAM and disk
-   allocation from the order; confirm datacenter, billing term and renewal total. Install an
+1. **DigitalOcean Basic Regular Droplet:** selected on 2026-11-03, superseding OVH.
+   Use x86-64 and plain Ubuntu Server 24.04 LTS. The 4 GiB / 2 vCPU / 80 GiB plan
+   is the tested safer current-code choice; the $12 2-GiB plan remains conditional
+   on memory/concurrency safeguards and retesting. See [the sizing experiment](digitalocean-sizing-experiment.md).
+   Confirm datacenter, actual allocation and billing total. Install an
    SSH public key and verify access from the deployment machine. Record public IP,
    SSH username and sudo access; keep the SSH private key on the deployment machine.
 2. **Public HTTPS endpoint (IP-first):** hold off buying a domain. First configure
@@ -47,7 +49,7 @@ Return the machine account to read-only after initialization. Public-domain buck
 settings still need dashboard confirmation because the Cloudflare management token
 cannot read them (HTTP 403). VPS provisioning remains pending.
 
-OVH API credentials are needed only if we automate VM/firewall provisioning with its
+DigitalOcean API credentials are needed only if we automate VM/firewall provisioning with its
 API; an already-created VPS can be bootstrapped through SSH. DNS API credentials
 are similarly optional if the DNS record is created manually.
 

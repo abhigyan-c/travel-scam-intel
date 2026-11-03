@@ -6,8 +6,9 @@ Deployment revision, 2026-10-31: target approximately 100 user requests/day on o
 low-cost VPS with no separate load balancer. The full AWS topology is superseded.
 See [minimal MVP deployment decision](minimal-mvp-deployment.md) for the recommended
 Compose/Caddy/R2 design, current price comparisons, tradeoffs and outstanding choices.
-OVHcloud is the selected provider. Region, billing term, final price, storage choice
-and the proposed dependency-aware sequencing still await confirmation.
+DigitalOcean is the selected provider as of 2026-11-03. R2/Bitwarden are provisioned.
+The [sizing experiment](digitalocean-sizing-experiment.md) makes 2 GiB conditional
+on safeguards; 4 GiB is safer for current code. Region and final plan await confirmation.
 
 ## Delivery workflow
 
@@ -39,7 +40,7 @@ and the proposed dependency-aware sequencing still await confirmation.
 | CI | GitHub Actions | Locked install, Ruff, tests; add real PostgreSQL integration checks when persistence arrives. |
 | ChatGPT | MCP endpoint mounted alongside REST; supported ChatGPT app UI | Shared intelligence services. Select and pin the supported SDKs at PR 31/33 rather than scaffolding them early. |
 | Admin | Bearer token from `ADMIN_API_TOKEN`; server-rendered minimal dashboard | One operator, no consumer accounts; PR 35. |
-| Deployment | One OVHcloud VPS-2 x86 Linux VPS, Docker Compose, Caddy HTTPS; minimal Terraform/cloud-init | VPS-2 selected 2026-11-03 due to VPS-1 availability; confirm ordered resources and measured headroom. No ALB, managed database or managed Redis. Region/checkout terms pending; PR 38. |
+| Deployment | One DigitalOcean Basic Regular x86 Droplet, Docker Compose, Caddy HTTPS; minimal Terraform/cloud-init | Selected 2026-11-03; 4 GiB safer for current code, 2 GiB conditional on measured safeguards. No load balancer, managed database or managed Redis. Region/final plan pending; PR 38. |
 
 Dependency versions are resolved and locked when introduced, rather than guessed during planning. Validate the embedding model on scam-matching fixtures at PR 16/17; change it if retrieval quality is inadequate. Model changes require compatible dimensions and deliberate backfill, never mixed incompatible vectors.
 
@@ -205,4 +206,4 @@ No API keys, databases, Docker services, embeddings, MCP setup or AWS credential
 - PR 22: finalize confidence components and labels through scenario review; no arbitrary truth probabilities.
 - PR 24/30: tune work limits, stale intervals and scheduler weights from observations. Monetary caps remain a later decision.
 - PR 31/33: confirm current ChatGPT MCP/UI requirements and request timing before finalizing those integrations.
-- PR 38: use OVHcloud; confirm region, billing term, checkout/renewal price, off-server storage, measured sizing and research-cost policy. First test trusted HTTPS at the VPS IP with automated IP-certificate renewal and a live ChatGPT MCP connection; IP URL acceptance is unverified. Defer buying a domain unless that compatibility test requires a hostname. Use the 2026-10-31 minimal deployment decision instead of the original AWS topology.
+- PR 38: use DigitalOcean; confirm region, plan/tax, off-server storage, measured sizing and research-cost policy. Address the sizing experiment's media-memory and query/concurrency findings before release. First test trusted HTTPS at the VPS IP with automated IP-certificate renewal and a live ChatGPT MCP connection; IP URL acceptance is unverified. Defer buying a domain unless that compatibility test requires a hostname. Use the minimal deployment decision instead of the original AWS topology.

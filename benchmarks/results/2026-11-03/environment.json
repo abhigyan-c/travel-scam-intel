@@ -1,0 +1,68 @@
+{
+  "source_commit": "9e2ae99731d2e322c18191fb9ce673d0be3a1097",
+  "cpu_host": "Intel Core i5-14600K; Docker Desktop/WSL, 20 exposed logical CPUs",
+  "docker": "28.5.1",
+  "containers": [
+    {
+      "name": "/travel-sizing-20261103-api-1",
+      "image_id": "sha256:c6bdfa9a233a29222b8e2961167b0f79bb818cb3b7438312cc14b83c27916348",
+      "cgroup_parent": "travel-scam-sizing-20261103",
+      "restarts": 2,
+      "state": "running"
+    },
+    {
+      "name": "/travel-sizing-20261103-object-store-1",
+      "image_id": "sha256:d0c267593a7b64d9a1811d2a3d60828487399e31e1f5446e4136b4b9498aa816",
+      "cgroup_parent": "",
+      "restarts": 0,
+      "state": "running"
+    },
+    {
+      "name": "/travel-sizing-20261103-postgres-1",
+      "image_id": "sha256:724a4041afdb1750446e3f6b5cfa8f3b0ac5a2cf538ddfa6bfee4f94c2fa85c6",
+      "cgroup_parent": "travel-scam-sizing-20261103",
+      "restarts": 0,
+      "state": "running"
+    },
+    {
+      "name": "/travel-sizing-20261103-proxy-1",
+      "image_id": "sha256:e70b164da81ef698b3ad19af799ea6086ce6d9e48ed4079eb9fe26f6fbf14ee5",
+      "cgroup_parent": "travel-scam-sizing-20261103",
+      "restarts": 0,
+      "state": "running"
+    },
+    {
+      "name": "/travel-sizing-20261103-redis-1",
+      "image_id": "sha256:858f009f9709ce576febc734aa78b8f6d624b82571f9ddb6bda4377c833b3499",
+      "cgroup_parent": "travel-scam-sizing-20261103",
+      "restarts": 0,
+      "state": "running"
+    },
+    {
+      "name": "/travel-sizing-20261103-worker-1",
+      "image_id": "sha256:c6bdfa9a233a29222b8e2961167b0f79bb818cb3b7438312cc14b83c27916348",
+      "cgroup_parent": "travel-scam-sizing-20261103",
+      "restarts": 0,
+      "state": "running"
+    }
+  ],
+  "corpus": {
+    "claims": 50055,
+    "documents": 50037,
+    "hypotheses": 10001,
+    "db_bytes": 317970099,
+    "jobs": [
+      {
+        "status": "succeeded",
+        "count": 34
+      }
+    ]
+  },
+  "model": {
+    "model": "BAAI/bge-small-en-v1.5",
+    "revision": "aa8f8b060edb00e03bfdd08813a2949946c8ba55:fastembed-0.8.1:text-v1",
+    "fastembed": "0.8.1",
+    "onnxruntime": "1.31.0"
+  },
+  "controller_final": "memory.max=1610612736\nmemory.swap.max=0\ncpu.max=100000 100000\ncpuset.cpus=0\nmemory.peak=2021957632\nmemory.events=low 0\nhigh 0\nmax 20887\noom 6\noom_kill 2\noom_group_kill 0"
+}

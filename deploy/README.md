@@ -137,8 +137,8 @@ The manually triggered `Deploy VPS preview` workflow builds the selected commit,
 pushes a compressed Docker image and deployment files over SSH, and activates it.
 No registry or repository credentials are needed on the VPS. Configure GitHub's
 `production` environment with `VPS_HOST` and `VPS_USER` variables and secrets
-`VPS_SSH_KEY` and `VPS_KNOWN_HOSTS`. Verify the SSH host key through the OVH console
-before saving it; do not trust an unauthenticated `ssh-keyscan` result alone.
+`VPS_SSH_KEY` and `VPS_KNOWN_HOSTS`. Verify the SSH host key through the DigitalOcean
+console before saving it; do not trust an unauthenticated `ssh-keyscan` result alone.
 
 The dedicated deployment user needs write access under `/opt/travel-scam/releases`
 and passwordless sudo for activation and Docker image loading. This is privileged

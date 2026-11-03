@@ -1,6 +1,6 @@
 # Travel Scam Intelligence
 
-Deployment planning now targets a minimal OVHcloud single-VPS MVP for approximately 100
+Deployment planning now targets a minimal DigitalOcean single-Droplet MVP for approximately 100
 requests/day, without a separate load balancer or managed AWS stack. See the
 [deployment proposal and revised release scope](docs/minimal-mvp-deployment.md).
 

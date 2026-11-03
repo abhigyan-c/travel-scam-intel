@@ -11,8 +11,10 @@ mandatory managed database/Redis services. Preserve the existing application and
 evidence architecture. The proposed Docker Compose/Caddy/private-R2 deployment,
 provider comparison, prerequisites and revised release sequencing are documented in
 [`docs/minimal-mvp-deployment.md`](../minimal-mvp-deployment.md).
-OVHcloud is the user-selected hosting provider. Region, purchase/billing terms,
-storage choice and the proposed sequencing still require discussion.
+DigitalOcean is the user-selected provider as of 2026-11-03, superseding OVHcloud.
+R2/Bitwarden are provisioned; region and final Droplet size remain to be confirmed.
+See the measured sizing findings in `docs/digitalocean-sizing-experiment.md` before
+choosing 2 GiB or declaring the current implementation ready for public release.
 This override takes precedence over remaining historical AWS examples. PR 31 is
 deferred until an HTTPS preview is available; no deployment or purchase is authorized
 by this document alone.
@@ -1328,7 +1330,7 @@ existing periodic scheduler remains in the worker. Private S3-compatible object
 storage and off-server database backups are proposed via Cloudflare R2.
 
 Do not provision a load balancer, ECS/Fargate, RDS or ElastiCache for this MVP.
-The server size, OVHcloud region/purchase terms and research usage policy must be confirmed against
+The server size, DigitalOcean region/billing terms and research usage policy must be confirmed against
 cost and measured capacity before purchase. Keep infrastructure automation small.
 
 Accept a single-server availability tradeoff only with working backups and a tested
@@ -2822,8 +2824,9 @@ existing in-worker scheduler; no separate cloud trigger
 ```
 
 Use minimal Terraform/cloud-init and versioned deployment/restore scripts, scoped to
-this one-machine deployment. OVHcloud VPS-2 was selected on 2026-11-03 due to limited
-VPS-1 availability. Confirm the ordered CPU/RAM/disk and actual recurring price,
+this one-machine deployment. DigitalOcean superseded the OVHcloud choice on
+2026-11-03. The sizing experiment found image-burst OOMs at 2 GiB and query/embedding
+concurrency problems at both sizes. Confirm safeguards, CPU/RAM/disk and recurring price,
 then profile that allocation with one worker job initially. Increase capacity only
 if measurements justify it. See the deployment decision for the pending choices.
 

@@ -1,19 +1,21 @@
 # Minimal MVP deployment decision — 2026-10-31
 
-Status: the single-server/no-load-balancer cost constraint and **OVHcloud as the
-hosting provider** are confirmed by the user (2026-10-31). **VPS-2** was selected on
-2026-11-03 because VPS-1 availability is limited. Region, allocated resources, billing
-term and checkout/renewal price remain to be confirmed. On 2026-11-01 the user
+Status: the single-server/no-load-balancer cost constraint is confirmed. On
+2026-11-03 the user selected **DigitalOcean**, superseding the earlier OVHcloud
+VPS-1/VPS-2 choices because they already use DigitalOcean. Region, final allocation
+and billing total remain to be confirmed. On 2026-11-01 the user
 confirmed R2 and Bitwarden resources ready; VPS provisioning is pending.
 This supersedes the original multi-service AWS release target. It authorizes planning,
 not provisioning, spending, exposing the local machine, or declaring a release complete.
 
 ## Recommended starting point
 
-Run one **OVHcloud VPS-2 x86-64 Linux VPS** with Docker Compose. Record the actual
-CPU, RAM and disk allocation from the order and validate its memory envelope with
-the actual model and workload. This replaces the earlier VPS-1/entry-flavor target;
-the original 2 vCPU / 4 GB / 40 GB sizing was a planning baseline, not the selected SKU.
+Run one **DigitalOcean Basic Regular x86-64 Droplet** with Docker Compose and Ubuntu
+24.04 LTS. The [2026-11-03 sizing experiment](digitalocean-sizing-experiment.md) found
+that 2 GiB handles ordinary text/embedding workloads but concurrent legal image
+uploads caused OOM kills. The $24/month 4-GiB plan is safer for current code; the
+$12/month 2-GiB plan is conditional on safeguards and retesting, not ruled out as
+an eventual optimized target. Confirm actual resources/region and tax before purchase.
 Cloudflare R2 Standard is the proposed private object store and off-server backup
 destination. First test HTTPS directly on the VPS public IP; a domain is a fallback.
 Caddy terminates HTTPS on that
@@ -69,11 +71,13 @@ Sources: [OVHcloud India](https://www.ovhcloud.com/en-in/vps/),
 [DigitalOcean Droplet prices](https://www.digitalocean.com/pricing/droplets),
 [Render free-service limits](https://render.com/docs/free).
 
-The proposed hosting envelope is **roughly ₹500–₹1,000/month**, assuming the entry
+The historical OVH proposal used **roughly ₹500–₹1,000/month**, assuming the entry
 or next-smallest VPS is available near those advertised prices and object usage is
 small. This is a planning envelope, excluding domain registration, Serper/Sarvam,
 tax/region differences and any paid storage overage; it is not a guaranteed total bill.
-If checkout materially exceeds it, compare providers again before purchase.
+The later user-selected DigitalOcean option is $12/month for the conditional
+2-GiB target or $24/month for the safer current-code 4-GiB target, before tax and
+provider usage. It is not represented as staying inside the earlier OVH envelope.
 
 R2 Standard currently includes 10 GB-month storage, 1 million Class A and 10 million
 Class B operations monthly, with no internet egress charge. Standard storage above
@@ -202,7 +206,9 @@ reuse the same interfaces, but it is not a prerequisite for release.
 
 - PR 35: complete the minimal admin interface; no cloud dependency.
 - PR 36: establish quality fixtures locally; no cloud dependency.
-- PR 37: profile within the actual VPS-2 resource envelope, retain single-job concurrency,
+- PR 37: use the DigitalOcean sizing findings to bound image memory/concurrency,
+  add semantic-match backpressure and profile the grown-corpus `recent` query;
+  retain single-job concurrency,
   add the required public-exposure controls and keep monitoring lightweight.
 - PR 38: replace AWS multi-service provisioning with the single-VPS Compose/TLS/R2
   profile, migrations, backups, restore drill, rollback and release checks.
@@ -223,9 +229,9 @@ on the VPS, migrate and restart with health checks. No registry or repository ke
 required on the VPS. See [the foundation runbook](../deploy/README.md) for implemented
 configuration and outstanding live gates.
 
-The configurator URL visible when the provider was selected contained
+Historical OVH comparison: the configurator URL visible when that provider was selected contained
 `pricing=upfront12`. Provider selection does not itself confirm a 12-month upfront
 purchase. Check the selected billing term and renewal total before ordering.
 
-Before provisioning, confirm the OVH checkout price and billing term, region, the IP-first HTTPS test plan, the
+Before provisioning, confirm the DigitalOcean plan and billing total, region, the IP-first HTTPS test plan, the
 single-server downtime/recovery tradeoff and the initial provider-usage policy.

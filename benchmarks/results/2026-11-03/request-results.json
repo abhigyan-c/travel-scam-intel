@@ -1,0 +1,349 @@
+{
+  "date": "2026-11-03",
+  "baseline_source": "Captured benchmark console summaries; memory trace retained",
+  "limitations": [
+    "Local Docker Desktop/WSL emulation, not a DigitalOcean VM",
+    "External services simulated; HTTP proxy tested without TLS",
+    "Initial large recent-query phase interrupted; no successful p95 claimed"
+  ],
+  "baseline": [
+    {
+      "phase": "cached_reads_100_serial",
+      "requests": 100,
+      "concurrency": 1,
+      "p50_ms": 203.04,
+      "p95_ms": 489.27,
+      "http_200": 100,
+      "findings": 100
+    },
+    {
+      "phase": "cached_reads_100_concurrency5",
+      "requests": 100,
+      "concurrency": 5,
+      "p50_ms": 1177.18,
+      "p95_ms": 1974.67,
+      "http_200": 100,
+      "findings": 100
+    },
+    {
+      "phase": "cold_embedding_match",
+      "requests": 1,
+      "elapsed_ms": 1328.08,
+      "http_200": 1,
+      "matched": 1
+    },
+    {
+      "phase": "warm_embedding_match_20_serial",
+      "requests": 20,
+      "concurrency": 1,
+      "p50_ms": 401.94,
+      "p95_ms": 527.96,
+      "http_200": 20,
+      "matched": 20
+    },
+    {
+      "phase": "mixed_reads_100_concurrency2",
+      "requests": 100,
+      "concurrency": 2,
+      "p50_ms": 472.77,
+      "p95_ms": 1476.2,
+      "http_200": 100,
+      "findings": 100
+    },
+    {
+      "phase": "mixed_match_burst_20_concurrency3",
+      "requests": 20,
+      "concurrency": 3,
+      "http_200": 20,
+      "matched": 5,
+      "unavailable": 15
+    },
+    {
+      "phase": "reads_during_research_100_concurrency2",
+      "requests": 100,
+      "concurrency": 2,
+      "p50_ms": 446.57,
+      "p95_ms": 1093.11,
+      "http_200": 100,
+      "findings": 100
+    }
+  ],
+  "probes": [
+    {
+      "phase": "grown_1cpu_2GiB_bounded",
+      "endpoint": "hypotheses",
+      "status": "200",
+      "elapsed_seconds": 1.081860499999948
+    },
+    {
+      "phase": "grown_1cpu_2GiB_bounded",
+      "endpoint": "summary",
+      "status": "200",
+      "elapsed_seconds": 0.7011507999995956
+    },
+    {
+      "phase": "grown_1cpu_2GiB_bounded",
+      "endpoint": "recent",
+      "status": "timeout_10s",
+      "elapsed_seconds": 10.009016699999847
+    },
+    {
+      "phase": "grown_2cpu_4GiB_control_bounded",
+      "endpoint": "hypotheses",
+      "status": "200",
+      "elapsed_seconds": 0.9113284999998541
+    },
+    {
+      "phase": "grown_2cpu_4GiB_control_bounded",
+      "endpoint": "summary",
+      "status": "200",
+      "elapsed_seconds": 0.5726925999997547
+    },
+    {
+      "phase": "grown_2cpu_4GiB_control_bounded",
+      "endpoint": "recent",
+      "status": "timeout_10s",
+      "elapsed_seconds": 10.005986299999677
+    },
+    {
+      "phase": "grown_4GiB_match_burst20_concurrency3",
+      "requests": 20,
+      "concurrency": 3,
+      "elapsed_seconds": 7.6655086999999185,
+      "requests_per_second": 2.6090897268175057,
+      "p50_ms": 918.6383999999634,
+      "p95_ms": 1783.300799999779,
+      "max_ms": 1783.300799999779,
+      "statuses": {
+        "200": 20
+      },
+      "outcomes": {
+        "unavailable": 11,
+        "matched": 9
+      },
+      "limitations": {
+        "candidate_limit": 20,
+        "embedding_unavailable": 11
+      }
+    },
+    {
+      "phase": "grown_2GiB_match_burst20_concurrency3",
+      "requests": 20,
+      "concurrency": 3,
+      "elapsed_seconds": 17.796795100000054,
+      "requests_per_second": 1.1237978460515028,
+      "p50_ms": 2421.385100000407,
+      "p95_ms": 4765.223700000206,
+      "max_ms": 4765.223700000206,
+      "statuses": {
+        "200": 20
+      },
+      "outcomes": {
+        "unavailable": 10,
+        "matched": 10
+      },
+      "limitations": {
+        "candidate_limit": 20,
+        "embedding_unavailable": 10
+      }
+    },
+    {
+      "phase": "half_cpu_grown_summary_and_search20_serial",
+      "requests": 20,
+      "concurrency": 1,
+      "elapsed_seconds": 35.90846240000019,
+      "requests_per_second": 0.5569717738735562,
+      "p50_ms": 1779.813600000125,
+      "p95_ms": 3269.2206000001534,
+      "max_ms": 3269.2206000001534,
+      "statuses": {
+        "200": 20
+      },
+      "outcomes": {
+        "findings": 20
+      },
+      "limitations": {}
+    },
+    {
+      "phase": "half_cpu_grown_match10_serial",
+      "requests": 10,
+      "concurrency": 1,
+      "elapsed_seconds": 30.84916000000021,
+      "requests_per_second": 0.32415793493242384,
+      "p50_ms": 2931.510199999593,
+      "p95_ms": 4336.120100000244,
+      "max_ms": 4336.120100000244,
+      "statuses": {
+        "200": 10
+      },
+      "outcomes": {
+        "matched": 10
+      },
+      "limitations": {
+        "candidate_limit": 10
+      }
+    },
+    {
+      "phase": "backup_grown_corpus_2GiB",
+      "elapsed_seconds": 2.711163899999974,
+      "encrypted_dump_size": "16776427 /tmp/backup.dump.gpg"
+    }
+  ],
+  "media": [
+    {
+      "phase": "media_2GiB_warm_embedding_before_upload",
+      "requests": 1,
+      "concurrency": 1,
+      "elapsed_seconds": 2.2794745000001058,
+      "requests_per_second": 0.438697603329168,
+      "p50_ms": 2234.9388999996336,
+      "p95_ms": 2234.9388999996336,
+      "max_ms": 2234.9388999996336,
+      "statuses": {
+        "200": 1
+      },
+      "outcomes": {
+        "matched": 1
+      },
+      "limitations": {
+        "candidate_limit": 1
+      }
+    },
+    {
+      "phase": "2GiB_one_10MP_upload",
+      "concurrency": 1,
+      "image_pixels": 10000000,
+      "compressed_bytes": 43916,
+      "outcomes": [
+        {
+          "status": "201",
+          "seconds": 2.1695223000001533
+        }
+      ]
+    },
+    {
+      "phase": "2GiB_five_10MP_uploads",
+      "concurrency": 5,
+      "image_pixels": 10000000,
+      "compressed_bytes": 43916,
+      "outcomes": [
+        {
+          "status": "502",
+          "seconds": 0.7422826000001805
+        },
+        {
+          "status": "502",
+          "seconds": 0.7417605999999068
+        },
+        {
+          "status": "502",
+          "seconds": 0.7403383000000758
+        },
+        {
+          "status": "502",
+          "seconds": 0.7395664000000579
+        },
+        {
+          "status": "502",
+          "seconds": 0.740232399999968
+        }
+      ]
+    },
+    {
+      "phase": "media_4GiB_warm_embedding_before_upload",
+      "requests": 1,
+      "concurrency": 1,
+      "elapsed_seconds": 1.4817281000000548,
+      "requests_per_second": 0.674887653139576,
+      "p50_ms": 1474.4170000003578,
+      "p95_ms": 1474.4170000003578,
+      "max_ms": 1474.4170000003578,
+      "statuses": {
+        "200": 1
+      },
+      "outcomes": {
+        "matched": 1
+      },
+      "limitations": {
+        "candidate_limit": 1
+      }
+    },
+    {
+      "phase": "4GiB_five_10MP_uploads_control",
+      "concurrency": 5,
+      "image_pixels": 10000000,
+      "compressed_bytes": 43916,
+      "outcomes": [
+        {
+          "status": "201",
+          "seconds": 0.7725118999996994
+        },
+        {
+          "status": "201",
+          "seconds": 0.7947371000000203
+        },
+        {
+          "status": "201",
+          "seconds": 0.7863562000002275
+        },
+        {
+          "status": "201",
+          "seconds": 0.7668317000002389
+        },
+        {
+          "status": "201",
+          "seconds": 0.3818694999999934
+        }
+      ]
+    }
+  ],
+  "memory_only_control": [
+    {
+      "phase": "memory_only_control_warm_embedding",
+      "requests": 1,
+      "concurrency": 1,
+      "elapsed_seconds": 1.6100197999999182,
+      "requests_per_second": 0.6211103739221411,
+      "p50_ms": 1557.0748000000094,
+      "p95_ms": 1557.0748000000094,
+      "max_ms": 1557.0748000000094,
+      "statuses": {
+        "200": 1
+      },
+      "outcomes": {
+        "matched": 1
+      },
+      "limitations": {
+        "candidate_limit": 1
+      }
+    },
+    {
+      "phase": "4GiB_1cpu_memory_only_control_5uploads",
+      "concurrency": 5,
+      "image_pixels": 10000000,
+      "compressed_bytes": 43916,
+      "outcomes": [
+        {
+          "status": "201",
+          "seconds": 2.3111281999999846
+        },
+        {
+          "status": "201",
+          "seconds": 1.7029720000000452
+        },
+        {
+          "status": "201",
+          "seconds": 1.7172224000000824
+        },
+        {
+          "status": "201",
+          "seconds": 1.686481300000196
+        },
+        {
+          "status": "201",
+          "seconds": 1.6701269999998658
+        }
+      ]
+    }
+  ]
+}

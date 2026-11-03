@@ -39,7 +39,7 @@ and the proposed dependency-aware sequencing still await confirmation.
 | CI | GitHub Actions | Locked install, Ruff, tests; add real PostgreSQL integration checks when persistence arrives. |
 | ChatGPT | MCP endpoint mounted alongside REST; supported ChatGPT app UI | Shared intelligence services. Select and pin the supported SDKs at PR 31/33 rather than scaffolding them early. |
 | Admin | Bearer token from `ADMIN_API_TOKEN`; server-rendered minimal dashboard | One operator, no consumer accounts; PR 35. |
-| Deployment | One OVHcloud x86 Linux VPS, Docker Compose, Caddy HTTPS; minimal Terraform/cloud-init | Target 2 vCPU / 4 GB with measured headroom; no ALB, managed database or managed Redis. Region/checkout terms pending; PR 38. |
+| Deployment | One OVHcloud VPS-2 x86 Linux VPS, Docker Compose, Caddy HTTPS; minimal Terraform/cloud-init | VPS-2 selected 2026-11-03 due to VPS-1 availability; confirm ordered resources and measured headroom. No ALB, managed database or managed Redis. Region/checkout terms pending; PR 38. |
 
 Dependency versions are resolved and locked when introduced, rather than guessed during planning. Validate the embedding model on scam-matching fixtures at PR 16/17; change it if retrieval quality is inadequate. Model changes require compatible dimensions and deliberate backfill, never mixed incompatible vectors.
 

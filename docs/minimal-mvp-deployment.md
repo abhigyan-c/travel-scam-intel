@@ -1,7 +1,8 @@
 # Minimal MVP deployment decision — 2026-10-31
 
 Status: the single-server/no-load-balancer cost constraint and **OVHcloud as the
-hosting provider** are confirmed by the user (2026-10-31). Region, final SKU, billing
+hosting provider** are confirmed by the user (2026-10-31). **VPS-2** was selected on
+2026-11-03 because VPS-1 availability is limited. Region, allocated resources, billing
 term and checkout/renewal price remain to be confirmed. On 2026-11-01 the user
 confirmed R2 and Bitwarden resources ready; VPS provisioning is pending.
 This supersedes the original multi-service AWS release target. It authorizes planning,
@@ -9,9 +10,10 @@ not provisioning, spending, exposing the local machine, or declaring a release c
 
 ## Recommended starting point
 
-Run one small **x86-64 Linux VPS** with Docker Compose. Start with **2 vCPU, 4 GB RAM**
-and at least **40 GB SSD**, then validate that memory envelope with the actual model
-and workload. OVHcloud is the selected provider; confirm its entry VPS at checkout.
+Run one **OVHcloud VPS-2 x86-64 Linux VPS** with Docker Compose. Record the actual
+CPU, RAM and disk allocation from the order and validate its memory envelope with
+the actual model and workload. This replaces the earlier VPS-1/entry-flavor target;
+the original 2 vCPU / 4 GB / 40 GB sizing was a planning baseline, not the selected SKU.
 Cloudflare R2 Standard is the proposed private object store and off-server backup
 destination. First test HTTPS directly on the VPS public IP; a domain is a fallback.
 Caddy terminates HTTPS on that
@@ -21,8 +23,9 @@ At about 100 user requests/day, always-on services and memory for the database a
 local embedding model dominate infrastructure sizing. The request count alone does
 not establish peak concurrency or research cost. Four GB is a planning minimum, not
 a measured capacity guarantee. A 2 GB machine is not the default while both API and
-worker can load the local embedding model. If profiling shows inadequate headroom,
-move to 8 GB instead of changing model semantics or relying on swap for normal work.
+worker can load the local embedding model. Profile the actual VPS-2 allocation;
+retain one API process and one worker job initially. Increase capacity only if
+measurements require it, preserving model semantics and avoiding swap for normal work.
 
 ```text
 Internet / ChatGPT
@@ -199,7 +202,7 @@ reuse the same interfaces, but it is not a prerequisite for release.
 
 - PR 35: complete the minimal admin interface; no cloud dependency.
 - PR 36: establish quality fixtures locally; no cloud dependency.
-- PR 37: profile within the chosen 4 GB envelope, configure single-job concurrency,
+- PR 37: profile within the actual VPS-2 resource envelope, retain single-job concurrency,
   add the required public-exposure controls and keep monitoring lightweight.
 - PR 38: replace AWS multi-service provisioning with the single-VPS Compose/TLS/R2
   profile, migrations, backups, restore drill, rollback and release checks.

@@ -7,8 +7,9 @@ managed Redis, a load balancer or an additional server.
 
 ## User-provided resources and access
 
-1. **OVHcloud VPS:** x86-64, 2 vCPU, 4 GB RAM, at least 40 GB SSD, plain Ubuntu
-   Server 24.04 LTS. Confirm datacenter, billing term and renewal total. Install an
+1. **OVHcloud VPS-2:** selected on 2026-11-03 because VPS-1 availability is limited.
+   Use x86-64 and plain Ubuntu Server 24.04 LTS. Record the actual CPU, RAM and disk
+   allocation from the order; confirm datacenter, billing term and renewal total. Install an
    SSH public key and verify access from the deployment machine. Record public IP,
    SSH username and sudo access; keep the SSH private key on the deployment machine.
 2. **Public HTTPS endpoint (IP-first):** hold off buying a domain. First configure

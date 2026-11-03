@@ -2822,9 +2822,10 @@ existing in-worker scheduler; no separate cloud trigger
 ```
 
 Use minimal Terraform/cloud-init and versioned deployment/restore scripts, scoped to
-this one-machine deployment. Validate a starting 2 vCPU / 4 GB envelope; increase
-memory only if measurements justify it. Confirm the provider and actual recurring
-price before provisioning. See the deployment decision for the pending choices.
+this one-machine deployment. OVHcloud VPS-2 was selected on 2026-11-03 due to limited
+VPS-1 availability. Confirm the ordered CPU/RAM/disk and actual recurring price,
+then profile that allocation with one worker job initially. Increase capacity only
+if measurements justify it. See the deployment decision for the pending choices.
 
 Do not introduce Kubernetes.
 

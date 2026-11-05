@@ -1,8 +1,12 @@
 # Droplet and tailnet readiness — 2026-11-03
 
-Status: hardware, private administration and external-service authentication have
-passed preflight. PR 38 can continue with the hosting foundation. This is not a
-production-release sign-off: the application stack has not yet been deployed.
+Status update (2026-11-05): the private API, worker, PostgreSQL and Redis stack is
+deployed and healthy. The dedicated deploy key successfully pushed and activated
+the immutable release; the embedding model is preloaded. A real encrypted R2
+backup restored migration 0021 and all 31 public tables into an isolated database.
+See [PR 38 rollout](pr38-rollout.md) for current evidence and remaining gates.
+This is not a public production-release sign-off. The dated preflight below is
+retained as the initial baseline.
 
 ## Provisioned host and access
 

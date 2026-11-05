@@ -7,4 +7,5 @@ Wants=network-online.target
 [Service]
 Type=oneshot
 UMask=0077
+TimeoutStartSec=900
 ExecStart=/bin/bash /opt/travel-scam/current/deploy/backup.sh

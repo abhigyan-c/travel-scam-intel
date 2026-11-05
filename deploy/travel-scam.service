@@ -8,6 +8,7 @@ Wants=network-online.target
 Type=oneshot
 RemainAfterExit=yes
 UMask=0077
+TimeoutStartSec=600
 ExecStart=/bin/bash -c 'exec /bin/bash /opt/travel-scam/current/deploy/activate.sh "$(cat /opt/travel-scam/active-release)"'
 
 [Install]

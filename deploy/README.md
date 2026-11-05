@@ -1,11 +1,17 @@
 # PR 38 hosting foundation
 
-Status (2026-11-03): the Droplet, private Tailscale administration and native service
-preflight are ready; actual application deployment remains pending. See
+Status (2026-11-05): the private application stack has been deployed successfully;
+the first encrypted offsite backup and isolated SQL restore passed. See
 [host readiness](../docs/host-readiness.md). This is
 the early hosting slice of PR 38, not the final release or the deferred MCP adapter.
 
 ## Configuration
+
+For the initial host, run `bash deploy/bootstrap.sh DEPLOY_PUBLIC_KEY_FILE` as root
+over the verified tailnet. It applies Ubuntu updates, installs Docker from its signed
+repository, the checksum-pinned Bitwarden CLI and an isolated AWS CLI, and creates
+the deployment account and root-owned deployment entry point. Do not pass a private
+key. Host token/configuration files are installed separately over encrypted stdin.
 
 Use a plain Ubuntu 24.04 x86-64 host. Install Docker Engine/Compose, Python 3,
 the official Bitwarden `bws` CLI, GnuPG and AWS CLI. Verify downloaded binaries
@@ -130,9 +136,10 @@ configuration. Install `install-certificate.sh` as a Certbot deploy hook, then
 enable the distribution's twice-daily renewal timer and run `certbot renew --dry-run`.
 Validate the Caddy configuration and verify the certificate chain/IP SAN remotely.
 Run `check-host.sh` hourly via the chosen monitoring service: it checks readiness,
-backup age, disk usage and at least 48 hours of certificate validity. Configure an
+backup age and disk usage. Once public TLS is configured, set `PUBLIC_TLS_CERT` in
+`production.env` to check at least 48 hours of certificate validity. Configure an
 actual alert destination before public use; the script alone sends no notifications.
-All issuance, renewal and ChatGPT IP compatibility checks await the VPS.
+Issuance, renewal and ChatGPT IP compatibility checks remain pending.
 
 Source: [Let's Encrypt's IP Certbot instructions](https://letsencrypt.org/2026/03/11/shorter-certs-certbot).
 
@@ -145,12 +152,23 @@ No registry or repository credentials are needed on the VPS. Configure GitHub's
 `VPS_SSH_KEY` and `VPS_KNOWN_HOSTS`. Verify the SSH host key through the DigitalOcean
 console before saving it; do not trust an unauthenticated `ssh-keyscan` result alone.
 
+The workflow joins Tailscale using an OIDC federated identity before connecting.
+Set `TS_OAUTH_CLIENT_ID` to its Client ID and `TS_AUDIENCE` to its generated Audience.
+Use GitHub issuer `https://token.actions.githubusercontent.com`, subject
+`repo:abhigyan-c/travel-scam-intel:environment:production`, Auth Keys write scope,
+and `tag:ci`. Permit that tag to reach only the Droplet's TCP 22 in the tailnet
+policy. The workflow grants `id-token: write`; no reusable Tailscale key is stored.
+Keep the production environment's deployment-branch restrictions enabled.
+Deployment keys grant privileged application code execution; they are separate
+from the operator's root key. The deploy user is not in the Docker group.
+
 The dedicated deployment user needs write access under `/opt/travel-scam/releases`
-and passwordless sudo for activation and Docker image loading. This is privileged
+and passwordless sudo for `/usr/local/sbin/travel-scam-deploy`. This is privileged
 deployment access; restrict repository/workflow writers accordingly. Host bootstrap
-and private CI access remain part of PR 38. The operator's private SSH and firewall
+is implemented by `bootstrap.sh`. The operator's private SSH and firewall
 restriction have passed preflight. GitHub hosted runners need their own scoped
-Tailscale identity before targeting the private host. No deployment runs on merge.
+Tailscale identity before targeting the private host. The federated GitHub runner
+connection still needs its first actual Actions run. No deployment runs on merge.
 
 Activation exports fresh secrets into `/run`, starts private dependencies, stops
 the old application, migrates/seeds, and waits for API/worker health. Failure exits
@@ -182,9 +200,16 @@ include R2 objects or Redis queue contents. Re-dispatch durable database jobs af
 recovery. Roll back application code by activating a retained SHA only after checking
 schema compatibility; otherwise restore the verified backup and matching image.
 
+`verify-backup.sh` automates retrieval of the last successful encrypted R2 object
+and invokes the same isolated restore. Backup upload uses conditional creation;
+an existing key is never overwritten. Backup credentials live under `/run` and
+are removed on exit; only the encrypted dump is staged on persistent disk.
+The hourly health timer detects failures in systemd/journal; an external alert
+destination has not been configured. Timers alone do not notify an operator.
+
 ## Remaining live gates
 
-- Host provisioning, SSH restrictions, patching, firewall and reboot test.
+- Application reboot recovery and deployment failure/rollback drills.
 - Caddy installation and trusted IP-certificate issuance/automatic renewal. API is
   loopback-only until then; this slice exposes no public application listener.
 - Actual R2 immutable writes/private media checks and Bitwarden permissions test.

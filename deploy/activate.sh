@@ -6,10 +6,15 @@ cd -- "$(dirname -- "${BASH_SOURCE[0]}")"
 test "$(id -u)" = 0
 release="${1:?Pass a full commit SHA}"
 [[ "$release" =~ ^[a-f0-9]{40}$ ]]
+exec 8>/run/lock/travel-scam-activate.lock
+flock -n 8
 set -a
 source /etc/travel-scam/production.env
 set +a
 export APP_IMAGE="travel-scam-intel:$release"
+# Fail before touching healthy services if the selected release is unavailable.
+docker image inspect "$APP_IMAGE" >/dev/null
+test -d "$MODEL_CACHE"
 install -d -m 0711 /run/travel-scam
 export SECRETS_PATH="$(mktemp -d /run/travel-scam/export-XXXXXXXX)"
 rmdir "$SECRETS_PATH"

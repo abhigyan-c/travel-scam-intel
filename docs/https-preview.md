@@ -22,7 +22,8 @@ the same nonsecret metadata to the root-only deploy hook.
 
 - Public HTTPS `/health` proxies process health.
 - `/mcp` and `/mcp/*` proxy to the application; PR 31 now implements the exact
-  `/mcp` endpoint. Protocol initialization passed; the real ChatGPT gate is pending.
+  `/mcp` endpoint. ChatGPT connected through the separately authorized filtered
+  Funnel hostname and completed its first-ever query/follow-up with partial state.
 - All other HTTPS routes return proxy-level 404, including REST, admin, media,
   readiness, API documentation and OpenAPI. They remain available via private SSH
   forwarding when needed. Public upload exposure must wait for PR 37 safeguards.

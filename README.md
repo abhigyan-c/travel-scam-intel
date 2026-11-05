@@ -1041,5 +1041,6 @@ Set `APP_MCP_PUBLIC_URL` for a directly served public URL, or `MCP_PUBLIC_URL` i
 the VPS host configuration used by production Compose. Localhost is allowed by
 default; DNS-rebinding protection remains enabled. The HTTPS preview is
 `https://travel-scam-prod.tailbbf557.ts.net/mcp`; ChatGPT connected through the
-authorized filtered Funnel hostname. The conversation review gate is still pending.
+authorized filtered Funnel hostname. The first-ever query/follow-up gate passed
+with honest partial results; completed research/findings were not demonstrated.
 See [the MCP runbook](docs/pr31-mcp.md) for tools, retry behavior and gate prompts.

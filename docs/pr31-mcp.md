@@ -88,8 +88,8 @@ Use the current [official connection instructions](https://developers.openai.com
 
 Record selected tools/arguments, timing, results and any timeout/continuation or
 IP-URL acceptance issue. Do not mark the live gate passed from an SDK client alone.
-The user has confirmed they can perform the ChatGPT check; it remains pending
-until they report the actual conversation outcome. No PR 32 work starts first.
+The user performed the ChatGPT check on 2026-11-05; the bounded partial-result
+outcome is recorded below. PR 32 remains a separate branch after this PR is merged.
 
 External alert delivery remains deferred at the user's request. The previously
 measured media-memory, embedding backpressure and grown-corpus recent-query issues
@@ -116,9 +116,9 @@ References: [MCP Python SDK ASGI mounting](https://py.sdk.modelcontextprotocol.i
   missing patterns returned not-found, and an unconfirmed report was rejected.
   No research/provider calls or production reports were requested by this check.
 - Public boundary checks passed: MCP initializes over trusted IP TLS, while REST,
-  admin, media and docs stay private. The user-run ChatGPT gate remains pending.
-- Running preview: `0c437f2`; API/worker healthy, zero restarts/OOM kills, host
-  health check passed. Idle containers after read checks: API 129.4 MiB, worker
+  admin, media and docs stay private. The user-run ChatGPT gate is recorded below.
+- Running preview: `0c437f2`. API/worker health and host checks passed. The initial
+  preview snapshot had zero restarts/OOM kills; idle containers: API 129.4 MiB, worker
   96.9 MiB, PostgreSQL 28.1 MiB, Redis 13.7 MiB. These are not load-capacity claims.
 - SDK warnings are discarded with a real null handler, preventing Python's
   fallback stderr handler from exposing SDK messages even if a child logger
@@ -133,4 +133,30 @@ References: [MCP Python SDK ASGI mounting](https://py.sdk.modelcontextprotocol.i
   Record this as an observed relay/reachability limitation, not a diagnosed cause
   or a passed global availability test. External alerting remains deferred.
 - Hostname alias Host/Origin tests: 11 MCP tests passed after this refinement;
-  unknown hosts still fail. The first-ever ChatGPT research conversation is pending.
+  unknown hosts still fail. The final full suite passed 843 tests with 10 skipped.
+
+## Live ChatGPT gate outcome — 2026-11-05
+
+The user reported that ChatGPT resolved Chiang Mai, Thailand as a provisional city,
+initiated research, showed `researching` / `research_incomplete`, and performed a
+second read with `request_research=false`. The follow-up showed stale/incomplete
+initial research with no enrichment completion and zero patterns. ChatGPT explicitly
+said that zero results did not mean no scams, and did not submit a report.
+
+Independent backend checks confirmed the new provisional location and both initial
+and enrichment jobs. Both ended with `partial`, `complete=false`, `deadline`, and
+`research_incomplete`; job execution was recorded as succeeded-with-partial-result,
+not successful completed research. Seven sources and seven documents were retained,
+with zero claims, hypotheses or traveler reports. All seven source/document links
+and immutable R2 content hashes were verified without displaying document bodies.
+
+The gate passes for real connection, first-ever query, bounded/background response,
+follow-up and honest incompleteness. It does **not** demonstrate completed research,
+positive findings, confidence quality, positive evidence rendering or global relay
+availability. Deadline/fetch tuning belongs in measured operational follow-up;
+conversation/evidence presentation and quality remain PR 32/36/37 work.
+
+`initial=true` means the initial pass has finished, including a partial pass; it
+does not mean `complete=true`. `queue_pending` describes outbox dispatch, not whether
+all research jobs are done. Keep those distinctions explicit in PR 32 presentation.
+No extra provider calls or fabricated report were made to force a positive result.

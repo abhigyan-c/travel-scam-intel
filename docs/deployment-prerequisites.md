@@ -5,6 +5,11 @@ services. Deployment code can be started before all items are ready; the live VP
 rollout needs the access and resources below. Do not provision managed databases,
 managed Redis, a load balancer or an additional server.
 
+Implementation update (2026-11-05): the private stack is deployed, with real R2
+backup/isolated restore verified. The user reports all GitHub production environment
+variables/secrets saved, including the federated Tailscale identity. Its first actual
+Actions run and public HTTPS remain pending. See [rollout evidence](pr38-rollout.md).
+
 ## User-provided resources and access
 
 1. **DigitalOcean Basic Regular Droplet:** selected on 2026-11-03, superseding OVH.

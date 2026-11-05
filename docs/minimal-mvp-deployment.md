@@ -7,8 +7,10 @@ and billing total were initially pending. The Droplet is now provisioned and
 validated in Bangalore (`blr1`), 2 vCPUs / 4-GiB / 80-GB class, Ubuntu 24.04.5 LTS.
 Billing was not inspected. R2/Bitwarden and native provider checks passed; see
 [host and tailnet readiness](host-readiness.md).
-This supersedes the original multi-service AWS release target. It authorizes planning,
-not provisioning, spending, exposing the local machine, or declaring a release complete.
+This supersedes the original multi-service AWS release target. The initial decision
+authorized planning; the user subsequently provisioned the host and authorized
+PR 38 implementation on 2026-11-05. The private application stack is now deployed;
+see [rollout evidence and remaining release gates](pr38-rollout.md).
 
 ## Recommended starting point
 

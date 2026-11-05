@@ -24,6 +24,9 @@ public release still depends on the remaining product and hardening PRs.
 - Added serialized encrypted, conditionally created R2 backups; automated
   download/isolated restore; boot recovery; nightly backup and hourly health timers.
   Missing images fail activation before stopping a healthy application.
+  Secret-consuming containers are recreated during activation because Compose
+  does not detect a changed file-secret source path. This also restarts PostgreSQL;
+  deployments have a short maintenance window rather than zero downtime.
 
 ## Live evidence
 
@@ -37,6 +40,9 @@ public release still depends on the remaining product and hardening PRs.
   bucket, downloaded with backup credentials, and restored into a disposable
   network-isolated PostgreSQL container. Migration 0021 and 31 tables recovered;
   the disposable container and volume were removed.
+- The first application reboot drill exposed stale `/run` secret mounts. Activation
+  now recreates PostgreSQL/API/worker against newly exported files; the boot unit
+  also retries transient startup failures. A repeat reboot drill is required.
 - Only seed locations exist in this new database; no fabricated scam evidence or
   test reports were inserted into production. The restore drill does not prove
   recovery of future user media or provenance; verify those after such data exists.

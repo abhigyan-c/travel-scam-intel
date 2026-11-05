@@ -41,7 +41,7 @@ Tailscale administration passed [host preflight](host-readiness.md) on 2026-11-0
 | CI | GitHub Actions | Locked install, Ruff, tests; add real PostgreSQL integration checks when persistence arrives. |
 | ChatGPT | MCP endpoint mounted alongside REST; supported ChatGPT app UI | Shared intelligence services. Select and pin the supported SDKs at PR 31/33 rather than scaffolding them early. |
 | Admin | Bearer token from `ADMIN_API_TOKEN`; server-rendered minimal dashboard | One operator, no consumer accounts; PR 35. |
-| Deployment | One DigitalOcean x86 Droplet, Docker Compose, trusted HTTPS; minimal Terraform/cloud-init | Provisioned Bangalore 2-vCPU / 4-GiB / 80-GB class; private Tailscale SSH verified. Private CI runner access/public MCP route and deployment remain PR 38 work. No load balancer or managed database/Redis. |
+| Deployment | One DigitalOcean x86 Droplet, Docker Compose, trusted HTTPS | Bangalore 2-vCPU / 4-GiB / 80-GB class; private stack deployed, dedicated-key activation and R2 backup/isolated restore passed. First GitHub OIDC run/public HTTPS remain pending. No load balancer or managed database/Redis. |
 
 Dependency versions are resolved and locked when introduced, rather than guessed during planning. Validate the embedding model on scam-matching fixtures at PR 16/17; change it if retrieval quality is inadequate. Model changes require compatible dimensions and deliberate backfill, never mixed incompatible vectors.
 

@@ -21,12 +21,16 @@ rmdir "$SECRETS_PATH"
 python3 export_secrets.py "$BWS_APP_PROJECT_ID" /etc/travel-scam/app-machine-token "$SECRETS_PATH"
 compose=(docker compose --env-file /dev/null -f compose.yaml)
 "${compose[@]}" config --quiet
-"${compose[@]}" up -d --wait postgres redis
 # Stop the old app while applying migrations. Do not automatically downgrade schemas.
 "${compose[@]}" stop worker api
+# Compose does not hash file-secret source paths into container configuration.
+# Recreate secret consumers so reboot/rotation never reuses a vanished /run mount.
+"${compose[@]}" up -d --wait --force-recreate postgres
+"${compose[@]}" up -d --wait redis
 "${compose[@]}" run --rm --no-deps api alembic upgrade head
 "${compose[@]}" run --rm --no-deps api python -m app.db.seed
-"${compose[@]}" up -d --wait --wait-timeout 180 api worker
+"${compose[@]}" up -d --no-deps --force-recreate --wait --wait-timeout 180 api
+"${compose[@]}" up -d --no-deps --force-recreate --wait --wait-timeout 180 worker
 curl --fail --silent --show-error http://127.0.0.1:8000/ready >/dev/null
 printf '%s\n' "$release" > /opt/travel-scam/active-release
 ln -sfn "/opt/travel-scam/releases/$release" /opt/travel-scam/current

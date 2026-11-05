@@ -16,5 +16,8 @@ openssl verify -CApath /etc/ssl/certs \
 install -d -o root -g caddy -m 0750 /etc/caddy/certs
 install -o root -g caddy -m 0640 "$RENEWED_LINEAGE/fullchain.pem" /etc/caddy/certs/fullchain.pem
 install -o root -g caddy -m 0640 "$RENEWED_LINEAGE/privkey.pem" /etc/caddy/certs/privkey.pem
-caddy validate --config /etc/caddy/Caddyfile --adapter caddyfile >/dev/null
+if ! caddy validate --config /etc/caddy/Caddyfile --adapter caddyfile >/dev/null 2>&1; then
+  printf '%s\n' 'Caddy validation failed; certificate reload skipped.' >&2
+  exit 1
+fi
 systemctl reload caddy

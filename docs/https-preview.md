@@ -41,7 +41,7 @@ persistent catch-up. The installer runs a staging renewal dry run with deploy ho
 Short-lived IP certificates are valid for about six days, so renewal is required.
 
 `PUBLIC_TLS_CERT` and `PUBLIC_HTTPS_IP` in the root-only production configuration
-enable expiry checking (48-hour threshold) and a verified local HTTPS probe in the
+enable stored/served certificate expiry checking (48-hour threshold) and a verified local HTTPS probe in the
 hourly health service. Renewal and health failures appear in systemd/journal.
 External notifications are **not configured**; a failed server cannot notify its
 operator using these local checks alone. Revisit Healthchecks.io/email before
@@ -71,7 +71,11 @@ Sources: [Caddy installation](https://caddyserver.com/docs/install),
   anonymous REST report POST was blocked; HTTP application access returned 503.
 - `/mcp` reached the backend and returned application 404, as expected before PR 31.
 - The production certificate install/reload hook passed; staging renewal simulation
-  passed. External alert delivery remains deferred, not silently enabled.
+  passed including deploy hooks. The twice-daily timer is enabled; a manual run of
+  the renewal service passed. External alert delivery remains deferred.
+- Caddy 2.11.9 and Certbot 5.4.0 are installed. The host health check verifies the
+  actual served certificate has at least 48 hours remaining, even if a future
+  reload fails after copying new certificate files.
 - Deployment/service unit tests: 12 passed. Ruff lint/format and diff checks passed.
 
 Re-run external boundary checks with

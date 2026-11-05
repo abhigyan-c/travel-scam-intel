@@ -8,7 +8,9 @@ managed Redis, a load balancer or an additional server.
 Implementation update (2026-11-05): the private stack is deployed, with real R2
 backup/isolated restore verified. The user reports all GitHub production environment
 variables/secrets saved, including the federated Tailscale identity. Its first actual
-Actions run and public HTTPS remain pending. See [rollout evidence](pr38-rollout.md).
+Actions run and public HTTPS subsequently passed. The HTTPS preview exposes health
+and the reserved MCP path; external alert delivery was deferred by the user. See
+[rollout evidence](pr38-rollout.md) and [HTTPS setup](https-preview.md).
 
 ## User-provided resources and access
 

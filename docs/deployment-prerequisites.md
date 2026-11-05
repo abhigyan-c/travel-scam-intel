@@ -56,8 +56,8 @@ R2 key pair accesses both buckets; separate scoped credentials are not yet in us
 Return the machine account to read-only after initialization. Public-domain bucket
 settings were confirmed private by the user on 2026-11-03; the Cloudflare management
 token cannot independently read them (HTTP 403). Native Droplet checks passed for
-Bitwarden, R2, Serper and Sarvam. Private GitHub-runner connectivity must be set up
-as part of PR 38 before the automated deployment can run.
+Bitwarden, R2, Serper and Sarvam. The private GitHub-runner OIDC configuration is
+now implemented; its first actual workflow run remains a verification gate.
 
 DigitalOcean API credentials are needed only if we automate VM/firewall provisioning with its
 API; an already-created VPS can be bootstrapped through SSH. DNS API credentials

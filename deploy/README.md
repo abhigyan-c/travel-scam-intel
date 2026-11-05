@@ -209,16 +209,23 @@ destination has not been configured. Timers alone do not notify an operator.
 
 ## Remaining live gates
 
-- Application reboot recovery and deployment failure/rollback drills.
+- First GitHub OIDC deployment run after workflow registration on the default branch.
 - Caddy installation and trusted IP-certificate issuance/automatic renewal. API is
   loopback-only until then; this slice exposes no public application listener.
-- Actual R2 immutable writes/private media checks and Bitwarden permissions test.
-- Encrypted backup/isolated restore, deployment failure and rollback drills.
-- Model preload, integration checks and memory profiling on the selected VPS.
+- Recovery of real user media/provenance once those records exist; off-server
+  passphrase recovery and agreed backup retention.
+- External alert destination and production load checks after PR 37 fixes.
 - ChatGPT IP-URL acceptance and PR 31 MCP tools; later UI/security/evaluation gates.
 
 See [architecture](../docs/minimal-mvp-deployment.md). Trusted IP HTTPS is still
 the first route; a DNS hostname remains conditional on its compatibility test.
+
+Live private rollout (2026-11-05): dedicated-key activation, encrypted R2
+backup/download/isolated SQL restore, missing-image rejection and same-schema
+rollback passed. The first reboot exposed stale secret mounts; after fixing
+activation, the repeat reboot recovered automatically in 57 seconds. All
+application services are healthy and public ports remain blocked. The complete
+local suite passed 828 tests with 10 skipped. See [rollout evidence](../docs/pr38-rollout.md).
 
 ## Local validation (2026-11-01)
 

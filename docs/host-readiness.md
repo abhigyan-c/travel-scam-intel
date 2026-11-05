@@ -58,7 +58,7 @@ into a server `.env`. Temporary verification code, dependencies, CLI and scratch
 directories were removed. Synthetic R2 objects were cleaned up. No application data
 or invented scam records were created. Existing vault entries were not changed.
 
-## Remaining PR 38 implementation and release gates
+## Preflight follow-ups recorded 2026-11-03
 
 1. Install/configure Docker/Compose, Caddy as appropriate for the chosen endpoint,
    production secrets delivery, model cache, PostgreSQL/pgvector, Redis, API and worker.

@@ -42,7 +42,26 @@ public release still depends on the remaining product and hardening PRs.
   the disposable container and volume were removed.
 - The first application reboot drill exposed stale `/run` secret mounts. Activation
   now recreates PostgreSQL/API/worker against newly exported files; the boot unit
-  also retries transient startup failures. A repeat reboot drill is required.
+  also retries transient startup failures. The repeat reboot recovered the full
+  application automatically in **57 seconds**, with no failed systemd units.
+- Missing-image activation failed before stopping services and preserved the active
+  marker. Rollback to `2ab3876` and reactivation of `5e04a07` both passed; the latter
+  is the running code release. These images share the same application/schema, so
+  this does not establish compatibility across future destructive migrations.
+- After reboot: API/worker healthy, zero restarts/OOM kills; host memory used
+  740 MiB with 3,175 MiB available; disk 4.6 GiB used, 72 GiB available, no swap.
+  Public TCP ports 22, 80, 443, 5432, 6379 and 8000 were unreachable from the PC.
+  Nightly backup and hourly health timers are enabled; the health unit passed.
+- Local full suite against local PostgreSQL/Redis/MinIO: **828 passed, 10 skipped**.
+  Ruff lint/format, Bash syntax, production Compose configuration and tracked-file
+  scans for the supplied credential values passed. Production data was not used
+  by the local test suite.
+- Post-reboot read-only probe: 100 sequential empty-corpus location reads all
+  succeeded, p50 26.87 ms / p95 46.75 ms (not representative of a grown corpus).
+  The unresearched location remained `research_incomplete`, incident matching
+  returned `no_match`, and anonymous admin access returned HTTP 401. No research
+  was queued. Offline inference inside the read-only API container produced a
+  normalized 384-dimensional embedding without downloading models.
 - Only seed locations exist in this new database; no fabricated scam evidence or
   test reports were inserted into production. The restore drill does not prove
   recovery of future user media or provenance; verify those after such data exists.

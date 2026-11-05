@@ -70,7 +70,7 @@ public DNS propagation. This alternative is not a passed ChatGPT gate by itself.
 
 ## Required ChatGPT review gate
 
-After protocol tests/deployment, connect `https://64.227.161.120/mcp` in ChatGPT
+After protocol tests/deployment, connect `https://travel-scam-prod.tailbbf557.ts.net/mcp` in ChatGPT
 with no authentication. The account/workspace must support custom MCP connections.
 Use the current [official connection instructions](https://developers.openai.com/plugins/deploy/connect-chatgpt).
 
@@ -100,7 +100,7 @@ References: [MCP Python SDK ASGI mounting](https://py.sdk.modelcontextprotocol.i
 
 ## Validation — 2026-11-05
 
-- Full local suite: **842 passed, 10 skipped**. Focused MCP/shared-intake tests
+- Full local suite: **843 passed, 10 skipped**. Focused MCP/shared-intake tests
   passed against isolated PostgreSQL schemas with controlled providers.
 - Actual Streamable HTTP initialization at the exact endpoint, Host/Origin
   rejection, structured results and correlated sanitized errors passed.
@@ -117,9 +117,20 @@ References: [MCP Python SDK ASGI mounting](https://py.sdk.modelcontextprotocol.i
   No research/provider calls or production reports were requested by this check.
 - Public boundary checks passed: MCP initializes over trusted IP TLS, while REST,
   admin, media and docs stay private. The user-run ChatGPT gate remains pending.
-- Running preview: `76d7e74`; API/worker healthy, zero restarts/OOM kills, host
+- Running preview: `0c437f2`; API/worker healthy, zero restarts/OOM kills, host
   health check passed. Idle containers after read checks: API 129.4 MiB, worker
   96.9 MiB, PostgreSQL 28.1 MiB, Redis 13.7 MiB. These are not load-capacity claims.
 - SDK warnings are discarded with a real null handler, preventing Python's
   fallback stderr handler from exposing SDK messages even if a child logger
   explicitly enables warnings. Application metadata/errors remain sanitized.
+- The user authorized Funnel and completed Tailscale's one-time feature approval.
+  Caddy's shared filter is bound to 127.0.0.1:8080; Funnel 443 forwards only there.
+  Listener, private-route rejection and hostname MCP smoke passed. The user then
+  reported a successful real ChatGPT connection through the hostname.
+- Forced public probes to both regional ingress IPs timed out during TLS even
+  though tailnet checks and ChatGPT's connection succeeded. Neither a daemon restart
+  nor a temporary 8443 probe resolved that test path; the extra port was removed.
+  Record this as an observed relay/reachability limitation, not a diagnosed cause
+  or a passed global availability test. External alerting remains deferred.
+- Hostname alias Host/Origin tests: 11 MCP tests passed after this refinement;
+  unknown hosts still fail. The first-ever ChatGPT research conversation is pending.

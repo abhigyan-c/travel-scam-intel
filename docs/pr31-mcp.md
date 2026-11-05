@@ -57,6 +57,17 @@ host configuration. DNS-rebinding protection stays enabled. No consumer login is
 introduced; anonymous access follows the agreed product architecture. Caddy still
 blocks REST/admin/media/docs and only exposes `/health` and `/mcp`.
 
+The first ChatGPT connection to the IP URL failed with a generic reachability
+error despite independent protocol success; this does not establish an IP-policy
+restriction. The user explicitly authorized a filtered Tailscale Funnel hostname
+on 2026-11-05 for a second connection test. `APP_MCP_PUBLIC_ALIASES` adds that exact
+hostname without disabling Host/Origin checks or removing the IP endpoint.
+`setup-funnel.sh --prepare-only` configures a Caddy listener bound only to
+127.0.0.1:8080, with the same health/MCP-only routes. After deploying the alias,
+`--enable` exposes that listener using Funnel. Never forward directly to port 8000.
+Funnel remains subject to the tailnet administrator's feature authorization and
+public DNS propagation. This alternative is not a passed ChatGPT gate by itself.
+
 ## Required ChatGPT review gate
 
 After protocol tests/deployment, connect `https://64.227.161.120/mcp` in ChatGPT
@@ -89,7 +100,7 @@ References: [MCP Python SDK ASGI mounting](https://py.sdk.modelcontextprotocol.i
 
 ## Validation — 2026-11-05
 
-- Full local suite: **841 passed, 10 skipped**. Focused MCP/shared-intake tests
+- Full local suite: **842 passed, 10 skipped**. Focused MCP/shared-intake tests
   passed against isolated PostgreSQL schemas with controlled providers.
 - Actual Streamable HTTP initialization at the exact endpoint, Host/Origin
   rejection, structured results and correlated sanitized errors passed.
@@ -106,3 +117,9 @@ References: [MCP Python SDK ASGI mounting](https://py.sdk.modelcontextprotocol.i
   No research/provider calls or production reports were requested by this check.
 - Public boundary checks passed: MCP initializes over trusted IP TLS, while REST,
   admin, media and docs stay private. The user-run ChatGPT gate remains pending.
+- Running preview: `76d7e74`; API/worker healthy, zero restarts/OOM kills, host
+  health check passed. Idle containers after read checks: API 129.4 MiB, worker
+  96.9 MiB, PostgreSQL 28.1 MiB, Redis 13.7 MiB. These are not load-capacity claims.
+- SDK warnings are discarded with a real null handler, preventing Python's
+  fallback stderr handler from exposing SDK messages even if a child logger
+  explicitly enables warnings. Application metadata/errors remain sanitized.

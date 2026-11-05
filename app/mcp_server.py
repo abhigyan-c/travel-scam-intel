@@ -250,8 +250,11 @@ def build_mcp(application):
 
     hosts = ["localhost", "localhost:*", "127.0.0.1", "127.0.0.1:*", "[::1]", "[::1]:*"]
     origins = ["http://localhost", "http://localhost:*", "http://127.0.0.1", "http://127.0.0.1:*"]
-    if application.state.settings.mcp_public_url:
-        public = urlsplit(str(application.state.settings.mcp_public_url))
+    settings = application.state.settings
+    for url in [settings.mcp_public_url, *settings.mcp_public_aliases]:
+        if url is None:
+            continue
+        public = urlsplit(str(url))
         hosts.append(public.netloc)
         origins.append(f"{public.scheme}://{public.netloc}")
     transport = server.streamable_http_app(

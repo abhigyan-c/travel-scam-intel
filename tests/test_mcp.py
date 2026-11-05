@@ -164,3 +164,47 @@ def test_sdk_warnings_cannot_fall_back_to_stderr(application, capsys):
         assert "test-private-report-body" not in capsys.readouterr().err
     finally:
         child.setLevel(previous)
+
+
+async def test_public_hostname_alias_is_allowed_without_disabling_rebinding_checks():
+    application = create_app(
+        Settings(
+            _env_file=None,
+            environment="test",
+            mcp_public_url="https://192.0.2.1/mcp",
+            mcp_public_aliases=["https://preview.example.test/mcp"],
+        )
+    )
+    initialize = {
+        "jsonrpc": "2.0",
+        "id": 1,
+        "method": "initialize",
+        "params": {
+            "protocolVersion": "2025-11-25",
+            "capabilities": {},
+            "clientInfo": {"name": "pytest", "version": "1"},
+        },
+    }
+    headers = {"Accept": "application/json, text/event-stream"}
+    async with application.router.lifespan_context(application):
+        async with httpx.AsyncClient(
+            transport=httpx.ASGITransport(app=application), base_url="https://preview.example.test"
+        ) as client:
+            allowed = await client.post(
+                "/mcp",
+                json=initialize,
+                headers={
+                    **headers,
+                    "Origin": "https://preview.example.test",
+                },
+            )
+            assert allowed.status_code == 200
+            blocked = await client.post(
+                "/mcp",
+                json=initialize,
+                headers={
+                    **headers,
+                    "Host": "unapproved.example.test",
+                },
+            )
+            assert blocked.status_code == 421

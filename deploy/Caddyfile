@@ -10,8 +10,7 @@
 	respond 503
 }
 
-https://{$VPS_IP} {
-	tls /etc/caddy/certs/fullchain.pem /etc/caddy/certs/privkey.pem
+(public_mcp_preview) {
 	header {
 		X-Content-Type-Options nosniff
 		Referrer-Policy no-referrer
@@ -36,4 +35,16 @@ https://{$VPS_IP} {
 	handle {
 		respond 404
 	}
+}
+
+https://{$VPS_IP} {
+	tls /etc/caddy/certs/fullchain.pem /etc/caddy/certs/privkey.pem
+	import public_mcp_preview
+}
+
+# Funnel terminates hostname TLS and reaches only this filtered loopback listener.
+# Never point Funnel directly at the application port, which also serves admin.
+http://:8080 {
+	bind 127.0.0.1
+	import public_mcp_preview
 }

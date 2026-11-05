@@ -37,6 +37,7 @@ class Settings(BaseSettings):
     admin_api_token: SecretStr = Field(default="", validation_alias="ADMIN_API_TOKEN")
     embedding_cache_dir: str = ".tools/embedding-cache"
     mcp_public_url: AnyHttpUrl | None = None
+    mcp_public_aliases: list[AnyHttpUrl] = Field(default_factory=list, max_length=4)
 
     @field_validator("mcp_public_url", mode="before")
     @classmethod

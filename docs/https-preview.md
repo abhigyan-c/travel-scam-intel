@@ -38,6 +38,8 @@ marker files 0600. Backup/bootstrap scripts must preserve that traversal mode.
 
 `travel-scam-certbot.timer` runs renewal twice daily, with randomized delay and
 persistent catch-up. The installer runs a staging renewal dry run with deploy hooks.
+Certbot's additional random sleep is disabled because the systemd timer already
+provides jitter; the service timeout covers the actual renewal work.
 Short-lived IP certificates are valid for about six days, so renewal is required.
 
 `PUBLIC_TLS_CERT` and `PUBLIC_HTTPS_IP` in the root-only production configuration
@@ -51,7 +53,7 @@ Operator commands:
 
 ```sh
 systemctl status caddy travel-scam-certbot.timer travel-scam-health.timer
-/opt/travel-scam-certbot/bin/certbot renew --cert-name vps-ip --dry-run --run-deploy-hooks
+/opt/travel-scam-certbot/bin/certbot renew --cert-name vps-ip --dry-run --run-deploy-hooks --no-random-sleep-on-renew
 systemctl start travel-scam-health.service
 journalctl -u travel-scam-certbot.service -u travel-scam-health.service
 ```
@@ -76,6 +78,13 @@ Sources: [Caddy installation](https://caddyserver.com/docs/install),
 - Caddy 2.11.9 and Certbot 5.4.0 are installed. The host health check verifies the
   actual served certificate has at least 48 hours remaining, even if a future
   reload fails after copying new certificate files.
+- A real encrypted R2 backup preserved ACME webroot traversal; an external PC then
+  retrieved a unique synthetic HTTP challenge and the file was removed afterward.
+- The staging lineage was rejected by the deploy hook without changing the live
+  certificate. Encoded/traversal-style admin paths also returned HTTP 404.
+- The updated host-helper release `a69fe8b` is active; the application source/image
+  was unchanged. The root-owned renewal unit was updated separately to use the
+  systemd timer's jitter without Certbot's additional internal random sleep.
 - Deployment/service unit tests: 12 passed. Ruff lint/format and diff checks passed.
 
 Re-run external boundary checks with

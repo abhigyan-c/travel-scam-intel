@@ -7,4 +7,4 @@ After=network-online.target caddy.service
 Type=oneshot
 UMask=0077
 TimeoutStartSec=600
-ExecStart=/opt/travel-scam-certbot/bin/certbot renew --quiet --cert-name vps-ip
+ExecStart=/opt/travel-scam-certbot/bin/certbot renew --quiet --cert-name vps-ip --no-random-sleep-on-renew

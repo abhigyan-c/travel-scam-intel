@@ -25,7 +25,7 @@ docker exec travel-scam-prod-postgres-1 pg_dump -U travel -d travel_scam_intel -
     --symmetric --cipher-algo AES256 --output "$work/database.dump.gpg"
 aws --endpoint-url "$S3_ENDPOINT" s3api put-object --bucket "$BACKUP_BUCKET" \
   --key "$object" --body "$work/database.dump.gpg" --if-none-match '*' >/dev/null
-install -d -m 0700 /var/lib/travel-scam
+install -d -m 0711 /var/lib/travel-scam
 printf '%s\n' "$object" > /var/lib/travel-scam/last-backup-object
 date -u +%FT%TZ > /var/lib/travel-scam/backup-success.tmp
 mv /var/lib/travel-scam/backup-success.tmp /var/lib/travel-scam/last-backup-success

@@ -34,7 +34,8 @@ install -o deploy -g deploy -m 0600 "$key" /home/deploy/.ssh/authorized_keys
 install -d -m 0755 /opt/travel-scam
 install -d -o deploy -g deploy -m 0750 /opt/travel-scam/releases
 install -d -o 10001 -g 10001 -m 0755 /opt/travel-scam/models
-install -d -m 0700 /etc/travel-scam /var/lib/travel-scam
+install -d -m 0700 /etc/travel-scam
+install -d -m 0711 /var/lib/travel-scam
 install -m 0755 "$(dirname "$0")/push-release.sh" /usr/local/sbin/travel-scam-deploy
 printf 'deploy ALL=(root) NOPASSWD: /usr/local/sbin/travel-scam-deploy *\n' > /etc/sudoers.d/travel-scam-deploy
 chmod 0440 /etc/sudoers.d/travel-scam-deploy

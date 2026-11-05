@@ -68,12 +68,14 @@ public release still depends on the remaining product and hardening PRs.
 
 ## Remaining gates
 
-- First real GitHub Actions OIDC/ACL connection. The user reports all environment
-  variables/secrets saved; GitHub configuration has not been independently read.
-  This new workflow must exist on the default branch before `workflow_dispatch`
-  becomes available. Use the production environment's branch restrictions.
-- Public trusted HTTPS, certificate renewal and alert delivery are pending.
-  No Funnel/Serve endpoint or public HTTP listener is enabled by this rollout.
+- GitHub Actions deployment succeeded after correcting the Tailscale subject to
+  the owner/repository-ID format received from GitHub. The deployed `f4cc5cd` image
+  was independently checked against merged `develop`; services and offline models
+  passed. GitHub environment settings were not independently read.
+- Public trusted IP HTTPS and certificate renewal are now configured; see the
+  [HTTPS preview](https-preview.md). Public routing is limited to health and the
+  reserved MCP path. No Tailscale Funnel/Serve endpoint is enabled.
+- External alert delivery was explicitly deferred by the user on 2026-11-05.
 - PR 31 live ChatGPT connection and PRs 32–37 remain deferred. The measured
   concurrent-image memory pressure, embedding backpressure and grown-corpus recent
   query issues remain public-release blockers; hosting does not fix them.

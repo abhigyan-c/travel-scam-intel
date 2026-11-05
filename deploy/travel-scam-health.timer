@@ -1,0 +1,9 @@
+[Unit]
+Description=Hourly travel scam host health checks
+
+[Timer]
+OnBootSec=10min
+OnUnitActiveSec=1h
+
+[Install]
+WantedBy=timers.target

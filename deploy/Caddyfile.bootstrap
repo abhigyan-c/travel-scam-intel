@@ -1,0 +1,11 @@
+{
+	auto_https off
+}
+
+:80 {
+	handle /.well-known/acme-challenge/* {
+		root * /var/lib/travel-scam/acme
+		file_server
+	}
+	respond 503
+}

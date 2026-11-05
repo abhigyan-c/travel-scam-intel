@@ -1,0 +1,37 @@
+# Override deploy/compose.yaml. Provider simulator is outside the measured cgroup.
+x-sizing-app: &sizing-app
+  cgroup_parent: travel-scam-sizing-20261103
+  volumes:
+    - ${MODEL_CACHE}:/models:ro
+    - ${BENCH_ROOT}:/bench:ro
+  environment:
+    PYTHONPATH: /bench:/app
+    BENCHMARK_SIZING: "1"
+
+services:
+  api:
+    <<: *sizing-app
+  worker:
+    <<: *sizing-app
+    command: [arq, benchmarks.droplet_sizing.worker.WorkerSettings]
+  postgres:
+    cgroup_parent: travel-scam-sizing-20261103
+  redis:
+    cgroup_parent: travel-scam-sizing-20261103
+  proxy:
+    image: caddy:2-alpine
+    cgroup_parent: travel-scam-sizing-20261103
+    command: [caddy, reverse-proxy, --from, ":80", --to, api:8000]
+    ports: ["127.0.0.1:18012:80"]
+    depends_on:
+      api: {condition: service_healthy}
+    logging:
+      driver: json-file
+      options: {max-size: 10m, max-file: "2"}
+  object-store:
+    image: travel-scam-intel-minio:latest
+    command: [server, /data]
+    environment:
+      MINIO_ROOT_USER: travel-local
+      MINIO_ROOT_PASSWORD: travel-local-password
+    tmpfs: ["/data:uid=10001,gid=10001,mode=0700"]

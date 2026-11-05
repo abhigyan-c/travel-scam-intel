@@ -1,0 +1,19 @@
+[Unit]
+Description=Travel scam single VPS application
+Requires=docker.service
+After=docker.service network-online.target
+Wants=network-online.target
+StartLimitIntervalSec=300
+StartLimitBurst=5
+
+[Service]
+Type=oneshot
+RemainAfterExit=yes
+UMask=0077
+TimeoutStartSec=600
+Restart=on-failure
+RestartSec=15
+ExecStart=/bin/bash -c 'exec /bin/bash /opt/travel-scam/current/deploy/activate.sh "$(cat /opt/travel-scam/active-release)"'
+
+[Install]
+WantedBy=multi-user.target

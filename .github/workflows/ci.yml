@@ -22,6 +22,8 @@ jobs:
       - run: uv run --locked ruff check .
       - run: uv run --locked ruff format --check .
       - run: uv run --locked pytest
+      - run: docker compose --env-file deploy/production.env.example -f deploy/compose.yaml config --quiet
+      - run: for script in deploy/*.sh; do bash -n "$script" || exit; done
 
   infrastructure:
     runs-on: ubuntu-latest

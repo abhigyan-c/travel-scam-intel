@@ -3,6 +3,23 @@
 
 Read this entire document before changing code.
 
+## Deployment Override — 2026-10-31
+
+The user has replaced the full AWS release target with a minimal product for about
+100 requests/day: one inexpensive Linux VPS, no separate load balancer and no
+mandatory managed database/Redis services. Preserve the existing application and
+evidence architecture. The proposed Docker Compose/Caddy/private-R2 deployment,
+provider comparison, prerequisites and revised release sequencing are documented in
+[`docs/minimal-mvp-deployment.md`](../minimal-mvp-deployment.md).
+DigitalOcean is the user-selected provider as of 2026-11-03, superseding OVHcloud.
+R2/Bitwarden and the Bangalore 2-vCPU / 4-GiB / 80-GB-class Droplet are provisioned.
+Private Tailscale SSH and native integration preflight passed; see `docs/host-readiness.md`.
+See the measured sizing findings in `docs/digitalocean-sizing-experiment.md` before
+choosing 2 GiB or declaring the current implementation ready for public release.
+This override takes precedence over remaining historical AWS examples. PR 31 is
+deferred until an HTTPS preview is available; no deployment or purchase is authorized
+by this document alone.
+
 ## Confirmed Project Decisions — 2026-10-11
 
 These decisions take precedence over conflicting examples elsewhere in this document.
@@ -1306,53 +1323,20 @@ Backend LLM calls should return structured output where practical and must be va
 
 ---
 
-# 31. Future AWS Direction
+# 31. Minimal Production Direction
 
-The system will eventually run on AWS.
+Deploy the MVP on one small Linux VPS using Docker Compose. Caddy handles HTTPS on
+the same server. API/MCP, worker, PostgreSQL/pgvector and Redis run together; the
+existing periodic scheduler remains in the worker. Private S3-compatible object
+storage and off-server database backups are proposed via Cloudflare R2.
 
-Do not implement AWS infrastructure in early PRs.
+Do not provision a load balancer, ECS/Fargate, RDS or ElastiCache for this MVP.
+The server size, DigitalOcean region/billing terms and research usage policy must be confirmed against
+cost and measured capacity before purchase. Keep infrastructure automation small.
 
-However, architecture choices should avoid making deployment unnecessarily difficult.
-
-Likely production architecture:
-
-```text
-Internet / ChatGPT
-        │
-        ▼
-Application Load Balancer
-        │
-        ▼
-Amazon ECS / Fargate
-        │
-        ├── API + MCP service
-        ├── worker service
-        └── lightweight scheduled research trigger/process
-        │
-        ├──────────────────────────┐
-        │                          │
-        ▼                          ▼
-Amazon RDS                   Amazon ElastiCache
-PostgreSQL                   Redis-compatible
-+ pgvector
-        │
-        ▼
-Amazon S3
-raw documents / media / artifacts
-```
-
-Supporting AWS services will likely include:
-
-```text
-Amazon ECR
-AWS Secrets Manager
-Amazon CloudWatch
-Route 53
-ACM
-VPC
-```
-
-The periodic scheduler can later be triggered by a simple AWS scheduling mechanism. Do not redesign the research logic around AWS.
+Accept a single-server availability tradeoff only with working backups and a tested
+restore procedure. Scaling to managed infrastructure later is optional, not an MVP
+prerequisite. Do not redesign the research logic around a hosting vendor.
 
 Core application code must continue to operate through ordinary configuration such as:
 
@@ -2805,7 +2789,7 @@ basic load testing
 
 ---
 
-# 70. PR 38 — AWS Deployment, Durability and MVP Release
+# 70. PR 38 — Minimal VPS Deployment, Durability and MVP Release
 
 ## Goal
 
@@ -2814,44 +2798,38 @@ Deploy the validated application without redesigning it.
 Target architecture:
 
 ```text
-                  Internet / ChatGPT
-                         │
-                         ▼
-                 Application Load
-                    Balancer
-                         │
-                         ▼
-                 ECS / Fargate
-        ┌────────────────┼────────────────┐
-        │                │                │
-     API/MCP           Worker         Scheduler trigger
-        │                │                │
-        └────────────────┼────────────────┘
-                         │
-          ┌──────────────┼──────────────┐
-          ▼              ▼              ▼
-        RDS         ElastiCache         S3
-     PostgreSQL      Redis-like      objects
-      pgvector
+Internet / ChatGPT
+        |
+        v
+One low-cost Linux VPS
+  Caddy HTTPS -> API/MCP/admin
+  PostgreSQL + pgvector
+  Redis + arq worker + existing periodic scheduler
+        |
+        v
+Private S3-compatible objects + off-server database backups
 ```
 
 Add production configuration for:
 
 ```text
-ECS/Fargate
-ECR
-RDS PostgreSQL
-pgvector
-ElastiCache
-S3
-Secrets Manager
-CloudWatch
-ALB
-TLS
-scheduled research trigger
+single x86-64 VPS and firewall
+production Docker Compose
+Caddy TLS; first test a publicly trusted IP certificate with automated renewal and ChatGPT MCP compatibility, using domain/DNS only as a fallback
+PostgreSQL + pgvector and Redis on private container networking
+private S3-compatible storage (R2 proposed)
+restricted untracked server credentials
+bounded worker/model/database resources
+rotated logs and simple health/backup checks
+existing in-worker scheduler; no separate cloud trigger
 ```
 
-Add one infrastructure-as-code system.
+Use minimal Terraform/cloud-init and versioned deployment/restore scripts, scoped to
+this one-machine deployment. DigitalOcean superseded the OVHcloud choice on
+2026-11-03. The sizing experiment found image-burst OOMs at 2 GiB and query/embedding
+concurrency problems at both sizes. Confirm safeguards, CPU/RAM/disk and recurring price,
+then profile that allocation with one worker job initially. Increase capacity only
+if measurements justify it. See the deployment decision for the pending choices.
 
 Do not introduce Kubernetes.
 
@@ -3338,7 +3316,7 @@ MVP is complete when:
 26. Users can report incidents from ChatGPT.
 27. Important automated decisions can be reviewed.
 28. Evaluation can detect major regressions.
-29. The system can deploy to the planned AWS architecture.
+29. The system can deploy to the planned low-cost single-VPS architecture with working HTTPS and tested off-server recovery.
 
 ---
 

@@ -1,5 +1,9 @@
 # Travel Scam Intelligence
 
+Deployment planning now targets a minimal DigitalOcean single-Droplet MVP for approximately 100
+requests/day, without a separate load balancer or managed AWS stack. See the
+[deployment proposal and revised release scope](docs/minimal-mvp-deployment.md).
+
 An evidence-backed travel scam intelligence backend. The repository currently provides the
 API, local infrastructure and core domain models; research and ChatGPT integration arrive in later PRs.
 

@@ -1,0 +1,19 @@
+{
+	auto_https off
+}
+
+:80 {
+	handle /.well-known/acme-challenge/* {
+		root * /var/lib/travel-scam/acme
+		file_server
+	}
+	respond 503
+}
+
+https://{$VPS_IP} {
+	tls /etc/caddy/certs/fullchain.pem /etc/caddy/certs/privkey.pem
+	request_body {
+		max_size 12MB
+	}
+	reverse_proxy 127.0.0.1:8000
+}

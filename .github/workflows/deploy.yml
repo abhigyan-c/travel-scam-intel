@@ -1,0 +1,46 @@
+name: Deploy VPS preview
+on:
+  workflow_dispatch:
+permissions:
+  contents: read
+  id-token: write
+concurrency:
+  group: vps-preview
+  cancel-in-progress: false
+jobs:
+  deploy:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    environment: production
+    steps:
+      - uses: actions/checkout@v4
+      - name: Build selected commit
+        run: |
+          docker build --tag "travel-scam-intel:$GITHUB_SHA" .
+          docker save "travel-scam-intel:$GITHUB_SHA" | gzip > image.tar.gz
+          tar -czf deployment.tar.gz deploy
+      - name: Configure pinned SSH host identity
+        env:
+          SSH_KEY: ${{ secrets.VPS_SSH_KEY }}
+          KNOWN_HOSTS: ${{ secrets.VPS_KNOWN_HOSTS }}
+        run: |
+          install -d -m 700 ~/.ssh
+          printf '%s\n' "$SSH_KEY" > ~/.ssh/id_ed25519
+          printf '%s\n' "$KNOWN_HOSTS" > ~/.ssh/known_hosts
+          chmod 600 ~/.ssh/*
+          printf '%s\n' 'Host *' '  BatchMode yes' '  StrictHostKeyChecking yes' '  ConnectTimeout 15' '  ServerAliveInterval 30' > ~/.ssh/config
+      - name: Join deployment tailnet
+        uses: tailscale/github-action@v4
+        with:
+          oauth-client-id: ${{ secrets.TS_OAUTH_CLIENT_ID }}
+          audience: ${{ secrets.TS_AUDIENCE }}
+          tags: tag:ci
+      - name: Push and activate
+        env:
+          VPS_HOST: ${{ vars.VPS_HOST }}
+          VPS_USER: ${{ vars.VPS_USER }}
+        run: |
+          target="$VPS_USER@$VPS_HOST"
+          ssh "$target" "mkdir -p /opt/travel-scam/releases/$GITHUB_SHA"
+          scp image.tar.gz deployment.tar.gz "$target:/opt/travel-scam/releases/$GITHUB_SHA/"
+          ssh "$target" "sudo /usr/local/sbin/travel-scam-deploy $GITHUB_SHA"

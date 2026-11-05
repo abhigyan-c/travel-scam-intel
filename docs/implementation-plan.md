@@ -2,11 +2,20 @@
 
 Planning baseline: 2026-10-11. This plan follows `docs/prompts/travel_scam_intelligence_master_prompt.md` and its confirmed project decisions. It does not authorize implementing multiple PRs in one run.
 
+Deployment revision, 2026-10-31: target approximately 100 user requests/day on one
+low-cost VPS with no separate load balancer. The full AWS topology is superseded.
+See [minimal MVP deployment decision](minimal-mvp-deployment.md) for the recommended
+Compose/Caddy/R2 design, current price comparisons, tradeoffs and outstanding choices.
+DigitalOcean is the selected provider as of 2026-11-03. R2/Bitwarden are provisioned.
+The [sizing experiment](digitalocean-sizing-experiment.md) makes 2 GiB conditional
+on safeguards. The provisioned 2-vCPU / 4-GiB / 80-GB-class Bangalore Droplet and
+Tailscale administration passed [host preflight](host-readiness.md) on 2026-11-03.
+
 ## Delivery workflow
 
-- Exactly 38 numbered implementation PRs, in the existing order.
+- Retain exactly 38 numbered implementation PRs and their scope/review gates. PR 31 is deferred until an HTTPS preview and ChatGPT access are available; any dependency-ready reordering must follow the deployment decision above and user confirmation.
 - Create each branch from the latest `develop`; target `develop`. Branch convention: `codex/pr-NN-short-description`.
-- Merge the preceding PR into `develop` before starting the next dependent PR. Avoid stacked branches.
+- Merge prerequisite PRs into `develop` before starting dependent work. Avoid stacked branches; independent work may proceed only when requested.
 - Include relevant behavior tests, Ruff checks, a concise change summary, and material simplifications or deferred work in every PR.
 - Stop after each PR. The designated review gates require manual inspection before proceeding.
 - Keep the prompt and this planning document as the baseline on `develop` before PR 01. They are planning changes, not an additional numbered implementation PR. No commits or remote changes are performed by this plan.
@@ -21,18 +30,18 @@ Planning baseline: 2026-10-11. This plan follows `docs/prompts/travel_scam_intel
 | API | FastAPI, Pydantic 2, pydantic-settings, Uvicorn | Typed requests, responses, and `.env` configuration; PR 01. |
 | Database | SQLAlchemy 2 async sessions, psycopg 3, Alembic | Shared async approach for API and worker I/O; PR 02. Alembic uses its ordinary migration connection. |
 | Durable storage | PostgreSQL with pgvector | Domain records, job history, score history, and vectors; PR 02 onward. |
-| Objects | MinIO locally, S3 in production, boto3 | Immutable source versions and attachments. Blocking object operations run outside the async event loop; PR 02/08. |
+| Objects | MinIO locally; proposed private R2 Standard in production, boto3 | Preserve the S3-compatible boundary and verify the actual remote operations before release. |
 | HTTP | httpx AsyncClient | Shared connection pools and bounded network calls; PR 08 onward. |
 | Search | Serper.dev, one small provider boundary | Discovery only; underlying pages remain evidence sources; PR 09. |
 | LLM | Sarvam API, `sarvam-105b`, minimal httpx wrapper | Structured relevance, extraction, hypothesis generation, and resolution; PR 12. |
 | Embeddings | FastEmbed, `BAAI/bge-small-en-v1.5`, initially 384 dimensions | Separate local English embedding model; no embedding API credential. Generate in bounded thread work, store in pgvector; PR 16. |
 | Background jobs | arq with Redis | Async jobs and bounded retries; PR 11. PostgreSQL retains durable research job state. |
-| Scheduler | One deterministic scheduling function, periodic worker trigger locally | Approximately every 15 minutes; PR 30. An AWS scheduled trigger invokes the same selection logic later. |
+| Scheduler | Existing arq periodic worker trigger | Approximately every 15 minutes; PR 30. Runs on the same VPS, opt-in, without a separate cloud scheduler. |
 | Tests and lint | pytest, pytest-asyncio when needed, Ruff | Behavior tests and small fixtures; PR 01 onward. |
 | CI | GitHub Actions | Locked install, Ruff, tests; add real PostgreSQL integration checks when persistence arrives. |
 | ChatGPT | MCP endpoint mounted alongside REST; supported ChatGPT app UI | Shared intelligence services. Select and pin the supported SDKs at PR 31/33 rather than scaffolding them early. |
 | Admin | Bearer token from `ADMIN_API_TOKEN`; server-rendered minimal dashboard | One operator, no consumer accounts; PR 35. |
-| AWS IaC | Terraform | ECS/Fargate, RDS, ElastiCache, S3 and supporting services; PR 38 only. |
+| Deployment | One DigitalOcean x86 Droplet, Docker Compose, trusted HTTPS | Bangalore 2-vCPU / 4-GiB / 80-GB class; private stack deployed, dedicated-key activation and R2 backup/isolated restore passed. First GitHub OIDC run/public HTTPS remain pending. No load balancer or managed database/Redis. |
 
 Dependency versions are resolved and locked when introduced, rather than guessed during planning. Validate the embedding model on scam-matching fixtures at PR 16/17; change it if retrieval quality is inadequate. Model changes require compatible dimensions and deliberate backfill, never mixed incompatible vectors.
 
@@ -131,7 +140,7 @@ Every row implies a distinct branch `codex/pr-NN-<slug>` and PR targeting `devel
 | 35 | admin-dashboard | Token-protected minimal UI/API, review queues, merges/splits, job inspection, reprocessing and audit records. | Operator can review held allegations/candidates and failed jobs; unauthorized operations rejected. |
 | 36 | evaluation-harness | Labeled fixtures for extraction/resolution/matches/duplicates/stance; confidence and scheduler regression evaluation. | Reproducible quality metrics and false-merge tracking. **Gate: evaluation baseline.** |
 | 37 | operational-hardening | Rate/size/spam controls, dependency checks, useful metrics, load checks and measured optimizations. | Critical controls verified; only demonstrated bottlenecks justify caches/index tuning. |
-| 38 | aws-mvp-release | Terraform, ECS services, RDS/Redis/S3, TLS/secrets/logs, scheduled trigger, backup/restore and release. | Migration/deployment/restore checks; popular and unseen destination traceability; frozen contracts and release tag. **Gate: production release.** |
+| 38 | single-vps-mvp-release | Minimal VPS provisioning, production Compose, Caddy TLS, private S3-compatible objects, local PostgreSQL/Redis, backups and release. | Small-machine memory/latency validation, migration/deployment/restore checks, popular/unseen destination traceability, frozen contracts and release tag. **Gate: production release.** |
 
 ## PR 01 detailed implementation plan
 
@@ -198,4 +207,4 @@ No API keys, databases, Docker services, embeddings, MCP setup or AWS credential
 - PR 22: finalize confidence components and labels through scenario review; no arbitrary truth probabilities.
 - PR 24/30: tune work limits, stale intervals and scheduler weights from observations. Monetary caps remain a later decision.
 - PR 31/33: confirm current ChatGPT MCP/UI requirements and request timing before finalizing those integrations.
-- PR 38: choose AWS region, domain, production sizing and cost controls at deployment planning time.
+- PR 38: use DigitalOcean; confirm region, plan/tax, off-server storage, measured sizing and research-cost policy. Address the sizing experiment's media-memory and query/concurrency findings before release. First test trusted HTTPS at the VPS IP with automated IP-certificate renewal and a live ChatGPT MCP connection; IP URL acceptance is unverified. Defer buying a domain unless that compatibility test requires a hostname. Use the minimal deployment decision instead of the original AWS topology.

@@ -1,0 +1,7 @@
+[Unit]
+Description=Travel scam readiness, backup freshness and disk checks
+After=travel-scam.service
+
+[Service]
+Type=oneshot
+ExecStart=/bin/bash /opt/travel-scam/current/deploy/check-host.sh

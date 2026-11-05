@@ -1,7 +1,7 @@
 # PR 38 hosting foundation
 
-Status (2026-11-05): the private application stack has been deployed successfully;
-the first encrypted offsite backup and isolated SQL restore passed. See
+Status (2026-11-05): the application stack and IP-based HTTPS preview are deployed;
+encrypted offsite backup, isolated SQL restore and reboot recovery passed. See
 [host readiness](../docs/host-readiness.md). This is
 the early hosting slice of PR 38, not the final release or the deferred MCP adapter.
 
@@ -113,9 +113,12 @@ sudo docker run --rm --entrypoint python \
 
 ## IP-based HTTPS
 
-This is the earlier public-IP endpoint option. Administration now uses Tailscale;
-choose the ChatGPT-facing public HTTPS/tunnel route before issuing an IP certificate.
-No public endpoint is enabled by the host preflight.
+IP-based HTTPS is now live; administration still uses Tailscale. Run
+`bash deploy/setup-https.sh PUBLIC_IPV4` for the complete staging/production issuance,
+Caddy configuration, renewal timer and dry-run setup. See the
+[HTTPS preview runbook](../docs/https-preview.md). Public routes are limited to
+`/health` and the reserved `/mcp` path; REST/admin/media/docs remain private.
+The MCP adapter and ChatGPT IP-URL compatibility gate still belong to PR 31.
 
 Install Caddy as a host service and Certbot **5.4 or newer** with webroot support
 for IP certificates. Use `Caddyfile.bootstrap` first: it serves only ACME challenges
@@ -126,14 +129,15 @@ do not install it into the public configuration. After that succeeds, request th
 trusted production certificate:
 
 ```sh
-sudo certbot certonly --webroot -w /var/lib/travel-scam/acme \
+sudo /opt/travel-scam-certbot/bin/certbot certonly --webroot -w /var/lib/travel-scam/acme \
   --preferred-profile shortlived --ip-address VPS_PUBLIC_IP --cert-name vps-ip
 ```
 
 Set `VPS_IP` in Caddy's systemd environment and install `Caddyfile`. Copy the issued
 certificate/key into `/etc/caddy/certs` as root:caddy 0640 before starting that
 configuration. Install `install-certificate.sh` as a Certbot deploy hook, then
-enable the distribution's twice-daily renewal timer and run `certbot renew --dry-run`.
+enable `travel-scam-certbot.timer` and run the isolated Certbot's
+`renew --dry-run --run-deploy-hooks`.
 Validate the Caddy configuration and verify the certificate chain/IP SAN remotely.
 Run `check-host.sh` hourly via the chosen monitoring service: it checks readiness,
 backup age and disk usage. Once public TLS is configured, set `PUBLIC_TLS_CERT` in
@@ -155,7 +159,7 @@ console before saving it; do not trust an unauthenticated `ssh-keyscan` result a
 The workflow joins Tailscale using an OIDC federated identity before connecting.
 Set `TS_OAUTH_CLIENT_ID` to its Client ID and `TS_AUDIENCE` to its generated Audience.
 Use GitHub issuer `https://token.actions.githubusercontent.com`, subject
-`repo:abhigyan-c/travel-scam-intel:environment:production`, Auth Keys write scope,
+`repo:abhigyan-c@54025327/travel-scam-intel@1413911060:environment:production`, Auth Keys write scope,
 and `tag:ci`. Permit that tag to reach only the Droplet's TCP 22 in the tailnet
 policy. The workflow grants `id-token: write`; no reusable Tailscale key is stored.
 Keep the production environment's deployment-branch restrictions enabled.
@@ -168,7 +172,8 @@ deployment access; restrict repository/workflow writers accordingly. Host bootst
 is implemented by `bootstrap.sh`. The operator's private SSH and firewall
 restriction have passed preflight. GitHub hosted runners need their own scoped
 Tailscale identity before targeting the private host. The federated GitHub runner
-connection still needs its first actual Actions run. No deployment runs on merge.
+connection passed its first actual Actions deployment after correcting the subject
+to the owner/repository-ID format received from GitHub. No deployment runs on merge.
 
 Activation exports fresh secrets into `/run`, starts private dependencies, stops
 the old application, migrates/seeds, and waits for API/worker health. Failure exits
@@ -209,16 +214,14 @@ destination has not been configured. Timers alone do not notify an operator.
 
 ## Remaining live gates
 
-- First GitHub OIDC deployment run after workflow registration on the default branch.
-- Caddy installation and trusted IP-certificate issuance/automatic renewal. API is
-  loopback-only until then; this slice exposes no public application listener.
+- PR 31 MCP adapter and actual ChatGPT IP-URL connection; the HTTPS preview is live.
 - Recovery of real user media/provenance once those records exist; off-server
   passphrase recovery and agreed backup retention.
 - External alert destination and production load checks after PR 37 fixes.
 - ChatGPT IP-URL acceptance and PR 31 MCP tools; later UI/security/evaluation gates.
 
 See [architecture](../docs/minimal-mvp-deployment.md). Trusted IP HTTPS is still
-the first route; a DNS hostname remains conditional on its compatibility test.
+the chosen route; a DNS hostname remains conditional on its ChatGPT compatibility test.
 
 Live private rollout (2026-11-05): dedicated-key activation, encrypted R2
 backup/download/isolated SQL restore, missing-image rejection and same-schema

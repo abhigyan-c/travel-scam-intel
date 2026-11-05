@@ -12,8 +12,28 @@
 
 https://{$VPS_IP} {
 	tls /etc/caddy/certs/fullchain.pem /etc/caddy/certs/privkey.pem
+	header {
+		X-Content-Type-Options nosniff
+		Referrer-Policy no-referrer
+		Cache-Control no-store
+	}
 	request_body {
 		max_size 12MB
 	}
-	reverse_proxy 127.0.0.1:8000
+	# Preview entry points only. REST/admin/docs/media remain private, including
+	# while the measured upload/query safeguards await PR 37.
+	@health {
+		method GET HEAD
+		path /health
+	}
+	handle @health {
+		reverse_proxy 127.0.0.1:8000
+	}
+	@mcp path /mcp /mcp/*
+	handle @mcp {
+		reverse_proxy 127.0.0.1:8000
+	}
+	handle {
+		respond 404
+	}
 }

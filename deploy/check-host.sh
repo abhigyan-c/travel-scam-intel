@@ -12,3 +12,7 @@ source /etc/travel-scam/production.env
 if [[ -n "${PUBLIC_TLS_CERT:-}" ]]; then
   openssl x509 -checkend 172800 -noout -in "$PUBLIC_TLS_CERT" >/dev/null
 fi
+if [[ -n "${PUBLIC_HTTPS_IP:-}" ]]; then
+  curl --fail --silent --show-error --max-time 10 \
+    --resolve "$PUBLIC_HTTPS_IP:443:127.0.0.1" "https://$PUBLIC_HTTPS_IP/health" >/dev/null
+fi

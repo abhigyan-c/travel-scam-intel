@@ -100,4 +100,9 @@ References: [MCP Python SDK ASGI mounting](https://py.sdk.modelcontextprotocol.i
   a scheduler fixture uses explicit past timestamps to avoid Windows/Docker clock
   skew changing selection. No scheduler production behavior changed.
 - Ruff, lockfile, production Compose validation and image build passed.
-- Public deployment/protocol smoke and the user-run ChatGPT gate remain pending.
+- Public HTTPS deployment/protocol smoke passed: seven tools discovered, existing
+  location resolved, current/recent/matching reads returned structured results,
+  missing patterns returned not-found, and an unconfirmed report was rejected.
+  No research/provider calls or production reports were requested by this check.
+- Public boundary checks passed: MCP initializes over trusted IP TLS, while REST,
+  admin, media and docs stay private. The user-run ChatGPT gate remains pending.

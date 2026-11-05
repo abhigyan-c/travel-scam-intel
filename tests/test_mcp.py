@@ -1,4 +1,5 @@
 import json
+import logging
 from types import SimpleNamespace
 from unittest.mock import AsyncMock
 from uuid import uuid4
@@ -152,3 +153,14 @@ async def test_streamable_http_no_redirect_and_host_origin_protection(applicatio
 
 def test_blank_mcp_public_url_means_local_only():
     assert Settings(_env_file=None, mcp_public_url="").mcp_public_url is None
+
+
+def test_sdk_warnings_cannot_fall_back_to_stderr(application, capsys):
+    child = logging.getLogger("mcp.test_sensitive_warning")
+    previous = child.level
+    try:
+        child.setLevel(logging.WARNING)
+        child.warning("test-private-report-body")
+        assert "test-private-report-body" not in capsys.readouterr().err
+    finally:
+        child.setLevel(previous)

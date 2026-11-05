@@ -21,8 +21,8 @@ The systemd drop-in supplies Caddy's `VPS_IP`; `/etc/travel-scam/https.env` supp
 the same nonsecret metadata to the root-only deploy hook.
 
 - Public HTTPS `/health` proxies process health.
-- `/mcp` and `/mcp/*` proxy to the application; they return application 404 until
-  PR 31 implements the adapter. A successful TLS connection is not a live MCP gate.
+- `/mcp` and `/mcp/*` proxy to the application; PR 31 now implements the exact
+  `/mcp` endpoint. Protocol initialization passed; the real ChatGPT gate is pending.
 - All other HTTPS routes return proxy-level 404, including REST, admin, media,
   readiness, API documentation and OpenAPI. They remain available via private SSH
   forwarding when needed. Public upload exposure must wait for PR 37 safeguards.
@@ -88,4 +88,4 @@ Sources: [Caddy installation](https://caddyserver.com/docs/install),
 - Deployment/service unit tests: 12 passed. Ruff lint/format and diff checks passed.
 
 Re-run external boundary checks with
-`python -m deploy.verify_https PUBLIC_IPV4`; update its MCP expectation in PR 31.
+`python -m deploy.verify_https PUBLIC_IPV4`; it now checks MCP initialization.

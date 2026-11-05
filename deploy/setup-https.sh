@@ -62,4 +62,7 @@ fi
 if ! grep -q '^PUBLIC_HTTPS_IP=' /etc/travel-scam/production.env; then
   printf 'PUBLIC_HTTPS_IP=%s\n' "$ip" >> /etc/travel-scam/production.env
 fi
+if ! grep -q '^MCP_PUBLIC_URL=' /etc/travel-scam/production.env; then
+  printf 'MCP_PUBLIC_URL=https://%s/mcp\n' "$ip" >> /etc/travel-scam/production.env
+fi
 "$certbot" renew --cert-name vps-ip --dry-run --run-deploy-hooks --no-random-sleep-on-renew

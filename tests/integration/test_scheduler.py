@@ -290,6 +290,10 @@ async def test_hypothesis_becoming_private_before_execution_never_calls_provider
         )
     record = await seed(ctx, country)
     async with ctx["sessions"]() as session, session.begin():
+        # Python (Windows) and the Docker database can differ by milliseconds.
+        # Eligibility must not depend on an insert timestamp appearing in the future.
+        (await session.get(Claim, record[1])).created_at = now - timedelta(minutes=1)
+        (await session.get(Hypothesis, record[0])).created_at = now - timedelta(minutes=1)
         await calculate_recency_and_frequency(session, record[0])
     job_id = (await scheduler_cycle(ctx))["selected"][0]["job_id"]
     async with ctx["sessions"]() as session, session.begin():

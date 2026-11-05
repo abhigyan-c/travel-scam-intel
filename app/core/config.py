@@ -1,7 +1,7 @@
 import os
 from typing import Literal
 
-from pydantic import Field, SecretStr
+from pydantic import AnyHttpUrl, Field, SecretStr, field_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 from app.scheduling import SchedulerPolicy
@@ -36,6 +36,13 @@ class Settings(BaseSettings):
     sarvam_api_key: SecretStr = Field(default="", validation_alias="SARVAM_API_KEY")
     admin_api_token: SecretStr = Field(default="", validation_alias="ADMIN_API_TOKEN")
     embedding_cache_dir: str = ".tools/embedding-cache"
+    mcp_public_url: AnyHttpUrl | None = None
+
+    @field_validator("mcp_public_url", mode="before")
+    @classmethod
+    def empty_mcp_url(cls, value):
+        return None if value == "" else value
+
     worker_max_jobs: int = Field(default=4, ge=1, le=4)
     database_pool_size: int = Field(default=5, ge=1, le=20)
     database_max_overflow: int = Field(default=10, ge=0, le=20)

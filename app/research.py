@@ -48,6 +48,7 @@ class ResearchResult(BaseModel):
     usage: dict
     hypothesis_ids: list[str] = Field(default_factory=list)
     pending_resolution_ids: list[str] = Field(default_factory=list)
+    diagnostics: dict = Field(default_factory=dict)
 
 
 class ResearchLeaseLost(Exception):
@@ -92,6 +93,7 @@ async def research_location(
     on_claim=None,
     on_hypothesis=None,
     topic: str | None = None,
+    diagnostics: dict | None = None,
 ) -> ResearchResult:
     limits = limits or ResearchLimits()
     generate_queries(location)
@@ -101,9 +103,13 @@ async def research_location(
         else None
     )
     target_id = target_location_id or target.location_id
-    deadline = asyncio.get_running_loop().time() + limits.timeout
+    # Leave a small bounded margin for savepoint cleanup and the final checkpoint.
+    deadline = asyncio.get_running_loop().time() + limits.timeout - min(0.5, limits.timeout / 10)
     errors, documents, claim_ids = [], [], []
     budget = _LimitedClient(llm, limits.llm_calls, limits.llm_concurrency)
+    diagnostics = diagnostics if diagnostics is not None else {}
+    diagnostics.update(stage_timings=[], active_stage="discovery", llm=budget.usage)
+    started = asyncio.get_running_loop().time()
     hypothesis_ids, pending_ids = [], []
     discovery = await discover(
         location,
@@ -113,10 +119,16 @@ async def research_location(
         timeout=min(25, limits.timeout),
         **({"topic": topic} if topic is not None else {}),
     )
+    diagnostics["stage_timings"].append(
+        {"stage": "discovery", "seconds": round(asyncio.get_running_loop().time() - started, 3)}
+    )
+    diagnostics["search"] = [item.model_dump() for item in discovery.usage]
     if discovery.status in {"failed", "partial"}:
         errors.append({"stage": "discovery", "code": discovery.status})
 
     async def stage(name, url, operation):
+        started = asyncio.get_running_loop().time()
+        diagnostics["active_stage"] = name
         remaining = deadline - asyncio.get_running_loop().time()
         if remaining <= 0:
             errors.append({"stage": name, "url": url, "code": "deadline"})
@@ -146,6 +158,11 @@ async def research_location(
                 code = str(exc)
             errors.append({"stage": name, "url": url, "code": code})
             return None
+        finally:
+            diagnostics["stage_timings"].append(
+                {"stage": name, "seconds": round(asyncio.get_running_loop().time() - started, 3)}
+            )
+            diagnostics["llm_calls"] = budget.calls
 
     fetched, eligible = 0, 0
     limited = len(discovery.results) >= limits.candidates
@@ -202,6 +219,7 @@ async def research_location(
         eligible += 1
         cached = document.document_metadata.get("relevance")
         decision = None
+        prior = None
         if cached:
             try:
                 prior = RelevanceResult.model_validate(cached)
@@ -217,23 +235,27 @@ async def research_location(
             decision = await stage(
                 "relevance",
                 candidate.url,
-                lambda document=document: classify_text(
+                lambda document=document, prior=prior: classify_text(
                     document.clean_text,
                     budget,
                     max_passages=min(
                         limits.passages, max(1, (limits.llm_calls - budget.calls) // 2)
                     ),
-                    timeout=max(0.01, deadline - asyncio.get_running_loop().time() - 0.05),
+                    # Classification must leave time to extract its completed passages.
+                    timeout=max(0.01, (deadline - asyncio.get_running_loop().time()) / 2),
+                    prior=prior,
                 ),
             )
             if decision is None:
                 continue
-            if decision.complete:
+            if decision.assessments:
                 document.document_metadata = {
                     **document.document_metadata,
                     "relevance": decision.model_dump(mode="json"),
                 }
                 await session.flush()
+                if checkpoint is not None:
+                    await checkpoint(session)
         row["relevance_complete"] = decision.complete
         row["relevance_passages"] = len(decision.assessments)
         row["relevance_errors"] = [
@@ -328,6 +350,7 @@ async def research_location(
         },
         hypothesis_ids=list(dict.fromkeys(hypothesis_ids)),
         pending_resolution_ids=list(dict.fromkeys(pending_ids)),
+        diagnostics=diagnostics,
     )
 
 

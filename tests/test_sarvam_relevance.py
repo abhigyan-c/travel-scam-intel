@@ -238,6 +238,26 @@ async def test_deadline_is_explicit():
     assert not result.complete and result.assessments[0].completion.error == "deadline"
 
 
+async def test_partial_classification_resumes_successful_passages_and_retries_errors():
+    client = AsyncMock()
+    client.complete.return_value = Completion(data=Relevance(**VALID))
+    text = "Travel passage. " * 600
+    prior = await classify_text(text, client, max_passages=1)
+    assert not prior.complete
+    client.complete.reset_mock()
+    resumed = await classify_text(text, client, prior=prior)
+    assert resumed.complete
+    assert client.complete.await_count == len(resumed.assessments) - 1
+    # A different text hash must invalidate all cached classifications.
+    client.complete.reset_mock()
+    changed = await classify_text(text + " Changed.", client, prior=resumed)
+    assert client.complete.await_count == len(changed.assessments)
+    resumed.assessments[0].completion = Completion(error="deadline", requests=1)
+    client.complete.reset_mock()
+    retried = await classify_text(text, client, prior=resumed)
+    assert retried.complete and client.complete.await_count == 1
+
+
 async def test_waiting_for_concurrency_slot_does_not_spend_request(monkeypatch):
     request = Mock()
     monkeypatch.setattr(sarvam, "_request", request)

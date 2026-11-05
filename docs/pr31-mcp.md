@@ -153,10 +153,43 @@ and immutable R2 content hashes were verified without displaying document bodies
 The gate passes for real connection, first-ever query, bounded/background response,
 follow-up and honest incompleteness. It does **not** demonstrate completed research,
 positive findings, confidence quality, positive evidence rendering or global relay
-availability. Deadline/fetch tuning belongs in measured operational follow-up;
+availability. The user requested the deadline investigation within PR 31 (below);
 conversation/evidence presentation and quality remain PR 32/36/37 work.
 
 `initial=true` means the initial pass has finished, including a partial pass; it
 does not mean `complete=true`. `queue_pending` describes outbox dispatch, not whether
 all research jobs are done. Keep those distinctions explicit in PR 32 presentation.
 No extra provider calls or fabricated report were made to force a positive result.
+
+## Deadline investigation — 2026-11-05
+
+The original initial job lasted 25.499 seconds; enrichment lasted 46.564 seconds
+(job timestamps include dispatch/finish overhead). Both hit their unchanged 25/45
+second execution limits. Four documents retained complete relevance classifications:
+12 assessed passages, eight marked relevant. Only one extraction was persisted, with
+zero claims. This is insufficient evidence to call the research successfully empty.
+
+Three read-only Sarvam extraction probes reused the first stored public article's
+passages. They took 0.470, 3.811 and 3.576 seconds: respectively zero claims, one
+grounded claim, and `invalid_grounding`. Probe outputs were not persisted or published.
+Grounding rejection remains enforced. These measurements demonstrate extractable
+source material, not provider reliability across all sources.
+
+The pipeline classified an entire article before starting extraction; the first
+20,834-character article required six sequential relevance calls. This can consume
+the initial time budget before claim extraction. Partial relevance classifications
+were not reused, and the worker's outer deadline discarded detailed result/usage
+telemetry. Original records cannot establish every stage's exact duration.
+
+PR 31 now reserves half the remaining document budget for extraction, reuses
+successful partial classifications only when text hash, prompt version and exact
+passage match, and checkpoints partial relevance before extraction. Failed passages
+are retried; partial coverage never becomes a complete negative. A small cleanup
+margin allows normal timeout results to reach the final checkpoint. Stage timings,
+active stage and LLM usage survive even the outer deadline, without source text or
+provider response bodies. The 25/45 second limits and grounding rules are unchanged.
+
+Validation: **846 passed, 10 skipped**, including timed slow-classification,
+partial-cache invalidation/retry and outer-deadline diagnostics regressions. Ruff
+and production image build passed. Deployment measurement follows separately;
+these changes do not guarantee completed research or published findings.

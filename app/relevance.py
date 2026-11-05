@@ -81,14 +81,31 @@ def chunk_passages(
 
 
 async def classify_text(
-    text: str, client: Sarvam, *, max_passages: int = 6, timeout: float = 45
+    text: str,
+    client: Sarvam,
+    *,
+    max_passages: int = 6,
+    timeout: float = 45,
+    prior: RelevanceResult | None = None,
 ) -> RelevanceResult:
     if timeout <= 0 or len(text) > 2_000_000:
         raise ValueError("invalid classification limits")
     passages = chunk_passages(text, max_passages=max_passages) if text.strip() else []
     assessments = []
+    text_hash = hashlib.sha256(text.encode()).hexdigest()
+    cached = {}
+    if prior and prior.text_hash == text_hash and prior.prompt_version == PROMPT_VERSION:
+        cached = {
+            (row.passage.start, row.passage.end, row.passage.text): row
+            for row in prior.assessments
+            if row.completion.error is None and row.completion.data is not None
+        }
     deadline = asyncio.get_running_loop().time() + timeout
     for passage in passages:
+        previous = cached.get((passage.start, passage.end, passage.text))
+        if previous is not None:
+            assessments.append(previous)
+            continue
         remaining = deadline - asyncio.get_running_loop().time()
         if remaining <= 0:
             break
@@ -109,5 +126,5 @@ async def classify_text(
     return RelevanceResult(
         assessments=assessments,
         complete=complete,
-        text_hash=hashlib.sha256(text.encode()).hexdigest(),
+        text_hash=text_hash,
     )

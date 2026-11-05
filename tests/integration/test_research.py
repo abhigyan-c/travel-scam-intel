@@ -189,3 +189,24 @@ async def test_long_article_reserves_budget_for_extraction(session, boundaries, 
     result = await research_location(session, "Bangkok", **deps, limits=limits(llm_calls=2))
     assert result.status == "partial" and len(result.claim_ids) == 1
     assert result.usage["llm_calls"] == 2 and result.documents[0]["relevance_passages"] == 1
+
+
+async def test_slow_classification_leaves_time_for_grounded_extraction(
+    session, boundaries, monkeypatch
+):
+    deps, _ = boundaries
+    monkeypatch.setitem(CASE, "text", CASE["text"] + " Additional source account. " * 400)
+    original = deps["llm"].complete.side_effect
+
+    async def complete(**kwargs):
+        if kwargs["schema"] is Relevance:
+            await asyncio.sleep(0.4)
+        return await original(**kwargs)
+
+    deps["llm"].complete.side_effect = complete
+    result = await research_location(session, "Bangkok", **deps, limits=limits(timeout=2))
+    assert result.status == "partial" and len(result.claim_ids) == 1
+    assert not result.documents[0]["relevance_complete"]
+    assert any(row["stage"] == "extraction" for row in result.diagnostics["stage_timings"])
+    document = await session.get(Document, UUID(result.documents[0]["document_id"]))
+    assert document.document_metadata["relevance"]["assessments"]

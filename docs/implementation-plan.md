@@ -13,7 +13,7 @@ Tailscale administration passed [host preflight](host-readiness.md) on 2026-11-0
 
 ## Delivery workflow
 
-- Retain exactly 38 numbered implementation PRs and their scope/review gates. PR 31 resumed on 2026-11-05 after HTTPS and ChatGPT access became available. Its hostname connection, first-ever query and follow-up gate passed with honest partial state; no completed research/findings were demonstrated before the worker deadlines. Any dependency-ready reordering must follow the deployment decision above and user confirmation.
+- Retain exactly 38 numbered implementation PRs and their scope/review gates. PR 31 resumed on 2026-11-05 after HTTPS and ChatGPT access became available. Its hostname connection, first-ever query and follow-up gate passed with honest partial state; no completed research/findings were demonstrated before the worker deadlines. The user requested deadline investigation within PR 31: extraction time reservation, reusable partial relevance and retained diagnostics were implemented; a measured live refresh still returned zero claims because of fetch failures and grounding rejections. These remain product-readiness concerns; see `docs/pr31-mcp.md`. Any dependency-ready reordering must follow the deployment decision above and user confirmation.
 - Create each branch from the latest `develop`; target `develop`. Branch convention: `codex/pr-NN-short-description`.
 - Merge prerequisite PRs into `develop` before starting dependent work. Avoid stacked branches; independent work may proceed only when requested.
 - Include relevant behavior tests, Ruff checks, a concise change summary, and material simplifications or deferred work in every PR.

@@ -193,3 +193,40 @@ Validation: **846 passed, 10 skipped**, including timed slow-classification,
 partial-cache invalidation/retry and outer-deadline diagnostics regressions. Ruff
 and production image build passed. Deployment measurement follows separately;
 these changes do not guarantee completed research or published findings.
+
+### Deployed measurement
+
+Preview `13cdcb2` was deployed and one ordinary refresh of existing Chiang Mai was
+requested through MCP. The tool responded in **0.155 seconds** while background
+research continued. The refresh finished in **44.967 seconds**, retaining detailed
+partial output rather than the outer-timeout fallback. This was a warm refresh,
+not a controlled cold-start comparison: cached classifications/extractions were
+reused, and live search returned a different candidate ordering.
+
+| Stage | Recorded seconds |
+| --- | ---: |
+| Discovery (six queries) | 10.331 |
+| Ingestion (14 attempts) | 16.073 |
+| Processing | 2.781 |
+| Relevance | 5.620 |
+| Extraction | 9.671 |
+
+Nine fetches failed before a document was obtained, including six Reddit URLs.
+Four documents were obtained; one Facebook document processed as empty. Seven LLM
+calls completed without transport/provider errors. All three TravelHiatus
+extraction attempts were rejected as `invalid_grounding`; a previously cached
+zero-claim extraction was reused for another article. Final state remained partial,
+with **zero claims/hypotheses and zero traveler reports**. Safe extraction errors
+are in document attempts; raw completion success is not grounded extraction success.
+
+The investigation establishes multiple bottlenecks: sequential classification can
+starve extraction; search/fetch failures consume a substantial budget; strict
+extraction rejects some real provider outputs. The first issue has a regression-tested
+budget/resume fix and the telemetry loss is fixed. Fetch/source selection and Sarvam
+grounded extraction quality remain unresolved product-readiness concerns. Do not
+increase deadlines or weaken quote/field validation to label this gate successful.
+Do not claim that the new allocation alone fixes real-world research usefulness.
+
+After rollout, all seven MCP tools passed the non-writing protocol smoke, trusted
+IP HTTPS health/initialization passed, and seven private route checks remained
+blocked. Real ChatGPT interaction has not been repeated since this refinement.

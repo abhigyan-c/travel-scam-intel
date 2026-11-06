@@ -250,9 +250,39 @@ async def test_full_pipeline_creates_scoped_candidate_only_when_publicly_eligibl
         assert row["public_patterns"] == (0 if sensitive else 1)
 
 
-async def test_real_recorded_landmark_resolves_but_stays_private():
+async def test_previously_recorded_sensitive_claim_is_not_unheld_by_reprocessing():
     case = next(c for c in load_corpus()["cases"] if c["id"] == "bangkok-landmark")
     records = json.loads((DATA / "sarvam-recording.json").read_text())["records"]
-    rows = await run_case(case, RecordedClient(records), Settings().database_url.get_secret_value())
+    # Replay the previously observed sensitivity outcome as a controlled response,
+    # not as a claimed live answer to the new prompt fingerprint.
+    captured = next(
+        row["completion"]["data"]
+        for values in records.values()
+        for row in values
+        if row["completion"].get("data")
+        and any(
+            c.get("location") == "Grand Palace in Bangkok"
+            for c in row["completion"]["data"].get("claims", [])
+        )
+    )
+    client = AsyncMock()
+
+    async def complete(**kwargs):
+        data = (
+            Relevance(
+                relevant=True,
+                category="diversion",
+                confidence=0.9,
+                reason="Source reports a diversion",
+            )
+            if kwargs["schema"] is Relevance
+            else (ClaimBatch.model_validate(captured))
+        )
+        return Completion(data=data, requests=1)
+
+    client.complete.side_effect = complete
+    rows = await run_case(
+        case, RecordedClient({}, live=client), Settings().database_url.get_secret_value()
+    )
     assert all(r["geography_check"] and r["public_patterns"] == 0 for r in rows)
     assert rows[1]["llm_calls"] == 0

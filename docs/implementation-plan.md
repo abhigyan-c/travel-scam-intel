@@ -161,6 +161,8 @@ Branch names use `codex/pr-31a-research-benchmark` and the analogous 31b–31f p
 PR 31A is merged. PR 31B's grounded qualified-place policy and measured limits are
 documented in `docs/pr31b-grounded-location-resolution.md`; its source-derived
 provisional POIs do not bypass moderation or broaden the research target's scope.
+PR 31B is merged. PR 31C's extraction experiments, rejected candidates, versioned
+cache behavior and retained safety rules are in `docs/pr31c-grounded-extraction-quality.md`.
 Keep Serper/Sarvam/current infrastructure. Initially retain 25/45-second execution
 limits. This targeted baseline does not replace PR 36's broader evaluation harness.
 

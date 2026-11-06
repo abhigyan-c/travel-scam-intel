@@ -34,6 +34,7 @@ from app.research import ResearchLimits, research_location
 from app.services.intelligence import IntelligenceService
 
 DATA = Path(__file__).parent / "data"
+CURRENT_RECORDING = DATA / "31c/sarvam-recording.json"
 
 
 def fingerprint(value):
@@ -423,7 +424,7 @@ async def run(args):
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--mode", choices=["replay", "live"], default="replay")
-    parser.add_argument("--recording", type=Path, default=DATA / "sarvam-recording.json")
+    parser.add_argument("--recording", type=Path, default=CURRENT_RECORDING)
     parser.add_argument("--output", type=Path, default=Path(".tools/research-benchmark.json"))
     parser.add_argument("--max-live-calls", type=int, choices=range(1, 101), default=40)
     args = parser.parse_args()

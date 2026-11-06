@@ -289,7 +289,7 @@ async def research_location(
                 "resolution",
                 candidate.url,
                 lambda identity=identity: resolve_claim(
-                    session, identity, parent_id=target_id, create_provisional=False
+                    session, identity, parent_id=target_id, create_provisional=True
                 ),
             )
             if resolution is not None:

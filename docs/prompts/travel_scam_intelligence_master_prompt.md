@@ -22,6 +22,11 @@ by this document alone.
 
 ## Confirmed Project Decisions — 2026-10-11
 
+Update — 2026-11-06: after merging PR 31, the user authorized intermediate PRs
+31A–31F to measure and repair research usefulness before PR 32. Their sequence and
+gates are in `docs/implementation-plan.md`; PR 31A's protocol is in
+`docs/pr31a-research-benchmark.md`. These supplement the original 38 numbered PRs.
+
 These decisions take precedence over conflicting examples elsewhere in this document.
 
 - Plan all 38 PRs, with detailed implementation planning beginning at PR 01. Implement one numbered PR at a time and preserve the review gates.

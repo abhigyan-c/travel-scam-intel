@@ -9,10 +9,11 @@ from sqlalchemy.dialects.postgresql import insert
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.db.locations import normalize_name
-from app.models import Claim, Location, LocationAlias
+from app.models import Claim, Document, Location, LocationAlias
+from app.models.document import DocumentStatus
 from app.models.location import LocationType
 
-RESOLUTION_VERSION = "location-v1"
+RESOLUTION_VERSION = "location-v2"
 
 
 class LocationNode(BaseModel):
@@ -35,6 +36,9 @@ class LocationResolution(BaseModel):
     hierarchy: list[LocationNode] = Field(default_factory=list)
     reason: str | None = None
     created: bool = False
+    method: Literal["exact", "qualified"] = "exact"
+    component_text: str | None = None
+    qualifier_text: str | None = None
 
 
 def _display_name(value: str) -> str:
@@ -108,7 +112,7 @@ async def _resolved(
     )
 
 
-async def resolve_location(
+async def _resolve_name(
     session: AsyncSession,
     text: str | None,
     *,
@@ -250,6 +254,144 @@ async def resolve_location(
     return await _resolved(session, row, text, normalized, created=created)
 
 
+def qualified_parts(value: str) -> tuple[str, str] | None:
+    """A deliberately narrow English grammar, not fuzzy matching or a geocoder."""
+    name = _display_name(value)
+    name = re.sub(r"^(?:at|near|outside|around|in)\s+", "", name, flags=re.I)
+    parts = re.split(r"\s+in\s+|,\s*", name, flags=re.I)
+    if len(parts) != 2 or not all(part.strip() for part in parts):
+        return None
+    return tuple(part.strip() for part in parts)
+
+
+def _landmark_name(value: str) -> bool:
+    # Unknown generic references and administrative names must not become POIs.
+    if re.search(
+        r"\b(?:city|country|state|province|district|neighborhood|and|or)\b|[;/]", value, re.I
+    ):
+        return False
+    words = re.findall(r"[^\W\d_]+", value, flags=re.UNICODE)
+    generic = {"the", "a", "an", "old", "new", "local", "nearby", "main", "central"}
+    kinds = {
+        "palace",
+        "temple",
+        "museum",
+        "airport",
+        "station",
+        "market",
+        "bridge",
+        "cathedral",
+        "monument",
+        "park",
+        "garden",
+        "gardens",
+        "castle",
+        "fort",
+    }
+    lower = {word.casefold() for word in words}
+    named = any(word[0].isupper() and word.casefold() not in generic | kinds for word in words)
+    return bool(lower & kinds) and named and len(words) <= 8
+
+
+async def resolve_location(
+    session: AsyncSession,
+    text: str | None,
+    *,
+    parent_id: UUID | None = None,
+    country_code: str | None = None,
+    location_type: LocationType | None = None,
+    create_provisional: bool = True,
+    allow_qualified: bool = True,
+) -> LocationResolution:
+    context = dict(parent_id=parent_id, country_code=country_code, location_type=location_type)
+    exact = await _resolve_name(session, text, **context, create_provisional=False)
+    if exact.status != "unresolved" or exact.reason != "insufficient_context_or_creation_disabled":
+        return exact
+    parts = qualified_parts(text) if allow_qualified and text is not None else None
+    if allow_qualified and text and parts is None and re.search(r"\s+in\s+|,", text, re.I):
+        return exact.model_copy(update={"reason": "unsupported_location_qualification"})
+    if parts is not None:
+        component, qualifier = parts
+        anchor = await _resolve_name(
+            session,
+            qualifier,
+            parent_id=parent_id,
+            country_code=country_code,
+            create_provisional=False,
+        )
+        if anchor.location_id is None:
+            return exact.model_copy(
+                update={
+                    "method": "qualified",
+                    "component_text": component,
+                    "qualifier_text": qualifier,
+                    "reason": "qualified_parent_" + anchor.status,
+                }
+            )
+        anchor_type = anchor.hierarchy[-1].type
+        if anchor_type not in {LocationType.CITY, LocationType.COUNTRY}:
+            return exact.model_copy(update={"reason": "unsupported_qualified_parent"})
+        leaf = await _resolve_name(
+            session,
+            component,
+            parent_id=anchor.location_id,
+            location_type=location_type,
+            create_provisional=False,
+        )
+        # First honor literal names/aliases, including place names beginning with 'The'.
+        if leaf.status == "unresolved" and component.casefold().startswith("the "):
+            component = component[4:]
+            leaf = await _resolve_name(
+                session,
+                component,
+                parent_id=anchor.location_id,
+                location_type=location_type,
+                create_provisional=False,
+            )
+        may_create_in_scope = parent_id is None or parent_id in {
+            node.id for node in anchor.hierarchy
+        }
+        inferred_type = location_type
+        if inferred_type is None and anchor_type == LocationType.CITY and _landmark_name(component):
+            inferred_type = LocationType.POINT_OF_INTEREST
+        if (
+            leaf.reason == "insufficient_context_or_creation_disabled"
+            and create_provisional
+            and may_create_in_scope
+            and inferred_type is not None
+            and inferred_type != LocationType.COUNTRY
+        ):
+            leaf = await _resolve_name(
+                session,
+                component,
+                parent_id=anchor.location_id,
+                location_type=inferred_type,
+            )
+        if leaf.location_id is not None:
+            allowed = anchor.location_id in {node.id for node in leaf.hierarchy}
+            if parent_id is not None:
+                parent_path = await get_location_path(session, parent_id)
+                allowed &= parent_id in {
+                    node.id for node in leaf.hierarchy
+                } or leaf.location_id in {node.id for node in parent_path}
+            if not allowed:
+                leaf = LocationResolution(
+                    text=component, status="unresolved", reason="conflicting_qualified_hierarchy"
+                )
+        return leaf.model_copy(
+            update={
+                "text": text,
+                "normalized_name": normalize_name(text),
+                "method": "qualified",
+                "component_text": component,
+                "qualifier_text": qualifier,
+            }
+        )
+    if create_provisional:
+        return await _resolve_name(session, text, **context, create_provisional=True)
+    return exact
+
+
 async def resolve_claim(
     session: AsyncSession, claim_id: UUID, **context
 ) -> LocationResolution | None:
@@ -261,7 +403,35 @@ async def resolve_claim(
     text = metadata.get("unresolved_location", metadata.get("location"))
     if text is not None and not isinstance(text, str):
         raise ValueError("location text must be a string")
-    resolution = await resolve_location(session, text, **context)
+    quote = metadata.get("evidence_quote")
+    grounded = isinstance(quote, str) and isinstance(text, str) and text in quote
+    # Qualified claim geography must come from a retained source quote, never the
+    # search label. Legacy exact-name claims without a quote retain exact resolution.
+    if grounded:
+        document = await session.get(Document, claim.document_id)
+        grounded = bool(
+            document
+            and document.processing_status == DocumentStatus.PROCESSED
+            and document.clean_text
+            and quote in document.clean_text
+        )
+        lineage = metadata.get("extraction", {})
+        if lineage.get("clean_text_hash") and document:
+            grounded = grounded and lineage["clean_text_hash"] == document.clean_text_hash
+        if "quote_start" in lineage or "quote_end" in lineage:
+            start, end = lineage.get("quote_start"), lineage.get("quote_end")
+            grounded = grounded and (
+                isinstance(start, int)
+                and isinstance(end, int)
+                and 0 <= start < end <= len(document.clean_text)
+                and document.clean_text[start:end] == quote
+            )
+    if quote is not None and not grounded and text is not None:
+        resolution = LocationResolution(
+            text=text, status="unresolved", reason="ungrounded_location"
+        )
+    else:
+        resolution = await resolve_location(session, text, allow_qualified=grounded, **context)
     await session.execute(
         update(Claim)
         .where(Claim.id == claim_id)

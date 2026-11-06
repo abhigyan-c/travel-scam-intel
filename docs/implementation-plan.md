@@ -158,6 +158,9 @@ next. The original 01–38 roadmap remains numbered as before; PR 32 waits for 3
 | 31F | research-acceptance | Controlled and live traceable results plus real ChatGPT retest; honest incomplete/empty controls. |
 
 Branch names use `codex/pr-31a-research-benchmark` and the analogous 31b–31f prefix.
+PR 31A is merged. PR 31B's grounded qualified-place policy and measured limits are
+documented in `docs/pr31b-grounded-location-resolution.md`; its source-derived
+provisional POIs do not bypass moderation or broaden the research target's scope.
 Keep Serper/Sarvam/current infrastructure. Initially retain 25/45-second execution
 limits. This targeted baseline does not replace PR 36's broader evaluation harness.
 

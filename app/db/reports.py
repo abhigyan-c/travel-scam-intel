@@ -221,7 +221,7 @@ async def process_report(session, report_id: UUID, *, client, embedder):
             }
         else:
             await resolve_claim(
-                session, claim.id, parent_id=report.location_id, create_provisional=False
+                session, claim.id, parent_id=report.location_id, create_provisional=True
             )
             await session.refresh(claim)
         held |= claim.location_id is None

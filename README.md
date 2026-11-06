@@ -1052,3 +1052,7 @@ stack to replay the recorded synthetic cases without external provider calls.
 Cold/warm results include grounded claims, exact geography, public eligibility,
 stage errors and token usage. See [the benchmark protocol and measured baseline](docs/pr31a-research-benchmark.md)
 before interpreting results or explicitly capturing a new paid-provider run.
+
+Qualified source locations such as “Grand Palace in Bangkok” use the shared
+[grounded location policy](docs/pr31b-grounded-location-resolution.md). Named
+landmarks may be provisional; ambiguous geography and sensitive claims remain held.

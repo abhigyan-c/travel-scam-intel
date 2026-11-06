@@ -20,7 +20,7 @@ from sqlalchemy.ext.asyncio import async_sessionmaker, create_async_engine
 
 from app.core.config import Settings
 from app.db.claim_pipeline import apply_and_score_claim
-from app.db.resolution import get_location_path, normalize_name
+from app.db.resolution import RESOLUTION_VERSION, get_location_path, normalize_name
 from app.db.session import Base
 from app.discovery import SearchResponse, SearchResult, SearchUsage
 from app.embeddings import Embedder
@@ -402,6 +402,7 @@ async def run(args):
             "relevance": RELEVANCE_VERSION,
             "extraction": EXTRACTION_VERSION,
             "processing": PROCESSING_VERSION,
+            "location": RESOLUTION_VERSION,
         },
         "limitations": [
             "Synthetic sources; search and acquisition are controlled.",

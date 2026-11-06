@@ -1,0 +1,166 @@
+{
+  "captured_at": "2026-11-06T05:22:01.240871+00:00",
+  "kind": "observational_production_jobs",
+  "jobs": [
+    {
+      "location": "Bangkok",
+      "phase": "enrichment",
+      "created_at": "2026-11-05T09:18:06.953503+00:00",
+      "job_status": "succeeded",
+      "job_elapsed_seconds": 46.08,
+      "result_status": "partial",
+      "complete": false,
+      "error_code": "research_incomplete",
+      "stage_seconds": {
+        "discovery": 10.244,
+        "ingestion": 12.352,
+        "processing": 1.123,
+        "relevance": 8.992,
+        "extraction": 11.701,
+        "resolution": 0.032,
+        "hypothesis": 0.023
+      },
+      "candidates": 40,
+      "fetch_attempts": 14,
+      "documents": 3,
+      "claims": 1,
+      "hypotheses": 0,
+      "llm_calls": 14,
+      "tokens": 17393,
+      "errors": {
+        "http_status": 9,
+        "FetchError": 1,
+        "incomplete": 2,
+        "unresolved_location": 1,
+        "empty": 1,
+        "deadline": 1,
+        "resource_limit_or_deadline": 1
+      },
+      "extraction_errors": {
+        "invalid_grounding": 3,
+        "deadline": 1
+      },
+      "usage_complete": true
+    },
+    {
+      "location": "Bangkok",
+      "phase": "initial",
+      "created_at": "2026-11-05T09:17:41.884340+00:00",
+      "job_status": "succeeded",
+      "job_elapsed_seconds": 25.069,
+      "result_status": "partial",
+      "complete": false,
+      "error_code": "research_incomplete",
+      "stage_seconds": {
+        "discovery": 5.974,
+        "ingestion": 3.509,
+        "processing": 0.289,
+        "relevance": 4.103,
+        "extraction": 10.51,
+        "resolution": 0.042,
+        "hypothesis": 0.033
+      },
+      "candidates": 22,
+      "fetch_attempts": 7,
+      "documents": 1,
+      "claims": 1,
+      "hypotheses": 0,
+      "llm_calls": 7,
+      "tokens": 9414,
+      "errors": {
+        "http_status": 5,
+        "incomplete": 1,
+        "unresolved_location": 1,
+        "deadline": 1,
+        "resource_limit_or_deadline": 1
+      },
+      "extraction_errors": {
+        "invalid_grounding": 2
+      },
+      "usage_complete": true
+    },
+    {
+      "location": "Chiang Mai",
+      "phase": "refresh",
+      "created_at": "2026-11-05T09:03:53.159140+00:00",
+      "job_status": "succeeded",
+      "job_elapsed_seconds": 44.967,
+      "result_status": "partial",
+      "complete": false,
+      "error_code": "research_incomplete",
+      "stage_seconds": {
+        "discovery": 10.331,
+        "ingestion": 16.073,
+        "processing": 2.781,
+        "relevance": 5.62,
+        "extraction": 9.671
+      },
+      "candidates": 45,
+      "fetch_attempts": 14,
+      "documents": 4,
+      "claims": 0,
+      "hypotheses": 0,
+      "llm_calls": 7,
+      "tokens": 8957,
+      "errors": {
+        "http_status": 7,
+        "FetchError": 2,
+        "empty": 1,
+        "incomplete": 1,
+        "deadline": 1,
+        "resource_limit_or_deadline": 1
+      },
+      "extraction_errors": {
+        "invalid_grounding": 3
+      },
+      "usage_complete": true
+    },
+    {
+      "location": "Chiang Mai",
+      "phase": "enrichment",
+      "created_at": "2026-11-05T08:19:16.470113+00:00",
+      "job_status": "succeeded",
+      "job_elapsed_seconds": 46.564,
+      "result_status": "partial",
+      "complete": false,
+      "error_code": "research_incomplete",
+      "stage_seconds": {},
+      "candidates": null,
+      "fetch_attempts": null,
+      "documents": null,
+      "claims": null,
+      "hypotheses": null,
+      "llm_calls": null,
+      "tokens": null,
+      "errors": {},
+      "extraction_errors": {},
+      "usage_complete": false
+    },
+    {
+      "location": "Chiang Mai",
+      "phase": "initial",
+      "created_at": "2026-11-05T08:18:50.971001+00:00",
+      "job_status": "succeeded",
+      "job_elapsed_seconds": 25.499,
+      "result_status": "partial",
+      "complete": false,
+      "error_code": "research_incomplete",
+      "stage_seconds": {},
+      "candidates": null,
+      "fetch_attempts": null,
+      "documents": null,
+      "claims": null,
+      "hypotheses": null,
+      "llm_calls": null,
+      "tokens": null,
+      "errors": {},
+      "extraction_errors": {},
+      "usage_complete": false
+    }
+  ],
+  "limitations": [
+    "No replay; live search ordering and availability vary.",
+    "Job elapsed includes queue/finish overhead, not just execution.",
+    "Missing historical telemetry is null, never interpreted as zero."
+  ]
+}

@@ -27,7 +27,7 @@ from app.embeddings import Embedder
 from app.extraction import PROMPT_VERSION as EXTRACTION_VERSION
 from app.integrations.fetch import FetchedPage, FetchError
 from app.integrations.sarvam import MODEL, Completion, Sarvam
-from app.models import Claim, Location
+from app.models import Claim, ClaimExtraction, Document, Location, Source
 from app.processing import PROCESSING_VERSION
 from app.relevance import PROMPT_VERSION as RELEVANCE_VERSION
 from app.research import ResearchLimits, research_location
@@ -205,7 +205,18 @@ async def run_case(case, client, database_url):
                     raise RuntimeError(client.failure)
                 await session.commit()
                 claims = list(await session.scalars(select(Claim)))
+                stored_documents = list(await session.scalars(select(Document)))
+                empty_extractions = sum(
+                    run.claim_count == 0 for run in await session.scalars(select(ClaimExtraction))
+                )
+                relevant = sum(
+                    bool(a.get("completion", {}).get("data", {}).get("relevant"))
+                    for doc in stored_documents
+                    for a in doc.document_metadata.get("relevance", {}).get("assessments", [])
+                    if a.get("completion", {}).get("data") is not None
+                )
                 paths, lineage = [], True
+                documents_by_id = {doc.id: doc for doc in stored_documents}
                 for claim in claims:
                     paths.append(
                         [node.name for node in await get_location_path(session, claim.location_id)]
@@ -213,7 +224,16 @@ async def run_case(case, client, database_url):
                         else None
                     )
                     quote = claim.structured_data["evidence_quote"]
-                    lineage &= quote in case["text"]
+                    doc = documents_by_id[claim.document_id]
+                    extraction = claim.structured_data["extraction"]
+                    raw = sources.objects[doc.raw_object_path]
+                    lineage &= (
+                        quote in case["text"]
+                        and hashlib.sha256(raw).hexdigest() == doc.content_hash
+                        and doc.clean_text[extraction["quote_start"] : extraction["quote_end"]]
+                        == quote
+                        and await session.get(Source, doc.source_id) is not None
+                    )
                 supported = (
                     any(
                         all(
@@ -242,10 +262,16 @@ async def run_case(case, client, database_url):
                     "relevance_passages": sum(
                         d.get("relevance_passages", 0) for d in result.documents
                     ),
+                    "relevant_passages": relevant,
+                    "stored_empty_extractions": empty_extractions,
                     "claims": len(claims),
                     "resolved_claims": sum(p is not None for p in paths),
                     "public_patterns": public.total,
                     "complete": result.complete,
+                    "result_status": result.status,
+                    "incomplete_control_check": not result.complete
+                    if case["fetch_error"] or not case["text"]
+                    else None,
                     "grounded_claim_check": supported,
                     "lineage_check": bool(lineage),
                     "geography_check": (
@@ -265,7 +291,7 @@ async def run_case(case, client, database_url):
                     ),
                     "llm_calls": client.calls - before_calls,
                     "provider_seconds": round(client.elapsed - before_seconds, 4),
-                    "stage_seconds": dict(timings),
+                    "stage_seconds": {k: round(v, 3) for k, v in timings.items()},
                     "tokens": sum(
                         u.get("usage", {}).get("total_tokens", 0) for u in result.usage["llm"]
                     ),
@@ -339,13 +365,17 @@ def scorecard(rows):
 
 async def run(args):
     corpus = load_corpus()
+    if args.mode == "live" and args.recording.exists():
+        raise ValueError("benchmark_recording_already_exists_choose_new_path")
     cassette = (
         json.loads(args.recording.read_text())
         if args.mode == "replay"
-        else {"corpus_hash": fingerprint(corpus), "records": {}}
+        else {"corpus_hash": fingerprint(corpus), "model": MODEL, "records": {}}
     )
     if cassette["corpus_hash"] != fingerprint(corpus):
         raise ValueError("benchmark_corpus_changed")
+    if cassette.get("model") != MODEL:
+        raise ValueError("benchmark_model_changed")
     settings = Settings()
     client = RecordedClient(
         cassette["records"],

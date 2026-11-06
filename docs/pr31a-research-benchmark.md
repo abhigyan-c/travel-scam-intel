@@ -52,7 +52,7 @@ Start local infrastructure with `docker compose up --wait`. From the repository:
 
 Live capture records only completions to synthetic passages, with input/schema
 fingerprints, token counts and duration; it omits request IDs, credentials and full
-prompts. Replay validates corpus hash and exact prompt/schema fingerprint. Missing
+prompts. Replay validates model, corpus hash and exact prompt/schema fingerprint. Missing
 records stop execution rather than becoming a quality failure or calling a provider.
 Prompt/schema changes require a separately named new recording; preserve the baseline.
 
@@ -70,7 +70,65 @@ observational and separate from the controlled synthetic benchmark.
 
 ## Review artifacts
 
-Baseline results, provider recording, production observations and measured findings
-will be recorded after the first bounded run. Quality targets are intentionally not
+Quality targets are intentionally not
 CI pass conditions for this baseline PR; existing failures are the subject of the
 intermediate work. Tests verify measurement/replay/isolation correctness instead.
+
+## Measured baseline — 2026-11-06
+
+Artifacts: `benchmarks/data/baseline.json`, `sarvam-recording.json`, and
+`production-observations.json` in the same directory. The capture used **22 real
+Sarvam calls / 7,242 reported tokens**, below the 40-call cap, and no Serper requests.
+No production research was triggered. All five historical production jobs were
+exported read-only. Identical replay reproduced every original outcome, count,
+error and token measurement; additional relevance/empty-extraction counters were
+derived by that replay, retaining the original live stage timings.
+
+| Controlled cold-case metric | Baseline | Target met? |
+| --- | ---: | --- |
+| Grounded positive claim coverage | 5/9 (55.6%) | No |
+| Correct geography coverage | 2/7 (28.6%) | No |
+| Eligible public pattern coverage | 2/6 (33.3%) | No |
+| Negative controls without extracted claims | 6/6 | Yes |
+| Withheld cases without public patterns | 9/9 | Yes |
+
+Warm reruns used **zero model calls/tokens** and produced the same outcomes. This
+confirms version-valid reuse, including misses, not improvement from continuation.
+All acquired claim lineage checks passed (raw hash, source/document link and exact
+clean-text quote offsets). Blocked and empty-source controls remained incomplete.
+The named-business case produced no claim, so it does not establish live-model
+sensitivity handling merely because its public output was empty.
+
+Specific losses:
+
+- All nine positive passages were classified relevant. Four then returned a valid
+  empty claims array: Bangkok fare, Chiang Mai fare, Suva fare and named business.
+  The pipeline labeled those bounded runs complete/empty. These are benchmark
+  false negatives, not provider errors, deadlines or grounding-validation errors.
+- The landmark claim was grounded but `Grand Palace in Bangkok` did not resolve.
+  It was also marked sensitive by the model, so resolving geography alone would
+  not establish that the resulting pattern could be public.
+- Missing and conflicting geography remained unresolved as intended. Those cases
+  are claim-extraction positives, not geography/publication positives.
+- Paris and Rome produced eligible public candidates with source lineage.
+
+The historical production observations remain a separate, harder dataset: Bangkok
+initial/enrichment took 25.069/46.080 seconds, retained one claim each but no
+hypotheses, and recorded unresolved-location/grounding/fetch failures. Chiang Mai's
+measured refresh spent 10.331 seconds discovering, 16.073 ingesting and 9.671
+extracting, with three grounding rejections and no claims. Older jobs lack detailed
+telemetry; unknown counts/usage are null, not zeros. These observations were not
+rerun under controlled search results and cannot be compared as cold/warm trials.
+
+The short synthetic corpus does not reproduce production article length, source
+ranking, multi-passage starvation or every moderation issue. It exposes repeatable
+failures and a measurement protocol; 31C should add a separately versioned long-
+article/provider diagnostic set. Preserve this baseline rather than tuning its
+labels to fit the model. PR 31B should address the landmark hierarchy; PR 31C must
+investigate valid-empty false negatives as well as grounding and sensitivity.
+
+Validation: **854 passed, 10 skipped** with infrastructure enabled; Ruff lint/format
+passed. The committed provider recordings also replay through the actual pipeline
+in integration tests. Isolation tests check that public claim/location counts and
+the set/count of generated schemas remain unchanged after cold/warm runs.
+No application code, migration, public contract or deployment behavior changed.

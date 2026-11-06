@@ -30,7 +30,7 @@ def safe_job(location, job):
         "result_status": result.get("status"),
         "complete": result.get("complete", False),
         "error_code": job.error_code,
-        "stage_seconds": dict(stages),
+        "stage_seconds": {k: round(v, 3) for k, v in stages.items()},
         "candidates": result.get("candidates"),
         "fetch_attempts": result.get("fetched"),
         "documents": len(result["documents"]) if "documents" in result else None,
@@ -40,7 +40,9 @@ def safe_job(location, job):
         "tokens": sum(
             row.get("usage", {}).get("total_tokens", 0)
             for row in result.get("usage", {}).get("llm", [])
-        ),
+        )
+        if "usage" in result
+        else None,
         "errors": dict(Counter(row["code"] for row in result.get("errors", []))),
         "extraction_errors": dict(
             Counter(

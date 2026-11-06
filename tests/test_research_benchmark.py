@@ -75,5 +75,6 @@ def test_production_snapshot_omits_source_content_and_preserves_missing_telemetr
     )
     snapshot = safe_job("Bangkok", job)
     assert snapshot["claims"] is None and snapshot["llm_calls"] is None
+    assert snapshot["tokens"] is None
     assert snapshot["extraction_errors"] == {"invalid_grounding": 1}
     assert "private" not in str(snapshot) and "never-export" not in str(snapshot)

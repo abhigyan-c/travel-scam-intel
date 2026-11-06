@@ -142,6 +142,25 @@ Every row implies a distinct branch `codex/pr-NN-<slug>` and PR targeting `devel
 | 37 | operational-hardening | Rate/size/spam controls, dependency checks, useful metrics, load checks and measured optimizations. | Critical controls verified; only demonstrated bottlenecks justify caches/index tuning. |
 | 38 | single-vps-mvp-release | Minimal VPS provisioning, production Compose, Caddy TLS, private S3-compatible objects, local PostgreSQL/Redis, backups and release. | Small-machine memory/latency validation, migration/deployment/restore checks, popular/unseen destination traceability, frozen contracts and release tag. **Gate: production release.** |
 
+## Intermediate research repair PRs after PR 31
+
+User-authorized on 2026-11-06. PR 31 is merged; create each intermediate branch from
+latest `develop`, target `develop`, and merge its prerequisite before starting the
+next. The original 01–38 roadmap remains numbered as before; PR 32 waits for 31F.
+
+| PR | Branch suffix | Scope / gate |
+| --- | --- | --- |
+| 31A | research-benchmark | Reproducible labeled cold/warm baseline, stage losses, bounded provider usage; see `docs/pr31a-research-benchmark.md`. |
+| 31B | grounded-location-resolution | Grounded city/landmark hierarchy and provisional records; ambiguous/conflicting places remain unresolved. |
+| 31C | grounded-extraction-quality | Measure field/quote failures and improve extraction without weaker grounding or moderation. |
+| 31D | source-acquisition-quality | Failure-aware source diversity and acquisition within existing resource/security bounds. |
+| 31E | research-continuation | Durable passage/document progress, version-valid reuse and bounded cumulative retries. |
+| 31F | research-acceptance | Controlled and live traceable results plus real ChatGPT retest; honest incomplete/empty controls. |
+
+Branch names use `codex/pr-31a-research-benchmark` and the analogous 31b–31f prefix.
+Keep Serper/Sarvam/current infrastructure. Initially retain 25/45-second execution
+limits. This targeted baseline does not replace PR 36's broader evaluation harness.
+
 ## PR 01 detailed implementation plan
 
 Branch: `codex/pr-01-repository-foundation`. Base and target: latest `develop`.

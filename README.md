@@ -1044,3 +1044,11 @@ default; DNS-rebinding protection remains enabled. The HTTPS preview is
 authorized filtered Funnel hostname. The first-ever query/follow-up gate passed
 with honest partial results; completed research/findings were not demonstrated.
 See [the MCP runbook](docs/pr31-mcp.md) for tools, retry behavior and gate prompts.
+
+## Research baseline (PR 31A)
+
+Run `.venv/Scripts/python.exe -m benchmarks.research` against the local PostgreSQL
+stack to replay the recorded synthetic cases without external provider calls.
+Cold/warm results include grounded claims, exact geography, public eligibility,
+stage errors and token usage. See [the benchmark protocol and measured baseline](docs/pr31a-research-benchmark.md)
+before interpreting results or explicitly capturing a new paid-provider run.

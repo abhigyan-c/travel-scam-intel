@@ -54,6 +54,9 @@ the new resolver. No production deployment/reprocessing is performed by this PR.
 
 ## Measurement and verification
 
+The result below is historical. PR 31C changes extraction fingerprints and uses a
+separate recording; revision `940040a` retains the exact v2-extraction/31B replay setup.
+
 The PR 31A corpus and provider recording are unchanged. Replay under `location-v2`
 improves correct scoped geography **2/7 → 3/7**: the Grand Palace claim becomes
 `Thailand → Bangkok → Grand Palace`, with the POI provisional when absent.

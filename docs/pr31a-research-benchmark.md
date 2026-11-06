@@ -39,6 +39,10 @@ Small counts and a single stochastic provider run cannot establish global reliab
 
 ## Commands
 
+Historical note: after PR 31C, the command defaults to the current v3 recording.
+The v2 files below remain immutable baseline evidence. Use the PR 31A revision
+`c386a87` to reproduce that original pipeline; do not feed v2 responses to v3 prompts.
+
 Start local infrastructure with `docker compose up --wait`. From the repository:
 
 ```powershell

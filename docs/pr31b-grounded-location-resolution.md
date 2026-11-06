@@ -66,6 +66,8 @@ not new spending or live performance.
 The new integration cases cover exact/qualified aliases, idempotent provisional
 creation, generic references, ambiguous parents, country/hierarchy/scope conflicts,
 stale quote/hash/offset checks, and both eligible/held end-to-end candidate behavior.
-The full test suite and the committed replay artifact are recorded after validation.
+Validation: **879 passed, 10 skipped** with infrastructure enabled; Ruff lint/format
+passed. `benchmarks/data/31b-replay.json` records the replay against committed
+source `33a8df6`, including `location-v2` and its unchanged provider recording.
 Valid-empty extraction misses, sensitivity classification quality and broader
 location-expression coverage remain future work; this does not pass the 31F gate.

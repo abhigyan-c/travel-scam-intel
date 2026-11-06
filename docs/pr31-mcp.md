@@ -1,0 +1,232 @@
+# PR 31: MCP integration
+
+Base: merged `develop` at `22cdcb7`; branch `codex/pr-31-mcp-integration`.
+The HTTPS and GitHub OIDC foundation is already deployed. This PR implements only
+the MCP adapter; conversation optimization, UI and final hardening remain PRs 32–37.
+
+## Server and tool contract
+
+The pinned official Python SDK is `mcp==2.3.0`, with locked `mcp-types==2.3.0`.
+The exact `/mcp` endpoint serves stateless Streamable HTTP with JSON responses and
+legacy protocol negotiation for current clients. FastAPI owns the MCP session
+manager lifespan alongside its existing database/Redis/storage resources. Existing
+REST routes and error contracts remain intact; no redirect or separate server.
+
+| Tool | Behavior |
+| --- | --- |
+| `resolve_scam_location` | Existing resolver; ambiguity stays unresolved; explicit known parent/country/type permits provisional creation. No country roots invented. |
+| `search_scam_patterns` | Current public patterns plus a durable shared research request for stale/unseen locations. |
+| `get_scam_pattern` | One public card through `IntelligenceService`. |
+| `get_scam_evidence` | Bounded public evidence/provenance page; private reports/media excluded. |
+| `match_possible_scam` | Local embedding comparison without persisting submitted text; unavailable differs from no match. |
+| `get_recent_patterns` | Occurrence-based 30/90/365-day public query with optional background research. |
+| `submit_scam_report` | Confirmed anonymous intake with a stable retry key, normalized document and durable processing/review. |
+
+PR 29 assessments and acknowledgements are private administrative signals, not
+published emerging labels. `get_emerging_patterns` is deliberately not advertised;
+there is no public emerging contract to expose. No admin tokens or review tools
+are available over MCP. This preserves PR 29's publication boundary.
+
+Research-enabled calls are annotated as non-destructive writes/open-world because
+they update demand/jobs and can invoke external providers in the worker. Resolution
+is also annotated as a write because it can create a provisional record. Public
+DB reads and local matching are read-only. Report submission requires a strict
+`confirmed_by_user=true`; client confirmation remains necessary, since the server
+cannot independently prove that a human supplied a boolean.
+
+## Research and failure behavior
+
+Unseen/stale searches queue the existing bounded initial/refresh pipeline, then
+return available findings and research state immediately. No provider runs inline,
+no duplicate pipeline, no LLM-generated response prose. Subsequent calls use the
+same IDs with `request_research=false`; unfinished research remains incomplete,
+and successful empty research retains the existing honest `nothing_found` outcome.
+This selects the plan's immediate-result/background-continuation option rather
+than holding a ChatGPT request open for the 25-second worker budget.
+
+Pages are bounded at 20 items / offset 1000 (default five). Input bodies are capped
+at 64 KiB, incident text at 2,000 characters and reports at 8,000. A 12-second tool
+deadline bounds database/matching/intake waits. Timeouts after report commit are
+safe to retry using the same key and content. The normalized intake/dispatch service
+is shared with REST. Errors return `isError=true`, stable safe codes and request
+IDs without reflecting input values or SDK/provider tracebacks.
+
+`APP_MCP_PUBLIC_URL` configures the precise public Host/Origin allowlist; defaults
+permit localhost only. Production Compose reads `MCP_PUBLIC_URL` from root-only
+host configuration. DNS-rebinding protection stays enabled. No consumer login is
+introduced; anonymous access follows the agreed product architecture. Caddy still
+blocks REST/admin/media/docs and only exposes `/health` and `/mcp`.
+
+The first ChatGPT connection to the IP URL failed with a generic reachability
+error despite independent protocol success; this does not establish an IP-policy
+restriction. The user explicitly authorized a filtered Tailscale Funnel hostname
+on 2026-11-05 for a second connection test. `APP_MCP_PUBLIC_ALIASES` adds that exact
+hostname without disabling Host/Origin checks or removing the IP endpoint.
+`setup-funnel.sh --prepare-only` configures a Caddy listener bound only to
+127.0.0.1:8080, with the same health/MCP-only routes. After deploying the alias,
+`--enable` exposes that listener using Funnel. Never forward directly to port 8000.
+Funnel remains subject to the tailnet administrator's feature authorization and
+public DNS propagation. This alternative is not a passed ChatGPT gate by itself.
+
+## Required ChatGPT review gate
+
+After protocol tests/deployment, connect `https://travel-scam-prod.tailbbf557.ts.net/mcp` in ChatGPT
+with no authentication. The account/workspace must support custom MCP connections.
+Use the current [official connection instructions](https://developers.openai.com/plugins/deploy/connect-chatgpt).
+
+1. Discover the seven tools and resolve Bangkok, Thailand. Inspect scope/confidence
+   and evidence on available results; do not interpret incomplete research as safe.
+2. First-ever query: ask about Chiang Mai, Thailand (city). Confirm provisional
+   location context, immediate research-in-progress response and later reads using
+   the returned location ID with `request_research=false`.
+3. Ask about ambiguous Springfield without country/parent context; confirm that
+   ChatGPT asks for clarification rather than selecting an arbitrary location.
+4. Verify that an incident match is a suggestion, unavailable is explicit, and
+   unsupported requests cannot call private review tools.
+5. Review report confirmation behavior without inventing or submitting a production
+   report. Actual report normalization/retry tests run only in isolated local schemas.
+
+Record selected tools/arguments, timing, results and any timeout/continuation or
+IP-URL acceptance issue. Do not mark the live gate passed from an SDK client alone.
+The user performed the ChatGPT check on 2026-11-05; the bounded partial-result
+outcome is recorded below. PR 32 remains a separate branch after this PR is merged.
+
+External alert delivery remains deferred at the user's request. The previously
+measured media-memory, embedding backpressure and grown-corpus recent-query issues
+remain PR 37/public-release work; this adapter does not claim to resolve them.
+
+References: [MCP Python SDK ASGI mounting](https://py.sdk.modelcontextprotocol.io/run/asgi/),
+[OpenAI MCP server guidance](https://developers.openai.com/plugins/build/mcp-server).
+
+## Validation — 2026-11-05
+
+- Full local suite: **843 passed, 10 skipped**. Focused MCP/shared-intake tests
+  passed against isolated PostgreSQL schemas with controlled providers.
+- Actual Streamable HTTP initialization at the exact endpoint, Host/Origin
+  rejection, structured results and correlated sanitized errors passed.
+- Database tests covered one durable unseen-location job, non-enqueueing polls,
+  fresh reuse, stale refresh, public evidence, ambiguous/provisional places and
+  confirmed normalized reports with replay/conflict handling.
+- Existing infrastructure fixture now keeps AnyIO/ASGI lifespan in one task;
+  a scheduler fixture uses explicit past timestamps to avoid Windows/Docker clock
+  skew changing selection. No scheduler production behavior changed.
+- Ruff, lockfile, production Compose validation and image build passed.
+- Public HTTPS deployment/protocol smoke passed: seven tools discovered, existing
+  location resolved, current/recent/matching reads returned structured results,
+  missing patterns returned not-found, and an unconfirmed report was rejected.
+  No research/provider calls or production reports were requested by this check.
+- Public boundary checks passed: MCP initializes over trusted IP TLS, while REST,
+  admin, media and docs stay private. The user-run ChatGPT gate is recorded below.
+- Running preview: `0c437f2`. API/worker health and host checks passed. The initial
+  preview snapshot had zero restarts/OOM kills; idle containers: API 129.4 MiB, worker
+  96.9 MiB, PostgreSQL 28.1 MiB, Redis 13.7 MiB. These are not load-capacity claims.
+- SDK warnings are discarded with a real null handler, preventing Python's
+  fallback stderr handler from exposing SDK messages even if a child logger
+  explicitly enables warnings. Application metadata/errors remain sanitized.
+- The user authorized Funnel and completed Tailscale's one-time feature approval.
+  Caddy's shared filter is bound to 127.0.0.1:8080; Funnel 443 forwards only there.
+  Listener, private-route rejection and hostname MCP smoke passed. The user then
+  reported a successful real ChatGPT connection through the hostname.
+- Forced public probes to both regional ingress IPs timed out during TLS even
+  though tailnet checks and ChatGPT's connection succeeded. Neither a daemon restart
+  nor a temporary 8443 probe resolved that test path; the extra port was removed.
+  Record this as an observed relay/reachability limitation, not a diagnosed cause
+  or a passed global availability test. External alerting remains deferred.
+- Hostname alias Host/Origin tests: 11 MCP tests passed after this refinement;
+  unknown hosts still fail. The final full suite passed 843 tests with 10 skipped.
+
+## Live ChatGPT gate outcome — 2026-11-05
+
+The user reported that ChatGPT resolved Chiang Mai, Thailand as a provisional city,
+initiated research, showed `researching` / `research_incomplete`, and performed a
+second read with `request_research=false`. The follow-up showed stale/incomplete
+initial research with no enrichment completion and zero patterns. ChatGPT explicitly
+said that zero results did not mean no scams, and did not submit a report.
+
+Independent backend checks confirmed the new provisional location and both initial
+and enrichment jobs. Both ended with `partial`, `complete=false`, `deadline`, and
+`research_incomplete`; job execution was recorded as succeeded-with-partial-result,
+not successful completed research. Seven sources and seven documents were retained,
+with zero claims, hypotheses or traveler reports. All seven source/document links
+and immutable R2 content hashes were verified without displaying document bodies.
+
+The gate passes for real connection, first-ever query, bounded/background response,
+follow-up and honest incompleteness. It does **not** demonstrate completed research,
+positive findings, confidence quality, positive evidence rendering or global relay
+availability. The user requested the deadline investigation within PR 31 (below);
+conversation/evidence presentation and quality remain PR 32/36/37 work.
+
+`initial=true` means the initial pass has finished, including a partial pass; it
+does not mean `complete=true`. `queue_pending` describes outbox dispatch, not whether
+all research jobs are done. Keep those distinctions explicit in PR 32 presentation.
+No extra provider calls or fabricated report were made to force a positive result.
+
+## Deadline investigation — 2026-11-05
+
+The original initial job lasted 25.499 seconds; enrichment lasted 46.564 seconds
+(job timestamps include dispatch/finish overhead). Both hit their unchanged 25/45
+second execution limits. Four documents retained complete relevance classifications:
+12 assessed passages, eight marked relevant. Only one extraction was persisted, with
+zero claims. This is insufficient evidence to call the research successfully empty.
+
+Three read-only Sarvam extraction probes reused the first stored public article's
+passages. They took 0.470, 3.811 and 3.576 seconds: respectively zero claims, one
+grounded claim, and `invalid_grounding`. Probe outputs were not persisted or published.
+Grounding rejection remains enforced. These measurements demonstrate extractable
+source material, not provider reliability across all sources.
+
+The pipeline classified an entire article before starting extraction; the first
+20,834-character article required six sequential relevance calls. This can consume
+the initial time budget before claim extraction. Partial relevance classifications
+were not reused, and the worker's outer deadline discarded detailed result/usage
+telemetry. Original records cannot establish every stage's exact duration.
+
+PR 31 now reserves half the remaining document budget for extraction, reuses
+successful partial classifications only when text hash, prompt version and exact
+passage match, and checkpoints partial relevance before extraction. Failed passages
+are retried; partial coverage never becomes a complete negative. A small cleanup
+margin allows normal timeout results to reach the final checkpoint. Stage timings,
+active stage and LLM usage survive even the outer deadline, without source text or
+provider response bodies. The 25/45 second limits and grounding rules are unchanged.
+
+Validation: **846 passed, 10 skipped**, including timed slow-classification,
+partial-cache invalidation/retry and outer-deadline diagnostics regressions. Ruff
+and production image build passed. Deployment measurement follows separately;
+these changes do not guarantee completed research or published findings.
+
+### Deployed measurement
+
+Preview `13cdcb2` was deployed and one ordinary refresh of existing Chiang Mai was
+requested through MCP. The tool responded in **0.155 seconds** while background
+research continued. The refresh finished in **44.967 seconds**, retaining detailed
+partial output rather than the outer-timeout fallback. This was a warm refresh,
+not a controlled cold-start comparison: cached classifications/extractions were
+reused, and live search returned a different candidate ordering.
+
+| Stage | Recorded seconds |
+| --- | ---: |
+| Discovery (six queries) | 10.331 |
+| Ingestion (14 attempts) | 16.073 |
+| Processing | 2.781 |
+| Relevance | 5.620 |
+| Extraction | 9.671 |
+
+Nine fetches failed before a document was obtained, including six Reddit URLs.
+Four documents were obtained; one Facebook document processed as empty. Seven LLM
+calls completed without transport/provider errors. All three TravelHiatus
+extraction attempts were rejected as `invalid_grounding`; a previously cached
+zero-claim extraction was reused for another article. Final state remained partial,
+with **zero claims/hypotheses and zero traveler reports**. Safe extraction errors
+are in document attempts; raw completion success is not grounded extraction success.
+
+The investigation establishes multiple bottlenecks: sequential classification can
+starve extraction; search/fetch failures consume a substantial budget; strict
+extraction rejects some real provider outputs. The first issue has a regression-tested
+budget/resume fix and the telemetry loss is fixed. Fetch/source selection and Sarvam
+grounded extraction quality remain unresolved product-readiness concerns. Do not
+increase deadlines or weaken quote/field validation to label this gate successful.
+Do not claim that the new allocation alone fixes real-world research usefulness.
+
+After rollout, all seven MCP tools passed the non-writing protocol smoke, trusted
+IP HTTPS health/initialization passed, and seven private route checks remained
+blocked. Real ChatGPT interaction has not been repeated since this refinement.

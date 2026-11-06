@@ -1029,3 +1029,18 @@ document versions and their required source links; the fourth adds claims and lo
 hypotheses with pgvector columns; the fifth adds evidence attachments and hypothesis relations.
 Models are registered through `app.models` in `migrations/env.py`.
 The sixth migration adds reports, duplicate groups, score snapshots and the evidence group link.
+
+## MCP / ChatGPT preview (PR 31)
+
+The API serves anonymous Streamable HTTP MCP at `/mcp`, using the official pinned
+Python SDK. Public tools resolve locations, read patterns/evidence, compare an
+incident, read recent patterns and submit a confirmed anonymous report. They reuse
+the REST intelligence/intake services; private emerging-review/admin data is excluded.
+
+Set `APP_MCP_PUBLIC_URL` for a directly served public URL, or `MCP_PUBLIC_URL` in
+the VPS host configuration used by production Compose. Localhost is allowed by
+default; DNS-rebinding protection remains enabled. The HTTPS preview is
+`https://travel-scam-prod.tailbbf557.ts.net/mcp`; ChatGPT connected through the
+authorized filtered Funnel hostname. The first-ever query/follow-up gate passed
+with honest partial results; completed research/findings were not demonstrated.
+See [the MCP runbook](docs/pr31-mcp.md) for tools, retry behavior and gate prompts.

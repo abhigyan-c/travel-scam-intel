@@ -28,11 +28,17 @@ def configure_logging(level: str) -> None:
             "version": 1,
             "disable_existing_loggers": False,
             "formatters": {"json": {"()": JsonFormatter}},
-            "handlers": {"console": {"class": "logging.StreamHandler", "formatter": "json"}},
+            "handlers": {
+                "console": {"class": "logging.StreamHandler", "formatter": "json"},
+                "discard": {"class": "logging.NullHandler"},
+            },
             "loggers": {
                 "app": {"handlers": ["console"], "level": level, "propagate": False},
                 # Uvicorn access logs include raw query strings; app logs replace them.
                 "uvicorn.access": {"handlers": [], "propagate": False},
+                # Tool input/errors can contain report text. Only our sanitized
+                # app.mcp metadata is logged, never SDK exception tracebacks.
+                "mcp": {"handlers": ["discard"], "level": "CRITICAL", "propagate": False},
             },
         }
     )

@@ -247,6 +247,11 @@ async def test_deadline_commits_first_document_then_background_continues(environ
     assert len(result.hypotheses) == 1
     async with ctx["sessions"]() as session:
         assert await session.scalar(select(func.count()).select_from(Claim)) == 1
+        # The initial job is retained separately from the queued enrichment job.
+        initial_job = await session.scalar(
+            select(ResearchJob).where(ResearchJob.payload["phase"].astext == "initial")
+        )
+        assert initial_job.result["diagnostics"]["stage_timings"]
     ctx["settings"] = ctx["settings"].model_copy(update={"research_max_total_seconds": 5})
     ctx["fetcher"].fetch.side_effect = lambda url: FetchedPage(url, BODY.encode(), "text/plain")
     final = await finish_enrichment(ctx, identity)
@@ -271,6 +276,25 @@ async def test_expired_worker_is_fenced_and_redelivery_reuses_the_job(environmen
         job.lease_expires_at = datetime.now(UTC) - timedelta(seconds=1)
     await run_location_job(ctx, str(reserved.active_job_id))
     assert (await read_location_intelligence(ctx, identity)).initial
+
+
+async def test_outer_deadline_keeps_safe_pipeline_diagnostics(environment, monkeypatch):
+    ctx, identity, _ = environment
+    ctx["settings"] = ctx["settings"].model_copy(update={"research_max_total_seconds": 0.1})
+
+    async def stalled(*args, diagnostics, **kwargs):
+        diagnostics.update(active_stage="extraction", stage_timings=[], llm_calls=2)
+        await asyncio.sleep(2)
+
+    monkeypatch.setattr("app.on_demand.research_location", stalled)
+    await get_location_intelligence(ctx, identity)
+    async with ctx["sessions"]() as session:
+        job = await session.scalar(
+            select(ResearchJob).where(ResearchJob.payload["phase"].astext == "initial")
+        )
+        assert job.result["error_code"] == "deadline" and not job.result["complete"]
+        assert job.result["diagnostics"]["active_stage"] == "extraction"
+        assert job.result["diagnostics"]["llm_calls"] == 2
 
 
 async def test_redis_outage_leaves_a_committed_dispatchable_job(environment):

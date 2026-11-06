@@ -7,6 +7,7 @@ from fastapi.exceptions import RequestValidationError
 from redis.asyncio import Redis
 from sqlalchemy.ext.asyncio import async_sessionmaker
 from starlette.exceptions import HTTPException
+from starlette.routing import Route
 
 from app.api.emergence import router as emergence_router
 from app.api.intelligence import router as intelligence_router
@@ -21,6 +22,7 @@ from app.core.middleware import RequestContextMiddleware
 from app.db.session import create_database_engine
 from app.embeddings import Embedder
 from app.integrations.storage import create_storage_client
+from app.mcp_server import build_mcp
 
 
 @asynccontextmanager
@@ -44,6 +46,7 @@ async def lifespan(application: FastAPI):
         cleanup.push_async_callback(report_queue.aclose)
         application.state.report_queue = report_queue
         application.state.storage = storage
+        await cleanup.enter_async_context(application.state.mcp_server.session_manager.run())
         yield
 
 
@@ -62,6 +65,13 @@ def create_app(settings: Settings | None = None) -> FastAPI:
     application.include_router(emergence_router)
     application.include_router(reports_router)
     application.include_router(report_media_router)
+    mcp_server, transport = build_mcp(application)
+    application.state.mcp_server = mcp_server
+    # Route the exact endpoint directly: mounting at /mcp would redirect to /mcp/
+    # and mounting at / would replace REST's existing not-found/error contract.
+    application.router.routes.append(
+        Route("/mcp", endpoint=transport, methods=["GET", "POST", "DELETE"])
+    )
     return application
 
 

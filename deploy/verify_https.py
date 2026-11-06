@@ -7,14 +7,22 @@ import json
 import ssl
 
 
-def request(ip, path, *, method="GET", secure=True):
+def request(ip, path, *, method="GET", secure=True, payload=None):
     connection = (
         http.client.HTTPSConnection(ip, timeout=10, context=ssl.create_default_context())
         if secure
         else http.client.HTTPConnection(ip, timeout=10)
     )
     try:
-        connection.request(method, path)
+        headers = {}
+        body = None
+        if payload is not None:
+            body = json.dumps(payload)
+            headers = {
+                "Content-Type": "application/json",
+                "Accept": "application/json, text/event-stream",
+            }
+        connection.request(method, path, body=body, headers=headers)
         response = connection.getresponse()
         body = response.read(65536)
         return response.status, dict(response.getheaders()), body
@@ -50,10 +58,23 @@ def verify(ip):
         raise ValueError("public_report_write_exposed")
     if request(ip, "/health", secure=False)[0] != 503:
         raise ValueError("plaintext_application_exposed")
-    # /mcp is reserved now; its application-level 404 is expected before PR 31.
-    status, headers, _ = request(ip, "/mcp", method="POST")
-    if status != 404 or not any(key.lower() == "x-request-id" for key in headers):
-        raise ValueError("mcp_preview_route_not_forwarded_or_adapter_now_present")
+    status, headers, body = request(
+        ip,
+        "/mcp",
+        method="POST",
+        payload={
+            "jsonrpc": "2.0",
+            "id": 1,
+            "method": "initialize",
+            "params": {
+                "protocolVersion": "2025-11-25",
+                "capabilities": {},
+                "clientInfo": {"name": "https-preview-check", "version": "1"},
+            },
+        },
+    )
+    if status != 200 or "tools" not in json.loads(body).get("result", {}).get("capabilities", {}):
+        raise ValueError("mcp_initialization_failed")
     return {
         "trusted_ip_tls": "passed",
         "certificate_expires": certificate["notAfter"],
@@ -61,7 +82,7 @@ def verify(ip):
         "private_routes_blocked": len(blocked),
         "public_rest_write_blocked": True,
         "http_application_blocked": True,
-        "mcp_route": "forwarded; adapter not implemented",
+        "mcp_route": "initialized",
     }
 
 

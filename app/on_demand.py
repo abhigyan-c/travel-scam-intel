@@ -381,6 +381,7 @@ async def run_location_job(ctx, job_id: str):
     async def on_hypothesis(session, hypothesis_id):
         return await embed_hypothesis(session, hypothesis_id, embedder=ctx["embedder"])
 
+    diagnostics = {}
     try:
         async with asyncio.timeout(limits.timeout):
             async with ctx["sessions"]() as session:
@@ -399,6 +400,7 @@ async def run_location_job(ctx, job_id: str):
                     checkpoint=checkpoint,
                     on_claim=on_claim,
                     on_hypothesis=on_hypothesis,
+                    diagnostics=diagnostics,
                 )
                 await checkpoint(session)
                 summary = result.model_dump(mode="json")
@@ -417,6 +419,7 @@ async def run_location_job(ctx, job_id: str):
             "error_code": "deadline",
             "message": "Time limit reached; completed stages are retained.",
             "usage_complete": False,
+            "diagnostics": diagnostics,
         }
     except asyncio.CancelledError:
         try:

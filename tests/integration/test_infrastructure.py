@@ -21,8 +21,27 @@ pytestmark = [
 @pytest.fixture
 async def application():
     application = create_app(Settings())
-    async with application.router.lifespan_context(application):
+    started, stop = asyncio.Event(), asyncio.Event()
+
+    async def serve():
+        try:
+            async with application.router.lifespan_context(application):
+                started.set()
+                await stop.wait()
+        finally:
+            started.set()
+
+    # ASGI lifespan/AnyIO scopes must enter and exit in one task. pytest-asyncio
+    # runs async fixture setup/teardown in different tasks; emulate the ASGI host.
+    task = asyncio.create_task(serve())
+    await started.wait()
+    if task.done():
+        await task
+    try:
         yield application
+    finally:
+        stop.set()
+        await task
 
 
 async def test_database_sessions_and_pgvector(application):

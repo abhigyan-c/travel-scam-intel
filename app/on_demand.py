@@ -50,6 +50,7 @@ def limits_for(settings, phase):
         llm_calls=min(24, settings.research_max_llm_calls * multiplier),
         llm_concurrency=settings.research_max_llm_concurrency,
         timeout=min(45, settings.research_max_total_seconds * multiplier),
+        fetch_timeout=settings.research_max_fetch_seconds,
     )
 
 

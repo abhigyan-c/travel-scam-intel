@@ -172,6 +172,7 @@ async def test_unseen_location_produces_persisted_scored_initial_cards_then_enri
 async def test_successful_empty_becomes_ready_and_does_not_invent_findings(environment):
     ctx, identity, _ = environment
     ctx["provider"].search.return_value.results = []
+    ctx["provider"].search.return_value.usage.returned_results = 0
     first = await get_location_intelligence(ctx, identity)
     assert first.initial and first.hypotheses == []
     final = await finish_enrichment(ctx, identity)

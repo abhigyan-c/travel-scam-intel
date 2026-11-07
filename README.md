@@ -1061,3 +1061,8 @@ Extraction uses the measured `claims-v3` contract and complete bounded source-qu
 coverage. [PR 31C's experiment report](docs/pr31c-grounded-extraction-quality.md)
 records rejected candidates, remaining misses and the distinction between known
 token counts and unknown usage for interrupted calls.
+
+[PR 31D's acquisition report](docs/pr31d-source-acquisition-quality.md) describes
+bounded parallel search, host diversity, run-local failure feedback and the
+configurable fetch-only cap. It includes measured source-access limitations and
+controlled cases where deferral helps or loses a recovering source.

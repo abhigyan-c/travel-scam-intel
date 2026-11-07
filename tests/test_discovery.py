@@ -28,6 +28,10 @@ def response(url="https://example.org/report", position=1, error=None):
 
 def test_queries_are_deterministic_and_bounded():
     assert generate_queries("  Bangkok  ")[0] == "Bangkok tourist scams"
+    assert generate_queries("Bangkok")[1:3] == [
+        "Bangkok common scams travel blog",
+        "Bangkok tourist traps travel blog",
+    ]
     assert generate_queries("Fiji")[-1] == "Fiji scams Reddit"
     assert len(generate_queries("Fiji")) == 6
     with pytest.raises(ValueError):
@@ -78,7 +82,8 @@ async def test_deadline_preserves_completed_results():
     provider.search.side_effect = search
     result = await discover("Fiji", provider, timeout=0.03)
     assert result.status == "partial" and len(result.results) == 1
-    assert result.usage[-1].error == "deadline"
+    assert result.usage[1].error == "deadline"
+    assert result.usage[2].error is None  # Independent query survives the slow query.
 
 
 @pytest.mark.parametrize(

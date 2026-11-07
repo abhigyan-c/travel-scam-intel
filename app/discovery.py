@@ -7,7 +7,10 @@ from urllib.parse import urlsplit
 
 from pydantic import BaseModel, Field
 
+from app.acquisition import dedup_key, diversify
 from app.db.ingestion import DiscoveryResult
+
+DISCOVERY_VERSION = "discovery-v2"
 
 
 class SearchResult(DiscoveryResult):
@@ -36,6 +39,8 @@ class DiscoveryResponse(BaseModel):
     results: list[SearchResult]
     usage: list[SearchUsage]
     status: str
+    filtered: int = 0
+    truncated: bool = False
 
 
 def generate_queries(location: str, *, topic: str | None = None) -> list[str]:
@@ -61,8 +66,8 @@ def generate_queries(location: str, *, topic: str | None = None) -> list[str]:
         f"{location} {suffix}"
         for suffix in (
             "tourist scams",
-            "common scams",
-            "tourist traps",
+            "common scams travel blog",
+            "tourist traps travel blog",
             "taxi scams",
             "tourist fraud",
             "scams Reddit",
@@ -95,39 +100,64 @@ async def discover(
     max_results: int = 30,
     timeout: float = 25,
     topic: str | None = None,
+    concurrency: int = 2,
 ) -> DiscoveryResponse:
     if not 1 <= max_queries <= 6 or not 1 <= max_results <= 100 or timeout <= 0:
         raise ValueError("invalid discovery limits")
+    if not 1 <= concurrency <= 3:
+        raise ValueError("invalid discovery concurrency")
     queries = generate_queries(location, topic=topic)[:max_queries]
     found: dict[str, tuple[int, SearchResult]] = {}
-    usage = []
+    usage, filtered = [], 0
     deadline = asyncio.get_running_loop().time() + timeout
-    for index, query in enumerate(queries):
-        remaining = deadline - asyncio.get_running_loop().time()
-        if remaining <= 0:
-            break
+    semaphore = asyncio.Semaphore(concurrency)
+
+    async def search(query):
+        started = False
         try:
-            async with asyncio.timeout(remaining):
-                response = await provider.search(query)
+            async with asyncio.timeout_at(deadline), semaphore:
+                started = True
+                return await provider.search(query)
         except TimeoutError:
-            usage.append(SearchUsage(error="deadline"))
-            break
+            return SearchResponse(usage=SearchUsage(requests=int(started), error="deadline"))
+
+    tasks = [asyncio.create_task(search(query)) for query in queries]
+    try:
+        responses = await asyncio.gather(*tasks)
+    except BaseException:
+        for task in tasks:
+            task.cancel()
+        await asyncio.gather(*tasks, return_exceptions=True)
+        raise
+    for index, response in enumerate(responses):
         usage.append(response.usage)
+        filtered += max(0, response.usage.returned_results - len(response.results))
         for result in response.results:
             if not usable_url(result.url):
+                filtered += 1
                 continue
-            prior = found.get(result.url)
+            key = dedup_key(result.url)
+            prior = found.get(key)
             if prior is None or (result.position, index) < (prior[1].position, prior[0]):
-                found[result.url] = (index, result)
-    results = [
+                found[key] = (index, result)
+    ranked = [
         result
         for _, result in sorted(
             found.values(), key=lambda row: (row[1].position, row[0], row[1].url)
         )
-    ][:max_results]
+    ]
+    results = diversify(ranked)[:max_results]
     complete = len(usage) == len(queries) and all(item.error is None for item in usage)
     status = ("ok" if results else "empty") if complete else ("partial" if results else "failed")
-    return DiscoveryResponse(results=results, usage=usage, status=status)
+    if not results and filtered and complete:
+        status = "partial"
+    return DiscoveryResponse(
+        results=results,
+        usage=usage,
+        status=status,
+        filtered=filtered,
+        truncated=len(ranked) > max_results,
+    )
 
 
 async def _main(location: str, queries: int):

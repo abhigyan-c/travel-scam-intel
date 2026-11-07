@@ -5,14 +5,15 @@ from uuid import UUID
 from pydantic import BaseModel, ConfigDict, Field
 from sqlalchemy.ext.asyncio import async_sessionmaker
 
+from app.acquisition import AcquisitionPolicy, CandidateFetcher
 from app.core.config import Settings
 from app.db.extraction import extract_document
 from app.db.ingestion import ingest_url
 from app.db.processing import process_document
 from app.db.resolution import resolve_claim, resolve_location
 from app.db.session import create_database_engine
-from app.discovery import discover, generate_queries
-from app.integrations.fetch import Fetcher, FetchError
+from app.discovery import DISCOVERY_VERSION, discover, generate_queries
+from app.integrations.fetch import FETCH_ERROR_CODES, Fetcher, FetchError
 from app.integrations.sarvam import Completion, Sarvam
 from app.integrations.serper import Serper
 from app.integrations.storage import create_storage_client
@@ -30,6 +31,7 @@ class ResearchLimits(BaseModel):
     llm_calls: int = Field(default=12, ge=1, le=24)
     timeout: float = Field(default=25, gt=0, le=45)
     llm_concurrency: int = Field(default=2, ge=1, le=4)
+    fetch_timeout: float = Field(default=6, gt=0, le=10)
 
 
 class ResearchResult(BaseModel):
@@ -109,6 +111,9 @@ async def research_location(
     budget = _LimitedClient(llm, limits.llm_calls, limits.llm_concurrency)
     diagnostics = diagnostics if diagnostics is not None else {}
     diagnostics.update(stage_timings=[], active_stage="discovery", llm=budget.usage)
+    acquisition = AcquisitionPolicy()
+    candidate_fetcher = CandidateFetcher(fetcher, limits.fetch_timeout, acquisition)
+    diagnostics["acquisition"] = acquisition.diagnostics
     started = asyncio.get_running_loop().time()
     hypothesis_ids, pending_ids = [], []
     discovery = await discover(
@@ -123,6 +128,11 @@ async def research_location(
         {"stage": "discovery", "seconds": round(asyncio.get_running_loop().time() - started, 3)}
     )
     diagnostics["search"] = [item.model_dump() for item in discovery.usage]
+    diagnostics["discovery"] = {
+        "version": DISCOVERY_VERSION,
+        "filtered": discovery.filtered,
+        "truncated": discovery.truncated,
+    }
     if discovery.status in {"failed", "partial"}:
         errors.append({"stage": "discovery", "code": discovery.status})
 
@@ -146,17 +156,13 @@ async def research_location(
             code = type(exc).__name__
             if isinstance(exc, TimeoutError):
                 code = "deadline"
-            elif isinstance(exc, FetchError) and str(exc) in {
-                "http_status",
-                "fetch_failed",
-                "fetch_timeout",
-                "non_public_address",
-                "unsupported_content_type",
-                "response_too_large",
-                "insecure_redirect",
-            }:
+            elif isinstance(exc, FetchError) and str(exc) in FETCH_ERROR_CODES:
                 code = str(exc)
-            errors.append({"stage": name, "url": url, "code": code})
+                acquisition.failure(url, exc)
+            error = {"stage": name, "url": url, "code": code}
+            if isinstance(exc, FetchError) and type(exc.status) is int and 100 <= exc.status <= 599:
+                error["http_status"] = exc.status
+            errors.append(error)
             return None
         finally:
             diagnostics["stage_timings"].append(
@@ -165,7 +171,7 @@ async def research_location(
             diagnostics["llm_calls"] = budget.calls
 
     fetched, eligible = 0, 0
-    limited = len(discovery.results) >= limits.candidates
+    limited = discovery.truncated
     for candidate in discovery.results:
         if (
             fetched >= limits.fetches
@@ -177,12 +183,14 @@ async def research_location(
         if asyncio.get_running_loop().time() >= deadline:
             limited = True
             break
+        if not acquisition.allow(candidate.url):
+            continue
         fetched += 1
         document = await stage(
             "ingestion",
             candidate.url,
             lambda candidate=candidate: ingest_url(
-                session, candidate, fetcher=fetcher, storage=storage, bucket=bucket
+                session, candidate, fetcher=candidate_fetcher, storage=storage, bucket=bucket
             ),
         )
         if document is None:
@@ -200,6 +208,7 @@ async def research_location(
         if document is None:
             continue
         processing = document.document_metadata.get("processing", {})
+        acquisition.processed(document.url or candidate.url, processing.get("outcome"))
         row["processing"] = processing.get("outcome")
         if document.processing_status == DocumentStatus.FAILED:
             errors.append(
@@ -319,6 +328,9 @@ async def research_location(
                                 if embedded and embedded.get("error"):
                                     errors.append({"stage": "embedding", "code": embedded["error"]})
         row["resolutions"] = resolutions
+    deferred = sum(acquisition.diagnostics["deferred"].values())
+    if deferred:
+        errors.append({"stage": "acquisition", "code": "host_deferred", "count": deferred})
     if limited:
         errors.append({"stage": "research", "code": "resource_limit_or_deadline"})
     complete = not errors and discovery.status in {"ok", "empty"}

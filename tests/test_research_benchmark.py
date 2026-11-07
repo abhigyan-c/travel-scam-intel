@@ -1,3 +1,4 @@
+import asyncio
 from datetime import UTC, datetime
 from types import SimpleNamespace
 from unittest.mock import AsyncMock
@@ -26,6 +27,30 @@ async def test_recorded_client_revalidates_and_never_falls_back_to_network():
     with pytest.raises(RuntimeError, match="live_call_limit"):
         await capture.complete(**request)
     assert live.complete.await_count == 1
+
+
+async def test_cancelled_provider_call_is_recorded_before_later_retry():
+    records, live = {}, AsyncMock()
+
+    async def slow(**kwargs):
+        await asyncio.sleep(1)
+
+    live.complete.side_effect = slow
+    capture = RecordedClient(records, live=live)
+    request = dict(system="fixture", user="fixture", schema=Relevance)
+    with pytest.raises(TimeoutError):
+        async with asyncio.timeout(0.01):
+            await capture.complete(**request)
+    assert capture.incomplete == 1
+    live.complete.side_effect = None
+    live.complete.return_value = Completion(
+        data=Relevance(relevant=False, category=None, confidence=0.9, reason="Ordinary tourism")
+    )
+    await capture.complete(**request)
+    replay = RecordedClient(records)
+    assert (await replay.complete(**request)).error == "deadline"
+    assert replay.incomplete == 1
+    assert (await replay.complete(**request)).data.relevant is False
 
 
 def test_corpus_and_targets_are_not_vacuous():

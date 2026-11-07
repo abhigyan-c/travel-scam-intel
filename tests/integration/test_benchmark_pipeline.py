@@ -10,7 +10,13 @@ from app.db.session import create_database_engine
 from app.extraction import ClaimBatch, ExtractedClaim
 from app.integrations.sarvam import Completion
 from app.relevance import Relevance
-from benchmarks.research import DATA, RecordedClient, isolated_database, load_corpus, run_case
+from benchmarks.research import (
+    CURRENT_RECORDING,
+    RecordedClient,
+    isolated_database,
+    load_corpus,
+    run_case,
+)
 
 pytestmark = [
     pytest.mark.integration,
@@ -85,7 +91,7 @@ async def test_actual_pipeline_replays_cold_and_warm_without_changing_public_sch
 
 async def test_committed_recordings_run_all_cases_without_live_services():
     corpus = load_corpus()
-    recording = json.loads((DATA / "sarvam-recording.json").read_text())
+    recording = json.loads(CURRENT_RECORDING.read_text())
     client = RecordedClient(recording["records"])
     for case in corpus["cases"]:
         cold, warm = await run_case(case, client, Settings().database_url.get_secret_value())

@@ -34,6 +34,7 @@ from app.research import ResearchLimits, research_location
 from app.services.intelligence import IntelligenceService
 
 DATA = Path(__file__).parent / "data"
+CURRENT_RECORDING = DATA / "31c/sarvam-recording.json"
 
 
 def fingerprint(value):
@@ -55,6 +56,7 @@ class RecordedClient:
         self.records, self.live, self.max_calls = records, live, max_calls
         self.calls, self.positions = 0, Counter()
         self.elapsed = 0.0
+        self.incomplete = 0
         self.failure = None
 
     async def complete(self, *, system, user, schema):
@@ -66,12 +68,30 @@ class RecordedClient:
                 raise RuntimeError("benchmark_live_call_limit")
             self.calls += 1
             started = time.monotonic()
-            result = await self.live.complete(system=system, user=user, schema=schema)
+            try:
+                result = await self.live.complete(system=system, user=user, schema=schema)
+            except asyncio.CancelledError:
+                self.incomplete += 1
+                self.records.setdefault(key, []).append(
+                    {
+                        "seconds": round(time.monotonic() - started, 4),
+                        "interrupted": True,
+                        "usage_complete": False,
+                        "completion": Completion(error="deadline", requests=1).model_dump(
+                            exclude={"request_id"}
+                        ),
+                    }
+                )
+                self.elapsed += time.monotonic() - started
+                raise
             seconds = time.monotonic() - started
+            usage_complete = not (result.error and result.requests and not result.usage)
+            self.incomplete += int(not usage_complete)
             self.records.setdefault(key, []).append(
                 {
                     "seconds": round(seconds, 4),
                     "completion": result.model_dump(exclude={"request_id"}),
+                    "usage_complete": usage_complete,
                 }
             )
         else:
@@ -83,6 +103,8 @@ class RecordedClient:
             self.positions[key] += 1
             self.calls += 1
             seconds = rows[position]["seconds"]
+            if rows[position].get("interrupted") or rows[position].get("usage_complete") is False:
+                self.incomplete += 1
             payload = dict(rows[position]["completion"])
             if payload.get("data") is not None:
                 payload["data"] = schema.model_validate(payload["data"])
@@ -185,7 +207,11 @@ async def run_case(case, client, database_url):
             return await apply_and_score_claim(session, claim_id, embedder=embedder, client=budget)
 
         for temperature in ("cold", "warm"):
-            before_calls, before_seconds = client.calls, client.elapsed
+            before_calls, before_seconds, before_incomplete = (
+                client.calls,
+                client.elapsed,
+                client.incomplete,
+            )
             async with sessions() as session:
                 result = await research_location(
                     session,
@@ -291,6 +317,8 @@ async def run_case(case, client, database_url):
                     ),
                     "llm_calls": client.calls - before_calls,
                     "provider_seconds": round(client.elapsed - before_seconds, 4),
+                    "usage_complete": client.incomplete == before_incomplete,
+                    "provider_timing_complete": client.incomplete == before_incomplete,
                     "stage_seconds": {k: round(v, 3) for k, v in timings.items()},
                     "tokens": sum(
                         u.get("usage", {}).get("total_tokens", 0) for u in result.usage["llm"]
@@ -309,6 +337,7 @@ def summarize(rows):
             "public_checks_passed": sum(r["public_check"] for r in selected),
             "llm_calls": sum(r["llm_calls"] for r in selected),
             "tokens": sum(r["tokens"] for r in selected),
+            "usage_complete": all(r.get("usage_complete", True) for r in selected),
         }
         for cache in ("cold", "warm")
     }
@@ -423,7 +452,7 @@ async def run(args):
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--mode", choices=["replay", "live"], default="replay")
-    parser.add_argument("--recording", type=Path, default=DATA / "sarvam-recording.json")
+    parser.add_argument("--recording", type=Path, default=CURRENT_RECORDING)
     parser.add_argument("--output", type=Path, default=Path(".tools/research-benchmark.json"))
     parser.add_argument("--max-live-calls", type=int, choices=range(1, 101), default=40)
     args = parser.parse_args()

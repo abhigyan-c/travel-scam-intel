@@ -5,7 +5,13 @@ from unittest.mock import AsyncMock
 import pytest
 from pydantic import ValidationError
 
-from app.extraction import ClaimBatch, ExtractedClaim, extract_passage, validate_grounding
+from app.extraction import (
+    ClaimBatch,
+    ExtractedClaim,
+    extract_passage,
+    source_excerpts,
+    validate_grounding,
+)
 from app.integrations.sarvam import Completion
 from app.relevance import Passage
 
@@ -46,6 +52,12 @@ async def test_unsupported_fields_rejected_without_repair(change):
         Passage(index=0, start=0, end=len(case["text"]), text=case["text"]), client
     )
     assert result.error == "invalid_grounding" and result.data is None
+    assert result.validation_errors
+    assert all(
+        field in {"evidence_quote", "location", "entities", "occurred_at", "methods"}
+        for field in result.validation_errors
+    )
+    assert "Invented" not in str(result.model_dump())
 
 
 @pytest.mark.parametrize(
@@ -83,3 +95,28 @@ async def test_source_instructions_cannot_create_ungrounded_claim():
     assert result.error == "invalid_grounding"
     assert text not in client.complete.call_args.kwargs["system"]
     assert json.loads(client.complete.call_args.kwargs["user"])["passage"] == text
+
+
+def test_quote_choices_cover_distinct_lines_after_the_old_32_line_limit():
+    lines = [f"Visitor section {i} lists normal opening times." for i in range(60)]
+    lines.append("In Bangkok, a driver demanded extra money after agreeing to a fixed fare.")
+    text = "\n".join(lines)
+    quotes = source_excerpts(text)
+    assert len(quotes) <= 32
+    assert all(quote in text and len(quote) <= 1000 for quote in quotes)
+    assert all(any(line in quote for quote in quotes) for line in lines)
+
+
+def test_long_single_line_quote_choices_overlap_at_split_boundaries():
+    text = "Published visitor information. " * 90
+    quotes = source_excerpts(text)
+    assert len(quotes) > 1
+    assert all(quote in text and len(quote) <= 1000 for quote in quotes)
+    for left, right in zip(quotes, quotes[1:], strict=False):
+        assert left[-100:] in right
+
+
+@pytest.mark.parametrize("text", ["", " ", "x" * 4001])
+def test_quote_inventory_rejects_unbounded_or_empty_input(text):
+    with pytest.raises(ValueError, match="invalid extraction passage"):
+        source_excerpts(text)

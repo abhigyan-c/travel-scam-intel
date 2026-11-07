@@ -11,7 +11,7 @@ from sqlalchemy.orm import joinedload
 
 from app.db.documents import create_document, set_document_processing
 from app.db.extraction import extract_document
-from app.extraction import ClaimBatch, ExtractedClaim
+from app.extraction import PROMPT_VERSION, ClaimBatch, ExtractedClaim
 from app.integrations.sarvam import Completion
 from app.models import Claim, ClaimExtraction, Document, Source
 from app.models.document import DocumentStatus
@@ -102,7 +102,7 @@ async def test_persistence_lineage_sensitive_hold_and_retry_checkpoint(session, 
     )
     run = await session.get(ClaimExtraction, stored.extraction_id)
     assert run.passage_text == document.clean_text and run.claim_count == 1
-    assert run.model == "sarvam-105b" and run.prompt_version == "claims-v2"
+    assert run.model == "sarvam-105b" and run.prompt_version == PROMPT_VERSION
     assert run.usage["completion_tokens"] == 150
     repeated = await extract_document(session, document.id, decision, client)
     assert repeated.claim_ids == result.claim_ids and repeated.attempts[0]["cached"]
@@ -124,6 +124,48 @@ async def test_irrelevant_passages_make_no_extraction_calls(session, document):
     )
     assert result.complete and result.claim_ids == []
     client.complete.assert_not_called()
+
+
+async def test_old_empty_extraction_is_not_reused_after_prompt_version_change(session, document):
+    old = ClaimExtraction(
+        document_id=document.id,
+        clean_text_hash=document.clean_text_hash,
+        model="sarvam-105b",
+        prompt_version="claims-v2",
+        passage_start=0,
+        passage_end=len(document.clean_text),
+        passage_text=document.clean_text,
+        claim_count=0,
+    )
+    session.add(old)
+    await session.flush()
+    client = client_with_claim()
+    result = await extract_document(session, document.id, relevance(document), client)
+    assert result.complete and len(result.claim_ids) == 1
+    assert old.claim_count == 0
+    assert (
+        await session.scalar(
+            select(func.count())
+            .select_from(ClaimExtraction)
+            .where(ClaimExtraction.document_id == document.id)
+        )
+        == 2
+    )
+    repeated = await extract_document(session, document.id, relevance(document), client)
+    assert repeated.claim_ids == result.claim_ids and repeated.attempts[0]["cached"]
+    client.complete.assert_awaited_once()
+
+
+async def test_grounding_field_diagnostics_persist_without_rejected_source_values(
+    session, document
+):
+    client = client_with_claim()
+    invalid = ExtractedClaim.model_validate({**CASE["claim"], "methods": ["invented method"]})
+    client.complete.return_value = Completion(data=ClaimBatch(claims=[invalid]), requests=1)
+    result = await extract_document(session, document.id, relevance(document), client)
+    assert not result.complete and not result.claim_ids
+    assert result.attempts[0]["validation_errors"] == ["methods"]
+    assert "invented method" not in str(result.attempts)
 
 
 async def test_empty_success_cached_but_provider_errors_retry(session, document):

@@ -19,8 +19,9 @@ moderation, scoring, persistence/continuation or the public MCP contract.
 - Try one candidate per host before additional pages from that host, preserving its
   internal provider rank. Diversity applies before candidate truncation. Host grouping
   is exact hostname with `www.` normalized, not a registrable-domain classifier.
-- Failure feedback lasts only for one research run. Two consecutive 401/403 denials,
-  two transport/acquisition timeouts, or two processed-empty pages defer later pages
+- Failure feedback lasts only for one research run. Two 401/403 denials or two
+  transport/acquisition timeouts without an intervening successful fetch, or two
+  processed-empty pages without successful processing, defer later pages
   from that host. One private page/404 does not block the host; successful acquisition
   resets access/transport failures. Successful processing resets empty-page failures.
 - A 429 stops immediate native retry and defers that host for this run. Redirects
@@ -37,8 +38,8 @@ Compose, defaulting to 6 without new provisioning. Old job payloads use this def
 Existing URL/DNS/public-IP/redirect/TLS/type/size protections remain in place. There
 is no browser scraping, proxy rotation, access-block bypass or new paid service.
 
-Returned-but-unusable search results now produce incomplete research, not a true
-empty search. Deferrals are explicit `host_deferred` diagnostics; their count is
+A search returning only unusable results now produces incomplete research, not a
+true empty search. Deferrals are explicit `host_deferred` diagnostics; their count is
 not labeled as a deadline. Failed/empty acquisition cannot produce invented claims.
 HTTP status and safe fetch error codes are retained alongside existing stage timings.
 No raw HTTP error body or credential is included in diagnostics.
@@ -118,3 +119,10 @@ an unparseable-returned-results regression verifies the separate incomplete case
 
 No production deployment or bulk reprocessing is performed. PR 31E remains separate.
 Acquisition improvements do not resolve v3 extraction misses or pass the 31F gate.
+
+Final artifacts `controlled-comparison.json` and `pipeline-replay.json` in the same
+data directory were generated from committed source `91687a1`. The frozen 31C
+extraction outcomes remain **7/9** grounded positive claims and **4/6** eligible
+public patterns; this is recorded-response reuse, not another live quality run.
+The existing interrupted-call/unknown-usage flags are preserved. Production Compose
+validation and the `travel-scam-intel:pr31d-check` image build passed without deployment.

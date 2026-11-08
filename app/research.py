@@ -216,7 +216,7 @@ async def research_location(
         if progress.pending() or asyncio.get_running_loop().time() >= deadline:
             return
         plan = progress.pending_queries()
-        if plan:
+        if plan and progress.remaining("llm_calls") > 0:
             began = asyncio.get_running_loop().time()
             discovery = await discover(
                 location,
@@ -262,6 +262,9 @@ async def research_location(
                 await progress.save()
             continue
         item = progress.cursor.candidates[candidate_key(candidate.url)] if progress else {}
+        if progress and not progress.candidate_can_advance(item):
+            limited = True
+            continue
         error_start = len(errors)
         document = None
         if item.get("document_id"):
@@ -450,7 +453,12 @@ async def research_location(
 
                     async def apply_claim(identity=identity, item=item):
                         value = await on_claim(session, identity, budget)
-                        if progress and value and value.get("error") in {None, "review_required"}:
+                        if (
+                            progress
+                            and value
+                            and value.get("error")
+                            in {None, "review_required", "unresolved_location", "claim_not_public"}
+                        ):
                             item.setdefault("applied", {})[str(identity)] = value
                         return value
 
@@ -481,9 +489,14 @@ async def research_location(
         row["resolutions"] = resolutions
         if progress:
             item.update(summary=row, errors=errors[error_start:], done=not errors[error_start:])
-            if any(
-                e["code"] in {"review_required", "claim_not_public", "unresolved_location"}
-                for e in errors[error_start:]
+            if (
+                decision.complete
+                and extraction.complete
+                and errors[error_start:]
+                and all(
+                    e["code"] in {"review_required", "claim_not_public", "unresolved_location"}
+                    for e in errors[error_start:]
+                )
             ):
                 item["terminal"] = True
             progress.remember_policy(acquisition)

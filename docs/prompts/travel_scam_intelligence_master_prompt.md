@@ -29,6 +29,14 @@ gates are in `docs/implementation-plan.md`; PR 31A's protocol is in
 
 These decisions take precedence over conflicting examples elsewhere in this document.
 
+Update — 2026-11-08: ordinary low-confidence findings should be visible as unverified
+candidates with a disclaimer, provenance, actual location scope and evidence limits.
+Blanket manual review of every semantic NEW decision is superseded by the eligibility
+policy in [`docs/pr31h-public-candidate-growth.md`](../pr31h-public-candidate-growth.md).
+Unambiguous independent ordinary candidates may be published without a high matching
+confidence score; sensitive/held/named allegations and uncertain changes to existing
+patterns retain review safeguards. A disclaimer never validates unsupported claims.
+
 Update — 2026-11-08: the user requires “one request -> automatic progress -> sourced
 report,” without manually prompting to check research again. PR 32 adds bounded
 automatic waiting/report contracts; PR 33 adds an updating progress/report view and

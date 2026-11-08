@@ -74,6 +74,25 @@ def test_unknown_cursor_schema_fails_closed():
         cursor(schema_version="future")
 
 
+def test_exhausted_budget_stops_paid_work_but_allows_saved_claim_followup():
+    value = cursor(used=dict(queries=3, fetches=3, llm_calls=4, documents=2))
+    value.plan = ["q"]
+    value.candidates["source"] = dict(
+        document_id="saved",
+        charged_document=True,
+        summary={},
+        source=dict(url="https://example.org/story", position=1, query="q"),
+    )
+    progress = Progress(value, AsyncMock())
+    assert progress.has_work() and not progress.can_advance()
+    value.candidates["source"]["summary"] = {"claim_ids": ["claim"]}
+    assert progress.can_advance()
+    value.candidates["source"]["applied"] = {"claim": {"hypothesis_ids": ["pattern"]}}
+    assert progress.can_advance()
+    value.candidates["source"]["embedded"] = {"pattern": True}
+    assert not progress.can_advance()
+
+
 async def test_unusable_search_results_remain_distinct_from_successful_empty():
     progress = Progress(cursor(), AsyncMock())
     provider = AsyncMock()

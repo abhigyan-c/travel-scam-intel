@@ -238,6 +238,19 @@ class _Query:
             select(self.category()).select_from(Hypothesis).where(Hypothesis.id == row.id)
         )
         _, metrics, _ = await self.cohort(row.id)
+        if row.status == "candidate" or metrics.confidence_label in {
+            "limited",
+            "unknown",
+            "no_support",
+        }:
+            disclaimer = (
+                "Unverified candidate or limited evidence: use as a precaution, not as "
+                "a verified incident, proof of prevalence or confirmed new scam. "
+                "Pattern matching may be incomplete; similar reports may appear separately."
+            )
+            metrics = metrics.model_copy(
+                update={"limitations": list(dict.fromkeys([*metrics.limitations, disclaimer]))}
+            )
         path = await self.path(row.primary_location_id)
         return HypothesisCard(
             id=row.id,

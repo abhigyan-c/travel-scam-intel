@@ -318,7 +318,7 @@ async def test_attachment_hold_and_evidence_limit_fail_closed(environment):
         await seed(ctx, location, hypothesis_id=report[0])
     card = await service.get_hypothesis(report[0], as_of=NOW)
     assert card.metrics.status == "unavailable" and card.metrics.confidence_score is None
-    assert card.metrics.limitations == ["public_evidence_limit"]
+    assert "public_evidence_limit" in card.metrics.limitations
     page = await service.get_hypothesis_evidence(report[0], offset=200, limit=1, as_of=NOW)
     assert page.total == 201 and len(page.items) == 1 and not page.has_more
     assert page.metrics_status == "unavailable" and page.items[0].evidence_weight is None
@@ -387,7 +387,7 @@ async def test_invalid_legacy_metadata_returns_unknown_without_breaking_evidence
     service = IntelligenceService(ctx["sessions"])
     card = await service.get_hypothesis(public[0], as_of=NOW)
     assert card.metrics.status == "unavailable"
-    assert card.metrics.limitations == ["invalid_evidence_metadata"]
+    assert "invalid_evidence_metadata" in card.metrics.limitations
     evidence = await service.get_hypothesis_evidence(public[0], as_of=NOW)
     assert evidence.total == 1 and evidence.items[0].evidence_weight is None
 

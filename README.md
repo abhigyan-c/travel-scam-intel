@@ -1064,6 +1064,13 @@ documents passing controlled thresholds, unsuccessful trials, retained holds and
 pending deployed reacceptance. [PR 31C's earlier report](docs/pr31c-grounded-extraction-quality.md)
 remains historical evidence; old recordings are not new-prompt responses.
 
+Ordinary sourced `NEW` candidates can be public without manual approval even with
+low matching confidence. Cards include an uncertainty disclaimer and preserve actual
+scope/provenance; sensitive/held claims and changes to existing patterns retain their
+safeguards. [PR 31H](docs/pr31h-public-candidate-growth.md) documents this policy and
+the populated-location/passage-continuation regression cases. Deployment/reacceptance
+is separate from code validation.
+
 [PR 31D's acquisition report](docs/pr31d-source-acquisition-quality.md) describes
 bounded parallel search, host diversity, run-local failure feedback and the
 configurable fetch-only cap. It includes measured source-access limitations and

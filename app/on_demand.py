@@ -325,6 +325,7 @@ async def _finish(ctx, identity, token, summary):
             and cursor.seconds_reserved < cursor.seconds_cap
             and summary.get("continuation_pending")
             and summary.get("made_progress")
+            and summary.get("continuation_possible")
             and "scheduler_limits" not in job.payload
         )
         if job.payload["phase"] == "initial":
@@ -491,6 +492,9 @@ async def run_location_job(ctx, job_id: str):
     try:
         if progress:
             summary["continuation_pending"] = progress.has_work()
+            summary["continuation_possible"] = progress.can_advance()
+            if progress.has_work() and not progress.can_advance():
+                summary["stop_reason"] = "resource_limit"
             summary["made_progress"] = progress.cursor.used != progress.start_used and any(
                 i.get("document_id") for i in progress.cursor.candidates.values()
             )

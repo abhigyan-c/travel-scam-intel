@@ -11,7 +11,7 @@ from sqlalchemy.dialects.postgresql import insert
 from app.db.evidence import invalidate_independence
 from app.db.hypothesis_resolution import _unchanged
 from app.embeddings import text_hash
-from app.hypothesis_resolution import VERSION
+from app.hypothesis_resolution import VERSION, public_new_candidate
 from app.models import (
     Claim,
     Evidence,
@@ -24,7 +24,7 @@ from app.models.evidence import EvidenceStance
 from app.models.hypothesis import HypothesisStatus
 from app.models.hypothesis_relation import HypothesisRelationType
 
-LIFECYCLE_VERSION = "lifecycle-v1"
+LIFECYCLE_VERSION = "lifecycle-v2"
 
 
 class Review(BaseModel):
@@ -245,14 +245,17 @@ async def _link(session, source_id, target_id, kind):
 
 
 async def apply_resolution(session, resolution_id: UUID, *, embedder, review: Review | None = None):
-    """Apply an unchanged decision once; semantic/held decisions need explicit review."""
+    """Apply an unchanged decision; ordinary NEW candidates need no operator approval."""
     async with session.begin_nested():
         event, fresh = await _reserve(
             session,
             f"resolution:{resolution_id}",
             "apply",
             {"resolution_id": resolution_id},
-            review or Review(actor="system", reason="Apply eligible deterministic resolution"),
+            review
+            or Review(
+                actor="system", reason="Apply eligible candidate or deterministic resolution"
+            ),
         )
         if not fresh:
             return event
@@ -269,7 +272,12 @@ async def apply_resolution(session, resolution_id: UUID, *, embedder, review: Re
             raise ValueError("resolution_version_changed")
         if (
             resolution.needs_review
-            or resolution.details.get("context", {}).get("method") == "semantic"
+            or (
+                resolution.details.get("context", {}).get("method") == "semantic"
+                and not public_new_candidate(
+                    resolution.details.get("decision"), resolution.details.get("claim", {})
+                )
+            )
         ) and review is None:
             raise ValueError("resolution_requires_review")
         details = resolution.details

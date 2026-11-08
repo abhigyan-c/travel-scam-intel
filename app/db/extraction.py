@@ -69,6 +69,24 @@ async def extract_document(
     complete = relevance.complete
     deadline = asyncio.get_running_loop().time() + timeout
     attempted = 0
+
+    async def locked_document():
+        current = await session.scalar(
+            select(Document)
+            .where(Document.id == document_id)
+            .with_for_update()
+            .execution_options(populate_existing=True)
+        )
+        if (
+            current is None
+            or current.clean_text_hash != text_hash
+            or current.clean_text != source_text
+            or current.processing_status != DocumentStatus.PROCESSED
+            or current.language != "en"
+        ):
+            raise ValueError("document_changed_during_extraction")
+        return current
+
     for assessment in relevance.assessments:
         if assessment.completion.error is not None or assessment.completion.data is None:
             complete = False
@@ -95,38 +113,95 @@ async def extract_document(
             if remaining <= 0:
                 complete = False
                 break
+            review_key = hashlib.sha256(
+                f"{MODEL}:{PROMPT_VERSION}:{text_hash}:{passage.start}:{passage.end}".encode()
+            ).hexdigest()
+            pending = document.document_metadata.get("empty_extraction_reviews", {}).get(review_key)
             try:
                 async with asyncio.timeout(remaining):
-                    result = await extract_passage(passage, client)
+                    if not pending:
+                        result = await extract_passage(passage, client)
+                        attempts.append(
+                            {
+                                "passage_start": passage.start,
+                                "cached": False,
+                                "purpose": "extraction",
+                                **result.model_dump(exclude={"data"}),
+                            }
+                        )
+                        invalid_entity = result.error == "invalid_entity_contract"
+                        if not invalid_entity and (result.error is not None or result.data is None):
+                            complete = False
+                            continue
+                        if invalid_entity or not result.data.claims:
+                            current = await locked_document()
+                            saved = {
+                                key: value
+                                for key, value in current.document_metadata.get(
+                                    "empty_extraction_reviews", {}
+                                ).items()
+                                if value.get("text_hash") == text_hash
+                                and value.get("version") == PROMPT_VERSION
+                            }
+                            pending = dict(
+                                version=PROMPT_VERSION,
+                                text_hash=text_hash,
+                                model=MODEL,
+                                state="pending",
+                                usage=result.usage,
+                                reason="invalid_entity" if invalid_entity else "empty",
+                            )
+                            saved[review_key] = pending
+                            current.document_metadata = {
+                                **current.document_metadata,
+                                "empty_extraction_reviews": saved,
+                            }
+                            await session.flush()
+                            if checkpoint is not None:
+                                await checkpoint(session)
+                    if pending:
+                        result = await extract_passage(
+                            passage,
+                            client,
+                            review_empty=True,
+                            invalid_entity=pending.get("reason") == "invalid_entity",
+                        )
+                        attempts.append(
+                            {
+                                "passage_start": passage.start,
+                                "cached": False,
+                                "purpose": "empty_review",
+                                **result.model_dump(exclude={"data"}),
+                            }
+                        )
             except TimeoutError:
                 attempts.append({"passage_start": passage.start, "error": "deadline"})
                 complete = False
                 break
-            attempts.append(
-                {
-                    "passage_start": passage.start,
-                    "cached": False,
-                    **result.model_dump(exclude={"data"}),
-                }
-            )
             if result.error is not None or result.data is None:
                 complete = False
                 continue
             # Verify the input again under a lock before committing derived claims.
-            current = await session.scalar(
-                select(Document)
-                .where(Document.id == document_id)
-                .with_for_update()
-                .execution_options(populate_existing=True)
-            )
-            if (
-                current.clean_text_hash != text_hash
-                or current.clean_text != source_text
-                or current.processing_status != DocumentStatus.PROCESSED
-                or current.language != "en"
-            ):
-                raise ValueError("document_changed_during_extraction")
+            current = await locked_document()
+            usage = dict(result.usage)
+            if pending:
+                for key, value in pending.get("usage", {}).items():
+                    usage[key] = usage.get(key, 0) + value
+                reviews = dict(current.document_metadata["empty_extraction_reviews"])
+                reviews[review_key] = {**pending, "state": "completed"}
+                current.document_metadata = {
+                    **current.document_metadata,
+                    "empty_extraction_reviews": reviews,
+                }
             async with session.begin_nested():
+                prior_holds = list(
+                    await session.scalars(
+                        select(Claim).where(
+                            Claim.document_id == document_id,
+                            Claim.structured_data["publication_status"].astext == "held",
+                        )
+                    )
+                )
                 run_id = await session.scalar(
                     insert(ClaimExtraction)
                     .values(
@@ -138,7 +213,7 @@ async def extract_document(
                         passage_end=passage.end,
                         passage_text=passage.text,
                         claim_count=len(result.data.claims),
-                        usage=result.usage,
+                        usage=usage,
                         request_id=(result.request_id or "")[:200] or None,
                     )
                     .on_conflict_do_nothing(constraint="uq_claim_extraction_passage")
@@ -148,6 +223,30 @@ async def extract_document(
                     for index, extracted in enumerate(result.data.claims):
                         quote_start = passage.start + passage.text.index(extracted.evidence_quote)
                         held = extracted.sensitive or bool(extracted.entities)
+                        inherited = []
+                        for prior in prior_holds:
+                            old = prior.structured_data
+                            lineage = old.get("extraction", {})
+                            start, end = lineage.get("quote_start"), lineage.get("quote_end")
+                            overlap = (
+                                lineage.get("clean_text_hash") == text_hash
+                                and type(start) is int
+                                and type(end) is int
+                                and start < quote_start + len(extracted.evidence_quote)
+                                and quote_start < end
+                            )
+                            quote = old.get("evidence_quote")
+                            same_quote = (
+                                isinstance(quote, str)
+                                and bool(quote)
+                                and (
+                                    quote in extracted.evidence_quote
+                                    or extracted.evidence_quote in quote
+                                )
+                            )
+                            if overlap or same_quote:
+                                inherited.append(str(prior.id))
+                        held = held or bool(inherited)
                         normalized = " ".join(
                             unicodedata.normalize("NFKC", extracted.claim).split()
                         ).casefold()
@@ -167,6 +266,7 @@ async def extract_document(
                                     "unresolved_location": extracted.location,
                                     "publication_status": "held" if held else "unreviewed",
                                     "sensitive": held,
+                                    **({"hold_inherited_from": inherited} if inherited else {}),
                                     "extraction": {
                                         "model": MODEL,
                                         "prompt_version": PROMPT_VERSION,

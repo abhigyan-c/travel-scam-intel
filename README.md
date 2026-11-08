@@ -1057,10 +1057,12 @@ Qualified source locations such as “Grand Palace in Bangkok” use the shared
 [grounded location policy](docs/pr31b-grounded-location-resolution.md). Named
 landmarks may be provisional; ambiguous geography and sensitive claims remain held.
 
-Extraction uses the measured `claims-v3` contract and complete bounded source-quote
-coverage. [PR 31C's experiment report](docs/pr31c-grounded-extraction-quality.md)
-records rejected candidates, remaining misses and the distinction between known
-token counts and unknown usage for interrupted calls.
+Current extraction code uses `claims-v6`, strict source-quote coverage and a bounded
+audit for empty/invalid-anonymous-entity responses. The default benchmark recording
+is the selected PR 31G capture. [The quality-repair report](docs/pr31g-research-quality-repair.md)
+documents passing controlled thresholds, unsuccessful trials, retained holds and
+pending deployed reacceptance. [PR 31C's earlier report](docs/pr31c-grounded-extraction-quality.md)
+remains historical evidence; old recordings are not new-prompt responses.
 
 [PR 31D's acquisition report](docs/pr31d-source-acquisition-quality.md) describes
 bounded parallel search, host diversity, run-local failure feedback and the

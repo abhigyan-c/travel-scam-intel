@@ -185,7 +185,92 @@ async def test_empty_success_cached_but_provider_errors_retry(session, document)
     empty = await extract_document(session, document.id, relevance(document), client)
     assert empty.complete and empty.claim_ids == []
     await extract_document(session, document.id, relevance(document), client)
+    assert client.complete.await_count == 3  # Failed attempt, empty extraction, bounded audit.
+
+
+async def test_empty_audit_retains_sensitive_claim_and_aggregates_usage(session, document):
+    client = client_with_claim()
+    positive = client.complete.return_value
+    client.complete.side_effect = [
+        Completion(data=ClaimBatch(claims=[]), requests=1, usage={"prompt_tokens": 10}),
+        positive,
+    ]
+    result = await extract_document(session, document.id, relevance(document), client)
+    assert result.complete and len(result.claim_ids) == 1
+    claim = await session.get(Claim, result.claim_ids[0])
+    assert claim.structured_data["publication_status"] == "held"
+    assert claim.structured_data["sensitive"] is True
+    run = await session.get(ClaimExtraction, claim.extraction_id)
+    assert run.usage["prompt_tokens"] == 110
+    await extract_document(session, document.id, relevance(document), client)
     assert client.complete.await_count == 2
+
+
+async def test_failed_audit_resumes_without_repeating_saved_empty_extraction(session, document):
+    client = client_with_claim()
+    positive = client.complete.return_value
+    client.complete.side_effect = [
+        Completion(data=ClaimBatch(claims=[]), requests=1),
+        Completion(error="timeout", requests=1),
+        positive,
+    ]
+
+    async def checkpoint(session):
+        await session.commit()
+
+    first = await extract_document(
+        session, document.id, relevance(document), client, checkpoint=checkpoint
+    )
+    assert not first.complete and not first.claim_ids
+    assert len(document.document_metadata["empty_extraction_reviews"]) == 1
+    second = await extract_document(
+        session, document.id, relevance(document), client, checkpoint=checkpoint
+    )
+    assert second.complete and len(second.claim_ids) == 1
+    assert client.complete.await_count == 3
+    assert "independent audit" in client.complete.await_args_list[-1].kwargs["system"]
+
+
+async def test_valid_sensitive_output_is_never_audited_to_clear_a_hold(session, document):
+    client = client_with_claim()
+    client.complete.return_value.data.claims[0].entities = []
+    client.complete.return_value.data.claims[0].sensitive = True
+    result = await extract_document(session, document.id, relevance(document), client)
+    assert len(result.claim_ids) == 1
+    client.complete.assert_awaited_once()
+    claim = await session.get(Claim, result.claim_ids[0])
+    assert claim.structured_data["publication_status"] == "held"
+
+
+async def test_prompt_upgrade_cannot_republish_overlapping_previously_held_evidence(
+    session, document
+):
+    prior = Claim(
+        document_id=document.id,
+        claim_text="Old held allegation",
+        normalized_claim="old held allegation",
+        claim_type="fare",
+        structured_data={
+            "publication_status": "held",
+            "sensitive": True,
+            "evidence_quote": document.clean_text,
+            "extraction": {
+                "clean_text_hash": document.clean_text_hash,
+                "quote_start": 0,
+                "quote_end": len(document.clean_text),
+            },
+        },
+    )
+    session.add(prior)
+    await session.flush()
+    client = client_with_claim()
+    client.complete.return_value.data.claims[0].entities = []
+    client.complete.return_value.data.claims[0].sensitive = False
+    result = await extract_document(session, document.id, relevance(document), client)
+    claim = await session.get(Claim, result.claim_ids[0])
+    assert claim.structured_data["publication_status"] == "held"
+    assert claim.structured_data["hold_inherited_from"] == [str(prior.id)]
+    assert prior.structured_data["publication_status"] == "held"
 
 
 async def test_stale_relevance_and_forged_offsets_rejected_before_calls(session, document):

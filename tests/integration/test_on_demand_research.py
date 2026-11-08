@@ -248,7 +248,7 @@ async def test_cancelled_extraction_keeps_completed_empty_passages_and_advances_
                 requests=1,
             )
         extractions += 1
-        if extractions == 2:
+        if extractions == 4:  # First empty is audited/committed; interrupt the next audit.
             entered.set()
             await asyncio.Event().wait()
         return Completion(data=ClaimBatch(claims=[]), requests=1)
@@ -269,8 +269,8 @@ async def test_cancelled_extraction_keeps_completed_empty_passages_and_advances_
     await run_location_job(ctx, str(first.active_job_id))
     final = await finish_enrichment(ctx, identity)
     assert final.complete and not final.hypotheses
-    assert extractions == passage_count + 1
-    assert ctx["llm"].complete.await_count == 2 * passage_count + 1
+    assert extractions == 2 * passage_count + 1
+    assert ctx["llm"].complete.await_count == 3 * passage_count + 1
     assert ctx["fetcher"].fetch.await_count == ctx["storage"].get_object.call_count == 1
     async with ctx["sessions"]() as session:
         assert (

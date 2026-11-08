@@ -32,6 +32,7 @@ def test_interactive_and_enrichment_limits_are_bounded():
     "changes",
     [
         {"research_max_total_seconds": 46},
+        {"research_max_fetch_seconds": 11},
         {"research_max_search_queries": 7},
         {"research_max_llm_concurrency": 0},
         {"research_fresh_seconds": 0},

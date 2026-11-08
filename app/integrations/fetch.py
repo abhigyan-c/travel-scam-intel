@@ -9,7 +9,29 @@ from urllib.parse import quote, urljoin, urlsplit, urlunsplit
 
 
 class FetchError(ValueError):
-    pass
+    def __init__(self, code: str, *, status: int | None = None, host: str | None = None):
+        super().__init__(code)
+        self.status, self.host = status, host
+
+
+FETCH_ERROR_CODES = frozenset(
+    {
+        "invalid_url",
+        "non_public_address",
+        "unsupported_encoding",
+        "unsupported_content_type",
+        "response_too_large",
+        "incomplete_response",
+        "redirect_limit_or_missing_location",
+        "insecure_redirect",
+        "rate_limited",
+        "http_status",
+        "fetch_failed",
+        "fetch_timeout",
+        "acquisition_timeout",
+        "host_deferred",
+    }
+)
 
 
 def canonicalize_url(value: str) -> str:
@@ -124,6 +146,8 @@ def _request(url: str, address: str, timeout: float, max_bytes: int):
 
 
 class Fetcher:
+    supports_host_guard = True
+
     def __init__(
         self,
         *,
@@ -148,7 +172,7 @@ class Fetcher:
         self._next_host[host] = scheduled + self.host_interval
         await asyncio.sleep(scheduled - now)
 
-    async def fetch(self, url: str) -> FetchedPage:
+    async def fetch(self, url: str, *, host_allowed=None) -> FetchedPage:
         try:
             async with asyncio.timeout(self.timeout):
                 for attempt in range(self.attempts):
@@ -156,6 +180,8 @@ class Fetcher:
                     try:
                         for hop in range(self.redirects + 1):
                             parts = urlsplit(current)
+                            if host_allowed is not None and not host_allowed(current):
+                                raise FetchError("host_deferred", host=parts.hostname)
                             await self._pace(parts.hostname)
                             address = await resolve_public(
                                 parts.hostname, 443 if parts.scheme == "https" else 80
@@ -171,15 +197,18 @@ class Fetcher:
                                     raise FetchError("insecure_redirect")
                                 current = target
                                 continue
-                            if status in {429, 500, 502, 503, 504}:
+                            if status == 429:
+                                # Do not retry a rate-limited origin immediately or evade it.
+                                raise FetchError("rate_limited", status=status, host=parts.hostname)
+                            if status in {500, 502, 503, 504}:
                                 raise OSError("transient_http_status")
                             if status != 200:
-                                raise FetchError("http_status")
+                                raise FetchError("http_status", status=status, host=parts.hostname)
                             return FetchedPage(current, content, headers["content-type"])
                     except (OSError, http.client.HTTPException):
                         if attempt + 1 == self.attempts:
-                            raise FetchError("fetch_failed") from None
+                            raise FetchError("fetch_failed", host=parts.hostname) from None
                         await asyncio.sleep(0.25 * (attempt + 1))
         except TimeoutError:
-            raise FetchError("fetch_timeout") from None
+            raise FetchError("fetch_timeout", host=parts.hostname) from None
         raise FetchError("fetch_failed")

@@ -18,11 +18,12 @@ from sqlalchemy import select, text
 from sqlalchemy.engine import make_url
 from sqlalchemy.ext.asyncio import async_sessionmaker, create_async_engine
 
+from app.acquisition import POLICY_VERSION
 from app.core.config import Settings
 from app.db.claim_pipeline import apply_and_score_claim
 from app.db.resolution import RESOLUTION_VERSION, get_location_path, normalize_name
 from app.db.session import Base
-from app.discovery import SearchResponse, SearchResult, SearchUsage
+from app.discovery import DISCOVERY_VERSION, SearchResponse, SearchResult, SearchUsage
 from app.embeddings import Embedder
 from app.extraction import PROMPT_VERSION as EXTRACTION_VERSION
 from app.integrations.fetch import FetchedPage, FetchError
@@ -432,6 +433,8 @@ async def run(args):
             "extraction": EXTRACTION_VERSION,
             "processing": PROCESSING_VERSION,
             "location": RESOLUTION_VERSION,
+            "discovery": DISCOVERY_VERSION,
+            "acquisition": POLICY_VERSION,
         },
         "limitations": [
             "Synthetic sources; search and acquisition are controlled.",

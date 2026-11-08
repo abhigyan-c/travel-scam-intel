@@ -1,0 +1,138 @@
+{
+  "kind": "single_live_source_probe",
+  "location": "Bangkok, Thailand",
+  "discovery_seconds": 3.411,
+  "queries": [
+    {
+      "query_index": 0,
+      "seconds": 1.562,
+      "usage": {
+        "requests": 1,
+        "returned_results": 10,
+        "reported_credits": 1,
+        "error": null
+      },
+      "query": "Bangkok, Thailand tourist scams"
+    },
+    {
+      "query_index": 1,
+      "seconds": 1.753,
+      "usage": {
+        "requests": 1,
+        "returned_results": 10,
+        "reported_credits": 1,
+        "error": null
+      },
+      "query": "Bangkok, Thailand common scams"
+    },
+    {
+      "query_index": 2,
+      "seconds": 1.847,
+      "usage": {
+        "requests": 1,
+        "returned_results": 9,
+        "reported_credits": 1,
+        "error": null
+      },
+      "query": "Bangkok, Thailand tourist traps"
+    }
+  ],
+  "candidates": 22,
+  "observations": [
+    {
+      "url": "https://th.usembassy.gov/common-scams-to-avoid/",
+      "host": "th.usembassy.gov",
+      "error": "http_status",
+      "http_status": 407,
+      "seconds": 0.231
+    },
+    {
+      "url": "https://www.reddit.com/r/ThailandTourism/comments/147htyw/what_are_the_extremely_popular_scams_in_thailand/",
+      "host": "reddit.com",
+      "error": "http_status",
+      "http_status": 403,
+      "seconds": 0.152
+    },
+    {
+      "url": "https://www.thecaravelgu.com/blog/avoiding-tourist-traps-in-bangkok",
+      "host": "thecaravelgu.com",
+      "error": "http_status",
+      "http_status": 404,
+      "seconds": 0.23
+    },
+    {
+      "url": "https://yourthaiguide.com/top-10-bangkok-scams-you-should-avoid/",
+      "host": "yourthaiguide.com",
+      "outcome": "ready",
+      "language": "en",
+      "bytes": 83137,
+      "raw_hash": "80d74bebcde63c9e796994c6d7160e79c5d9a63a0e7bfc03d548133724fed068",
+      "seconds": 1.233
+    },
+    {
+      "url": "https://www.swisshelpingpoint.com/en/touristenfallen-in-bangkok/",
+      "host": "swisshelpingpoint.com",
+      "error": "http_status",
+      "http_status": 421,
+      "seconds": 0.835
+    },
+    {
+      "url": "https://www.facebook.com/groups/1206669499358683/posts/28420631040869161/",
+      "host": "facebook.com",
+      "outcome": "empty",
+      "language": null,
+      "bytes": 868563,
+      "raw_hash": "2d43fdd7d0d8ef27b95c7126646558242afe54eafc4284d6d156fd73b961c013",
+      "seconds": 1.855
+    },
+    {
+      "url": "https://www.quora.com/How-can-you-avoid-tourist-traps-and-overpriced-places-when-visiting-Bangkok",
+      "host": "quora.com",
+      "error": "http_status",
+      "http_status": 403,
+      "seconds": 0.197
+    },
+    {
+      "url": "https://masxworld.com/what-not-to-do-when-visiting-thailand-avoid-these-tourist-traps/",
+      "host": "masxworld.com",
+      "error": "redirect_limit_or_missing_location",
+      "http_status": null,
+      "seconds": 2.507
+    }
+  ],
+  "policy": {
+    "version": "acquisition-v1",
+    "host_attempts": {
+      "th.usembassy.gov": 1,
+      "reddit.com": 1,
+      "thecaravelgu.com": 1,
+      "yourthaiguide.com": 1,
+      "swisshelpingpoint.com": 1,
+      "facebook.com": 1,
+      "quora.com": 1,
+      "masxworld.com": 1
+    },
+    "deferred": {}
+  },
+  "limitations": [
+    "One changing live sample; no before/after speed claim.",
+    "At most three searches and eight fetches, each bounded to six seconds.",
+    "No LLM, database writes, object storage writes or scam findings.",
+    "Bodies/text are not retained; ready is processable text, not useful evidence."
+  ],
+  "environment": "Existing production Droplet, isolated Python process; modules loaded in memory, running service unchanged.",
+  "source_hashes": {
+    "app/integrations/fetch.py": "a748c4f5d40de889cb410a252e9f19269654718f8e5b83c5515750b68a3d4952",
+    "app/acquisition.py": "9f088432e8ad86182f2bb4317e33302805bf351754f338684db2134a98bf7606",
+    "app/discovery.py": "c085f9a49f08fca22fe2a9d075f3d4b0c1dcd6f25e43c298bf0b957f16976531",
+    "benchmarks/acquisition.py": "602983ebc59bea062f79ab1d346086fca14df2db04bdd509d205d0a5fc3e269a"
+  },
+  "base_commit": "e0d10226995f44a614da23c1c37591cef531845d",
+  "working_tree_dirty": true,
+  "recorded_at": "2026-11-07T14:16:24.936864+00:00",
+  "actual_queries": [
+    "Bangkok, Thailand tourist scams",
+    "Bangkok, Thailand common scams",
+    "Bangkok, Thailand tourist traps"
+  ]
+}

@@ -210,3 +210,83 @@ async def test_slow_classification_leaves_time_for_grounded_extraction(
     assert any(row["stage"] == "extraction" for row in result.diagnostics["stage_timings"])
     document = await session.get(Document, UUID(result.documents[0]["document_id"]))
     assert document.document_metadata["relevance"]["assessments"]
+
+
+async def test_host_access_denial_defers_other_pages_but_keeps_useful_other_host(
+    session, boundaries
+):
+    deps, url = boundaries
+    blocked = "https://denied.example/first"
+    later = "https://denied.example/second"
+    deferred = "https://denied.example/third"
+    deps["provider"].search.return_value.results = [
+        SearchResult(url=blocked, position=1, query="q"),
+        SearchResult(url=later, position=2, query="q"),
+        SearchResult(url=deferred, position=3, query="q"),
+        SearchResult(url=url, position=3, query="q"),
+    ]
+    original = deps["fetcher"].fetch.side_effect
+
+    async def fetch(requested):
+        if requested.startswith("https://denied.example/"):
+            raise FetchError("http_status", status=403)
+        return await original(requested)
+
+    deps["fetcher"].fetch.side_effect = fetch
+    result = await research_location(session, "Bangkok", **deps, limits=limits())
+    assert len(result.claim_ids) == 1 and result.status == "partial" and result.fetched == 3
+    assert result.diagnostics["acquisition"]["deferred"] == {"repeated_access_denied": 1}
+    assert await session.scalar(select(Source.id).where(Source.canonical_url == deferred)) is None
+
+
+async def test_fetch_timeout_leaves_budget_for_a_different_source(session, boundaries):
+    deps, url = boundaries
+    slow = "https://slow.example/first"
+    deps["provider"].search.return_value.results.insert(
+        0, SearchResult(url=slow, position=1, query="q")
+    )
+    original = deps["fetcher"].fetch.side_effect
+
+    async def fetch(requested):
+        if requested == slow:
+            await asyncio.sleep(5)
+        return await original(requested)
+
+    deps["fetcher"].fetch.side_effect = fetch
+    result = await research_location(
+        session, "Bangkok", **deps, limits=limits(timeout=2, fetch_timeout=0.05)
+    )
+    assert len(result.claim_ids) == 1 and result.fetched == 2
+    assert any(e["code"] == "acquisition_timeout" for e in result.errors)
+
+
+async def test_slow_object_storage_does_not_consume_the_origin_fetch_cap(
+    session, boundaries, monkeypatch
+):
+    import time
+
+    from app.db import ingestion
+
+    deps, _ = boundaries
+    store = ingestion._store_raw
+
+    def slow_store(*args):
+        time.sleep(0.05)
+        return store(*args)
+
+    monkeypatch.setattr(ingestion, "_store_raw", slow_store)
+    result = await research_location(
+        session, "Bangkok", **deps, limits=limits(timeout=2, fetch_timeout=0.01)
+    )
+    assert result.complete and len(result.claim_ids) == 1
+
+
+async def test_only_unsupported_discovery_results_are_not_successful_empty(session, boundaries):
+    deps, _ = boundaries
+    deps["provider"].search.return_value.results = [
+        SearchResult(url="https://example.org/report.pdf", position=1, query="q")
+    ]
+    result = await research_location(session, "Bangkok", **deps, limits=limits())
+    assert not result.complete and result.message != "Nothing was found."
+    deps["fetcher"].fetch.assert_not_called()
+    deps["llm"].complete.assert_not_called()

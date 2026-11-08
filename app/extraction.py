@@ -6,7 +6,7 @@ from pydantic import BaseModel, ConfigDict, Field, create_model
 from app.integrations.sarvam import Completion, Sarvam
 from app.relevance import Passage
 
-PROMPT_VERSION = "claims-v6"
+PROMPT_VERSION = "claims-v7"
 Snippet = Annotated[str, Field(min_length=1, max_length=200)]
 SYSTEM_PROMPT = """Extract at most one travel scam claim reported in the passage.
 Use only this passage. Return an empty claims array if no claim is supported. Do not invent scams,
@@ -94,6 +94,7 @@ class GroundingError(ValueError):
 class ExtractionCompletion(Completion[ClaimBatch]):
     # Only fixed field names, never source values or rejected model output.
     validation_errors: list[str] = Field(default_factory=list)
+    preserve_hold: bool = False
 
 
 def validate_grounding(batch: ClaimBatch, passage: Passage) -> None:
@@ -158,12 +159,21 @@ def source_excerpts(text: str) -> list[str]:
     return quotes
 
 
-def source_bound_schema(passage: Passage) -> type[ClaimBatch]:
+def source_bound_schema(passage: Passage, *, core_only: bool = False) -> type[ClaimBatch]:
     quotes = source_excerpts(passage.text)
+    fields = {}
+    if core_only:
+        # This is a different requested output shape, never removal of rejected values.
+        # The mechanism remains in the claim and exact source quote.
+        fields = {
+            name: (list[Snippet], Field(max_length=0))
+            for name in ("approach", "methods", "warning_signs")
+        }
     claim = create_model(
         "SourceBoundClaim",
         __base__=ExtractedClaim,
         evidence_quote=(Literal[tuple(quotes)], ...),
+        **fields,
     )
     return create_model(
         "SourceBoundClaimBatch",
@@ -173,16 +183,51 @@ def source_bound_schema(passage: Passage) -> type[ClaimBatch]:
 
 
 async def extract_passage(
-    passage: Passage, client: Sarvam, *, review_empty: bool = False, invalid_entity: bool = False
+    passage: Passage,
+    client: Sarvam,
+    *,
+    review_empty: bool = False,
+    invalid_entity: bool = False,
+    invalid_fields: list[str] | None = None,
 ) -> Completion[ClaimBatch]:
     if not passage.text.strip() or len(passage.text) > 4000:
         raise ValueError("invalid extraction passage")
+    feedback = ""
+    if invalid_fields:
+        allowed = {
+            "evidence_quote",
+            "location",
+            "approach",
+            "methods",
+            "warning_signs",
+            "entities",
+            "occurred_at",
+            "duplicate_claim",
+        }
+        if any(field not in allowed for field in invalid_fields):
+            raise ValueError("invalid grounding feedback")
+        feedback = (
+            "\nAn earlier extraction failed exact-source validation for these fields: "
+            + ", ".join(sorted(set(invalid_fields)))
+            + ". Re-extract independently from the source. Copy exact substrings from the "
+            "selected quote; use null/[] for absent optional details. A location must be one "
+            "source-named place, never a list of alternatives or a search destination. "
+            "Do not remove named entities or sensitivity to make validation pass. "
+            "An empty result remains valid when no deceptive act is supported.\n"
+            "For this correction, approach, methods and warning_signs MUST be empty arrays "
+            "as required by the schema. Describe the supported mechanism in claim and retain "
+            "its exact evidence_quote. Do not omit named entities, sensitivity "
+            "or source geography.\n"
+        )
     result = await client.complete(
-        system=(EMPTY_REVIEW_PROMPT + (ENTITY_REPAIR if invalid_entity else ""))
-        if review_empty
-        else SYSTEM_PROMPT,
+        system=(
+            (EMPTY_REVIEW_PROMPT + (ENTITY_REPAIR if invalid_entity else ""))
+            if review_empty
+            else SYSTEM_PROMPT
+        )
+        + feedback,
         user=json.dumps({"passage": passage.text}),
-        schema=source_bound_schema(passage),
+        schema=source_bound_schema(passage, core_only=bool(invalid_fields)),
     )
     if result.data is not None:
         try:
@@ -197,5 +242,13 @@ async def extract_passage(
                 usage=result.usage,
                 request_id=result.request_id,
                 validation_errors=exc.fields,
+                preserve_hold=any(
+                    claim.sensitive or bool(claim.entities) for claim in result.data.claims
+                )
+                if str(exc) != "anonymous_entity"
+                else any(
+                    any(entity not in ANONYMOUS_ROLES for entity in claim.entities)
+                    for claim in result.data.claims
+                ),
             )
     return result

@@ -117,6 +117,17 @@ async def extract_document(
                 f"{MODEL}:{PROMPT_VERSION}:{text_hash}:{passage.start}:{passage.end}".encode()
             ).hexdigest()
             pending = document.document_metadata.get("empty_extraction_reviews", {}).get(review_key)
+            if pending and pending.get("state") == "failed":
+                attempts.append(
+                    {
+                        "passage_start": passage.start,
+                        "cached": True,
+                        "requests": 0,
+                        "error": pending.get("error", "invalid_grounding"),
+                    }
+                )
+                complete = False
+                continue
             try:
                 async with asyncio.timeout(remaining):
                     if not pending:
@@ -130,10 +141,15 @@ async def extract_document(
                             }
                         )
                         invalid_entity = result.error == "invalid_entity_contract"
-                        if not invalid_entity and (result.error is not None or result.data is None):
+                        invalid_grounding = result.error == "invalid_grounding" and bool(
+                            getattr(result, "validation_errors", [])
+                        )
+                        if not (invalid_entity or invalid_grounding) and (
+                            result.error is not None or result.data is None
+                        ):
                             complete = False
                             continue
-                        if invalid_entity or not result.data.claims:
+                        if invalid_entity or invalid_grounding or not result.data.claims:
                             current = await locked_document()
                             saved = {
                                 key: value
@@ -149,7 +165,13 @@ async def extract_document(
                                 model=MODEL,
                                 state="pending",
                                 usage=result.usage,
-                                reason="invalid_entity" if invalid_entity else "empty",
+                                reason="invalid_entity"
+                                if invalid_entity
+                                else "invalid_grounding"
+                                if invalid_grounding
+                                else "empty",
+                                invalid_fields=getattr(result, "validation_errors", []),
+                                preserve_hold=getattr(result, "preserve_hold", False),
                             )
                             saved[review_key] = pending
                             current.document_metadata = {
@@ -165,6 +187,9 @@ async def extract_document(
                             client,
                             review_empty=True,
                             invalid_entity=pending.get("reason") == "invalid_entity",
+                            invalid_fields=pending.get("invalid_fields")
+                            if pending.get("reason") == "invalid_grounding"
+                            else None,
                         )
                         attempts.append(
                             {
@@ -179,6 +204,17 @@ async def extract_document(
                 complete = False
                 break
             if result.error is not None or result.data is None:
+                if pending and result.error in {"invalid_grounding", "invalid_entity_contract"}:
+                    current = await locked_document()
+                    reviews = dict(current.document_metadata["empty_extraction_reviews"])
+                    reviews[review_key] = {**pending, "state": "failed", "error": result.error}
+                    current.document_metadata = {
+                        **current.document_metadata,
+                        "empty_extraction_reviews": reviews,
+                    }
+                    await session.flush()
+                    if checkpoint is not None:
+                        await checkpoint(session)
                 complete = False
                 continue
             # Verify the input again under a lock before committing derived claims.
@@ -222,7 +258,11 @@ async def extract_document(
                 if run_id is not None:
                     for index, extracted in enumerate(result.data.claims):
                         quote_start = passage.start + passage.text.index(extracted.evidence_quote)
-                        held = extracted.sensitive or bool(extracted.entities)
+                        held = (
+                            extracted.sensitive
+                            or bool(extracted.entities)
+                            or bool(pending and pending.get("preserve_hold"))
+                        )
                         inherited = []
                         for prior in prior_holds:
                             old = prior.structured_data

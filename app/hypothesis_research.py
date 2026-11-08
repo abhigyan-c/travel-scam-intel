@@ -10,6 +10,7 @@ from app.db.resolution import get_location_path
 from app.models import Hypothesis, HypothesisResearchState, ResearchJob
 from app.on_demand import search_label
 from app.research import ResearchLeaseLost, ResearchLimits, research_location
+from app.research_progress import Cursor, Progress
 from app.services.intelligence import IntelligenceNotFound, _Query
 from app.services.public_evidence import current_hypothesis, public_text
 
@@ -32,18 +33,57 @@ async def perform_hypothesis_research(ctx, payload, session, identity, token):
         return {"status": "skipped", "complete": False, "reason": "topic_withheld"}
     path = await get_location_path(session, target.primary_location_id)
 
-    async def checkpoint(session):
+    limits = ResearchLimits.model_validate(payload["scheduler_limits"])
+    job = await session.get(ResearchJob, identity)
+    saved = job.result.get("continuation")
+    cursor = (
+        Cursor.model_validate(saved)
+        if saved
+        else Cursor(
+            caps={
+                name: getattr(limits, name)
+                for name in ("queries", "fetches", "documents", "llm_calls")
+            },
+            seconds_cap=3 * limits.timeout,
+        )
+    )
+
+    async def persist(session=None):
+        if session is None:
+            async with ctx["sessions"]() as owned_session:
+                await persist(owned_session)
+            return
         job = await session.scalar(
             select(ResearchJob)
             .where(ResearchJob.id == identity, ResearchJob.run_token == token)
             .with_for_update()
+            .execution_options(populate_existing=True)
         )
         visible = await session.scalar(
             select(Hypothesis.id).where(Hypothesis.id == hypothesis_id, current_hypothesis())
         )
         if job is None or job.lease_expires_at <= datetime.now(UTC) or visible is None:
             raise ResearchLeaseLost()
+        job.result = {**job.result, "continuation": cursor.model_dump(mode="json")}
         await session.commit()
+
+    progress = Progress(cursor, persist)
+
+    async def checkpoint(session):
+        await progress.save(session)
+
+    # Release the read transaction before reserving budget in an independent session.
+    target_location_id = target.primary_location_id
+    await session.commit()
+    granted = await progress.reserve_time(limits.timeout)
+    if granted <= 0:
+        return {
+            "status": "partial",
+            "complete": False,
+            "error_code": "run_time_limit",
+            "continuation": cursor.model_dump(mode="json"),
+        }
+    limits = limits.model_copy(update={"timeout": granted})
 
     async def on_claim(session, claim_id, budget):
         return await apply_and_score_claim(
@@ -56,20 +96,21 @@ async def perform_hypothesis_research(ctx, payload, session, identity, token):
     result = await research_location(
         session,
         search_label(path),
-        target_location_id=target.primary_location_id,
+        target_location_id=target_location_id,
         topic=topic,
         provider=ctx["provider"],
         fetcher=ctx["fetcher"],
         llm=ctx["llm"],
         storage=ctx["storage"],
         bucket=ctx["bucket"],
-        limits=ResearchLimits.model_validate(payload["scheduler_limits"]),
+        limits=limits,
         checkpoint=checkpoint,
         on_claim=on_claim,
         on_hypothesis=on_hypothesis,
+        progress=progress,
     )
     await checkpoint(session)
-    return result.model_dump(mode="json")
+    return {**result.model_dump(mode="json"), "continuation": cursor.model_dump(mode="json")}
 
 
 async def finish_hypothesis_state(session, payload, identity, settings, *, complete):

@@ -101,12 +101,17 @@ async def discover(
     timeout: float = 25,
     topic: str | None = None,
     concurrency: int = 2,
+    query_plan: list[str] | None = None,
 ) -> DiscoveryResponse:
     if not 1 <= max_queries <= 6 or not 1 <= max_results <= 100 or timeout <= 0:
         raise ValueError("invalid discovery limits")
     if not 1 <= concurrency <= 3:
         raise ValueError("invalid discovery concurrency")
-    queries = generate_queries(location, topic=topic)[:max_queries]
+    queries = (generate_queries(location, topic=topic) if query_plan is None else query_plan)[
+        :max_queries
+    ]
+    if any(not q.strip() or len(q) > 400 or any(ord(c) < 32 for c in q) for q in queries):
+        raise ValueError("invalid query plan")
     found: dict[str, tuple[int, SearchResult]] = {}
     usage, filtered = [], 0
     deadline = asyncio.get_running_loop().time() + timeout

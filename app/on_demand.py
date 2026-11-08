@@ -21,6 +21,7 @@ from app.models import Claim, Evidence, Hypothesis, LocationResearchState, Resea
 from app.models.hypothesis import HypothesisStatus
 from app.models.research_job import JobKind, JobStatus
 from app.research import ResearchLeaseLost, ResearchLimits, research_location
+from app.research_progress import Cursor, Progress
 
 LEASE_SECONDS = 90
 
@@ -61,6 +62,8 @@ def search_label(path):
 
 
 async def _new_job(session, state, phase, *, scheduler_limits=None):
+    if phase in {"initial", "refresh"} or scheduler_limits is not None:
+        state.progress = {}
     generation = uuid4()
     job = await create_job(
         session,
@@ -295,8 +298,8 @@ async def _take(ctx, identity, token):
         job.status, job.run_token = JobStatus.RUNNING, token
         job.lease_expires_at = now + timedelta(seconds=LEASE_SECONDS)
         state.run_token, state.lease_expires_at = token, job.lease_expires_at
-        state.progress = {"phase": job.payload["phase"], "complete": False, "checkpoints": 0}
-        return job.payload
+        state.progress = {**state.progress, "phase": job.payload["phase"], "complete": False}
+        return {**job.payload, "continuation": state.progress.get("continuation")}
 
 
 async def _finish(ctx, identity, token, summary):
@@ -314,9 +317,26 @@ async def _finish(ctx, identity, token, summary):
         if complete:
             state.last_success_at = now
             state.fresh_until = now + timedelta(seconds=settings.research_fresh_seconds)
+        saved = state.progress.get("continuation")
+        cursor = Cursor.model_validate(saved) if saved else None
+        more = bool(
+            cursor
+            and cursor.jobs < 3
+            and cursor.seconds_reserved < cursor.seconds_cap
+            and summary.get("continuation_pending")
+            and summary.get("made_progress")
+            and "scheduler_limits" not in job.payload
+        )
         if job.payload["phase"] == "initial":
             state.initial_completed_at = now
+            if cursor:
+                cursor.jobs += 1
+                state.progress = {**state.progress, "continuation": cursor.model_dump(mode="json")}
             await _new_job(session, state, "enrichment")
+        elif more:
+            cursor.jobs += 1
+            state.progress = {**state.progress, "continuation": cursor.model_dump(mode="json")}
+            await _new_job(session, state, "continuation")
         else:
             if complete and state.initial_completed_at is None:
                 state.initial_completed_at = now
@@ -367,12 +387,25 @@ async def run_location_job(ctx, job_id: str):
         else limits_for(settings, payload["phase"])
     )
 
-    async def checkpoint(session):
+    progress = None
+
+    async def persist(session=None):
+        if session is None:
+            async with ctx["sessions"]() as owned_session:
+                await persist(owned_session)
+            return
         job, state = await _owned(session, identity, token)
         if job.lease_expires_at <= datetime.now(UTC):
             raise ResearchLeaseLost()
-        state.progress = {**state.progress, "checkpoints": state.progress.get("checkpoints", 0) + 1}
+        state.progress = {
+            **state.progress,
+            "checkpoints": state.progress.get("checkpoints", 0) + 1,
+            "continuation": progress.cursor.model_dump(mode="json"),
+        }
         await session.commit()
+
+    async def checkpoint(session):
+        await progress.save(session)
 
     async def on_claim(session, claim_id, budget):
         return await apply_and_score_claim(
@@ -384,6 +417,26 @@ async def run_location_job(ctx, job_id: str):
 
     diagnostics = {}
     try:
+        if payload.get("continuation"):
+            cursor = Cursor.model_validate(payload["continuation"])
+        else:
+            initial = limits_for(settings, "initial")
+            extra = limits_for(settings, "enrichment")
+            phases = [initial, extra] if payload["phase"] == "initial" else [limits]
+            cursor = Cursor(
+                caps={
+                    name: sum(getattr(p, name) for p in phases)
+                    for name in ("queries", "fetches", "documents", "llm_calls")
+                },
+                seconds_cap=3 * sum(p.timeout for p in phases),
+            )
+        progress = Progress(cursor, persist)
+        granted = await progress.reserve_time(limits.timeout)
+        if granted <= 0:
+            summary = {"status": "partial", "complete": False, "error_code": "run_time_limit"}
+            await _finish(ctx, identity, token, summary)
+            return
+        limits = limits.model_copy(update={"timeout": granted})
         async with asyncio.timeout(limits.timeout):
             async with ctx["sessions"]() as session:
                 path = await get_location_path(session, UUID(payload["location_id"]))
@@ -402,6 +455,7 @@ async def run_location_job(ctx, job_id: str):
                     on_claim=on_claim,
                     on_hypothesis=on_hypothesis,
                     diagnostics=diagnostics,
+                    progress=progress,
                 )
                 await checkpoint(session)
                 summary = result.model_dump(mode="json")
@@ -435,6 +489,11 @@ async def run_location_job(ctx, job_id: str):
             pass
         return
     try:
+        if progress:
+            summary["continuation_pending"] = progress.has_work()
+            summary["made_progress"] = progress.cursor.used != progress.start_used and any(
+                i.get("document_id") for i in progress.cursor.candidates.values()
+            )
         await _finish(ctx, identity, token, summary)
     except ResearchLeaseLost:
         return

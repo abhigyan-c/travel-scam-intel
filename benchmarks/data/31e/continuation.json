@@ -1,0 +1,56 @@
+{
+  "version": "continuation-experiment-v1",
+  "baseline": "9579f5e",
+  "baseline_source_sha256": "3c72dd71f7307d4db84b025a0d4f959d2aa95c12fe2cda99c7ed4f74ee109e34",
+  "current_source_sha256": "cf1f39a5ceb708db2a8a32bcecaa87de8f82527a2b128f896f37bcd2a1612ba1",
+  "text_sha256": "5595ca4fe5f7bd9eb4dccfe803e3577d7090e0018cdde1285c77bb06aeca7b83",
+  "text_characters": 17279,
+  "legacy": {
+    "calls": 2,
+    "elapsed_seconds": 0.0334,
+    "rounds": [
+      {
+        "new_calls": 2,
+        "retained_passages": 2,
+        "complete": false
+      },
+      {
+        "new_calls": 0,
+        "retained_passages": 2,
+        "complete": false
+      },
+      {
+        "new_calls": 0,
+        "retained_passages": 2,
+        "complete": false
+      }
+    ]
+  },
+  "continuation": {
+    "calls": 5,
+    "elapsed_seconds": 0.0787,
+    "rounds": [
+      {
+        "new_calls": 2,
+        "retained_passages": 2,
+        "complete": false
+      },
+      {
+        "new_calls": 2,
+        "retained_passages": 4,
+        "complete": false
+      },
+      {
+        "new_calls": 1,
+        "retained_passages": 5,
+        "complete": true
+      }
+    ]
+  },
+  "limitations": [
+    "Synthetic negative passages; not an extraction-quality benchmark.",
+    "10ms controlled latency per call; timings are not live provider or VPS performance.",
+    "The legacy run uses fewer calls because it stalls on its first two passages.",
+    "Integration tests separately verify DB durability, reuse and budgets."
+  ]
+}

@@ -41,6 +41,7 @@ async def extract_document(
     *,
     timeout: float = 45,
     max_passages: int = 6,
+    checkpoint=None,
 ) -> DocumentExtraction:
     if timeout <= 0 or not 1 <= max_passages <= 20:
         raise ValueError("invalid extraction deadline")
@@ -67,10 +68,8 @@ async def extract_document(
     claim_ids, attempts = [], []
     complete = relevance.complete
     deadline = asyncio.get_running_loop().time() + timeout
-    for passage_index, assessment in enumerate(relevance.assessments):
-        if passage_index >= max_passages:
-            complete = False
-            break
+    attempted = 0
+    for assessment in relevance.assessments:
         if assessment.completion.error is not None or assessment.completion.data is None:
             complete = False
             continue
@@ -86,7 +85,12 @@ async def extract_document(
             ClaimExtraction.passage_end == passage.end,
         )
         run = await session.scalar(select(ClaimExtraction).where(*criteria))
+        fresh = run is None
         if run is None:
+            if attempted >= max_passages:
+                complete = False
+                continue
+            attempted += 1
             remaining = deadline - asyncio.get_running_loop().time()
             if remaining <= 0:
                 complete = False
@@ -184,6 +188,8 @@ async def extract_document(
             select(Claim.id).where(Claim.extraction_id == run.id).order_by(Claim.claim_index)
         )
         claim_ids.extend(stored)
+        if fresh and checkpoint is not None:
+            await checkpoint(session)
     return DocumentExtraction(
         claim_ids=list(dict.fromkeys(claim_ids)), complete=complete, attempts=attempts
     )

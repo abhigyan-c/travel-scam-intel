@@ -166,6 +166,9 @@ cache behavior and retained safety rules are in `docs/pr31c-grounded-extraction-
 PR 31C is merged. PR 31D's bounded parallel discovery, run-local host feedback,
 measured article-intent query mix and source-access limitations are documented in
 `docs/pr31d-source-acquisition-quality.md`; cross-job continuation remains PR 31E.
+PR 31D is merged. PR 31E's durable query/document/passage checkpoints, cumulative
+root budgets and measured prefix-stall fix are documented in
+`docs/pr31e-research-continuation.md`. Live deployment/ChatGPT acceptance remains PR 31F.
 Keep Serper/Sarvam/current infrastructure. Initially retain 25/45-second execution
 limits. This targeted baseline does not replace PR 36's broader evaluation harness.
 

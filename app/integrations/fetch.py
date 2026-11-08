@@ -30,6 +30,8 @@ FETCH_ERROR_CODES = frozenset(
         "fetch_timeout",
         "acquisition_timeout",
         "host_deferred",
+        "source_attempts_exhausted",
+        "run_fetch_limit",
     }
 )
 

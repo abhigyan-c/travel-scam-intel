@@ -18,7 +18,7 @@ def validate_payload(kind: JobKind, payload: dict) -> dict:
         return {"report_id": str(UUID(payload["report_id"]))}
     if kind == JobKind.LOCATION_RESEARCH:
         phase = payload["phase"]
-        if phase not in {"initial", "enrichment", "refresh"}:
+        if phase not in {"initial", "enrichment", "refresh", "continuation"}:
             raise ValueError("invalid_location_research_phase")
         result = {"location_id": str(UUID(payload["location_id"])), "phase": phase}
         if "scheduler_limits" in payload:

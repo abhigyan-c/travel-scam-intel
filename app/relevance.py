@@ -4,7 +4,7 @@ import json
 
 from pydantic import BaseModel, ConfigDict, Field, model_validator
 
-from app.integrations.sarvam import Completion, Sarvam
+from app.integrations.sarvam import MODEL, Completion, Sarvam
 
 PROMPT_VERSION = "relevance-v1"
 SYSTEM_PROMPT = """Classify whether the English passage reports or warns about a travel scam,
@@ -43,11 +43,14 @@ class Passage(BaseModel):
 class PassageAssessment(BaseModel):
     passage: Passage
     completion: Completion[Relevance]
+    attempts: int = Field(default=1, ge=1)
+    run_id: str | None = None
 
 
 class RelevanceResult(BaseModel):
     text_hash: str | None = None
     prompt_version: str = PROMPT_VERSION
+    model: str = MODEL
     assessments: list[PassageAssessment]
     complete: bool
 
@@ -65,19 +68,23 @@ def chunk_passages(
 ) -> list[Passage]:
     if not 100 <= size <= 16000 or not 0 <= overlap < size // 2 or not 1 <= max_passages <= 20:
         raise ValueError("invalid passage limits")
-    passages = []
+    return list(_passages(text, size=size, overlap=overlap, count=max_passages))
+
+
+def _passages(text, *, size=4000, overlap=200, count=None):
+    index = 0
     start = 0
-    while start < len(text) and len(passages) < max_passages:
+    while start < len(text) and (count is None or index < count):
         end = min(start + size, len(text))
         if end < len(text):
             boundary = text.rfind(" ", start + size // 2, end)
             if boundary > start + overlap:
                 end = boundary
-        passages.append(Passage(index=len(passages), start=start, end=end, text=text[start:end]))
+        yield Passage(index=index, start=start, end=end, text=text[start:end])
+        index += 1
         if end == len(text):
             break
         start = end - overlap
-    return passages
 
 
 async def classify_text(
@@ -87,28 +94,45 @@ async def classify_text(
     max_passages: int = 6,
     timeout: float = 45,
     prior: RelevanceResult | None = None,
+    checkpoint=None,
+    run_id: str | None = None,
 ) -> RelevanceResult:
     if timeout <= 0 or len(text) > 2_000_000:
         raise ValueError("invalid classification limits")
-    passages = chunk_passages(text, max_passages=max_passages) if text.strip() else []
+    if not 1 <= max_passages <= 20:
+        raise ValueError("invalid passage limits")
+    passages = list(_passages(text)) if text.strip() else []
     assessments = []
     text_hash = hashlib.sha256(text.encode()).hexdigest()
     cached = {}
-    if prior and prior.text_hash == text_hash and prior.prompt_version == PROMPT_VERSION:
+    if (
+        prior
+        and prior.text_hash == text_hash
+        and prior.prompt_version == PROMPT_VERSION
+        and prior.model == MODEL
+    ):
         cached = {
             (row.passage.start, row.passage.end, row.passage.text): row
             for row in prior.assessments
-            if row.completion.error is None and row.completion.data is not None
+            if 0 <= row.passage.start < row.passage.end <= len(text)
+            and row.passage.text == text[row.passage.start : row.passage.end]
         }
     deadline = asyncio.get_running_loop().time() + timeout
+    attempted = 0
     for passage in passages:
         previous = cached.get((passage.start, passage.end, passage.text))
-        if previous is not None:
+        if previous is not None and (
+            (previous.completion.error is None and previous.completion.data is not None)
+            or (run_id is not None and previous.run_id == run_id and previous.attempts >= 2)
+        ):
             assessments.append(previous)
             continue
         remaining = deadline - asyncio.get_running_loop().time()
-        if remaining <= 0:
-            break
+        if remaining <= 0 or attempted >= max_passages:
+            if previous is not None:
+                assessments.append(previous)
+            continue
+        attempted += 1
         try:
             async with asyncio.timeout(remaining):
                 result = await client.complete(
@@ -118,11 +142,32 @@ async def classify_text(
                 )
         except TimeoutError:
             result = Completion[Relevance](error="deadline", requests=1)
-        assessments.append(PassageAssessment(passage=passage, completion=result))
+        assessments.append(
+            PassageAssessment(
+                passage=passage,
+                completion=result,
+                attempts=(previous.attempts if previous and previous.run_id == run_id else 0) + 1,
+                run_id=run_id,
+            )
+        )
+        if checkpoint is not None:
+            merged = {key: value for key, value in cached.items()}
+            merged.update(
+                {(row.passage.start, row.passage.end, row.passage.text): row for row in assessments}
+            )
+            await checkpoint(
+                RelevanceResult(
+                    assessments=sorted(merged.values(), key=lambda row: row.passage.start),
+                    complete=False,
+                    text_hash=text_hash,
+                )
+            )
     complete = (
         bool(passages) and passages[-1].end == len(text) and len(assessments) == len(passages)
     )
-    complete = complete and all(row.completion.error is None for row in assessments)
+    complete = complete and all(
+        row.completion.error is None and row.completion.data is not None for row in assessments
+    )
     return RelevanceResult(
         assessments=assessments,
         complete=complete,

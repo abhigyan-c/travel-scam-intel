@@ -151,6 +151,182 @@ async def finish_enrichment(ctx, location_id):
     return await read_location_intelligence(ctx, location_id)
 
 
+async def test_cancelled_passage_resumes_without_refetch_or_repeating_saved_classification(
+    environment,
+):
+    from app.on_demand import request_location_research
+    from app.relevance import chunk_passages
+
+    ctx, identity, _ = environment
+    body = (BODY + " ") * 250
+    ctx["fetcher"].fetch.side_effect = lambda url: FetchedPage(url, body.encode(), "text/plain")
+    ctx["storage"].get_object.side_effect = lambda **kwargs: {
+        "Body": io.BytesIO(body.encode()),
+        "ContentType": "text/plain",
+    }
+    entered = asyncio.Event()
+    calls = 0
+
+    async def complete(**kwargs):
+        nonlocal calls
+        calls += 1
+        if calls == 2:
+            entered.set()
+            await asyncio.Event().wait()
+        return Completion(
+            data=Relevance(
+                relevant=False,
+                category=None,
+                confidence=0.9,
+                reason="No first-hand report in fixture",
+            ),
+            requests=1,
+        )
+
+    ctx["llm"].complete.side_effect = complete
+    await request_location_research(ctx, identity)
+    initial = await read_location_intelligence(ctx, identity)
+    task = asyncio.create_task(run_location_job(ctx, str(initial.active_job_id)))
+    await asyncio.wait_for(entered.wait(), 5)
+    task.cancel()
+    with pytest.raises(asyncio.CancelledError):
+        await task
+    async with ctx["sessions"]() as session:
+        document = await session.scalar(select(Document))
+        assert len(document.document_metadata["relevance"]["assessments"]) == 1
+        source_text = document.clean_text
+    await run_location_job(ctx, str(initial.active_job_id))
+    final = await finish_enrichment(ctx, identity)
+    assert final.complete and final.status == "ready"
+    assert ctx["fetcher"].fetch.await_count == 1
+    assert ctx["storage"].get_object.call_count == 1
+    # One interrupted call is counted in addition to exactly one completed call per passage.
+    assert calls == len(chunk_passages(source_text, max_passages=20)) + 1
+    assert final.progress["continuation"]["used"]["llm_calls"] == calls
+    assert ctx["provider"].search.await_count == 3
+    assert len({call.args[0] for call in ctx["provider"].search.await_args_list}) == 3
+
+
+async def test_completed_document_reuse_is_scoped_to_root_refresh_fetches_again(environment):
+    ctx, identity, _ = environment
+    await get_location_intelligence(ctx, identity)
+    final = await finish_enrichment(ctx, identity)
+    run_id = final.progress["continuation"]["run_id"]
+    assert ctx["fetcher"].fetch.await_count == 1
+    async with ctx["sessions"]() as session, session.begin():
+        state = await session.get(LocationResearchState, identity)
+        state.fresh_until = datetime.now(UTC) - timedelta(seconds=1)
+    refresh = await get_location_intelligence(ctx, identity)
+    await run_location_job(ctx, str(refresh.active_job_id))
+    final = await read_location_intelligence(ctx, identity)
+    assert final.progress["continuation"]["run_id"] != run_id
+    assert ctx["fetcher"].fetch.await_count == 2
+
+
+async def test_cancelled_extraction_keeps_completed_empty_passages_and_advances_past_six(
+    environment,
+):
+    from app.models import ClaimExtraction
+    from app.on_demand import request_location_research
+    from app.relevance import chunk_passages
+
+    ctx, identity, _ = environment
+    body = (BODY + " ") * 250
+    ctx["fetcher"].fetch.side_effect = lambda url: FetchedPage(url, body.encode(), "text/plain")
+    ctx["storage"].get_object.side_effect = lambda **kwargs: {
+        "Body": io.BytesIO(body.encode()),
+        "ContentType": "text/plain",
+    }
+    entered = asyncio.Event()
+    extractions = 0
+
+    async def complete(**kwargs):
+        nonlocal extractions
+        if kwargs["schema"] is Relevance:
+            return Completion(
+                data=Relevance(relevant=True, category="fare", confidence=0.9, reason="Report"),
+                requests=1,
+            )
+        extractions += 1
+        if extractions == 2:
+            entered.set()
+            await asyncio.Event().wait()
+        return Completion(data=ClaimBatch(claims=[]), requests=1)
+
+    ctx["llm"].complete.side_effect = complete
+    await request_location_research(ctx, identity)
+    first = await read_location_intelligence(ctx, identity)
+    task = asyncio.create_task(run_location_job(ctx, str(first.active_job_id)))
+    await asyncio.wait_for(entered.wait(), 5)
+    task.cancel()
+    with pytest.raises(asyncio.CancelledError):
+        await task
+    async with ctx["sessions"]() as session:
+        assert await session.scalar(select(func.count()).select_from(ClaimExtraction)) == 1
+        document = await session.scalar(select(Document))
+        passage_count = len(chunk_passages(document.clean_text, max_passages=20))
+    assert passage_count > 6
+    await run_location_job(ctx, str(first.active_job_id))
+    final = await finish_enrichment(ctx, identity)
+    assert final.complete and not final.hypotheses
+    assert extractions == passage_count + 1
+    assert ctx["llm"].complete.await_count == 2 * passage_count + 1
+    assert ctx["fetcher"].fetch.await_count == ctx["storage"].get_object.call_count == 1
+    async with ctx["sessions"]() as session:
+        assert (
+            await session.scalar(select(func.count()).select_from(ClaimExtraction)) == passage_count
+        )
+
+
+async def test_invalid_cursor_never_resets_budget_or_calls_providers(environment):
+    from app.on_demand import request_location_research
+
+    ctx, identity, _ = environment
+    await request_location_research(ctx, identity)
+    first = await read_location_intelligence(ctx, identity)
+    async with ctx["sessions"]() as session, session.begin():
+        state = await session.get(LocationResearchState, identity)
+        state.progress = {"continuation": {"schema_version": "future"}}
+    for _ in range(4):
+        await run_location_job(ctx, str(first.active_job_id))
+    ctx["provider"].search.assert_not_called()
+    ctx["llm"].complete.assert_not_called()
+    ctx["fetcher"].fetch.assert_not_called()
+    async with ctx["sessions"]() as session:
+        job = await session.get(ResearchJob, first.active_job_id)
+        assert job.attempts == 3 and job.status == "failed"
+
+
+@pytest.mark.parametrize("repeats,complete", [(500, True), (1000, False)])
+async def test_continuation_has_a_three_job_ceiling_and_never_labels_truncation_empty(
+    environment, repeats, complete
+):
+    ctx, identity, _ = environment
+    body = (BODY + " ") * repeats
+    ctx["fetcher"].fetch.side_effect = lambda url: FetchedPage(url, body.encode(), "text/plain")
+    ctx["storage"].get_object.side_effect = lambda **kwargs: {
+        "Body": io.BytesIO(body.encode()),
+        "ContentType": "text/plain",
+    }
+    ctx["llm"].complete.side_effect = None
+    ctx["llm"].complete.return_value = Completion(
+        data=Relevance(relevant=False, category=None, confidence=0.9, reason="Controlled"),
+        requests=1,
+    )
+    await get_location_intelligence(ctx, identity)
+    second = await finish_enrichment(ctx, identity)
+    assert second.in_progress and second.progress["phase"] == "enrichment"
+    third = await finish_enrichment(ctx, identity)
+    assert not third.in_progress and third.complete == complete
+    assert third.progress["continuation"]["jobs"] == 3
+    if not complete:
+        assert third.message != "Nothing was found."
+    used = third.progress["continuation"]["used"]
+    assert all(value <= third.progress["continuation"]["caps"][key] for key, value in used.items())
+    async with ctx["sessions"]() as session:
+        assert await session.scalar(select(func.count()).select_from(ResearchJob)) == 3
+
+
 async def test_unseen_location_produces_persisted_scored_initial_cards_then_enriches(environment):
     ctx, identity, _ = environment
     initial = await get_location_intelligence(ctx, identity)

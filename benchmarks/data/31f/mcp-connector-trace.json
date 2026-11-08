@@ -1,0 +1,425 @@
+{
+  "version": "mcp-connector-observations-v1",
+  "limitation": "Client wall time includes connector/relay overhead; this is not the user's ChatGPT test.",
+  "observations": [
+    {
+      "at": "2026-11-08T06:36:50.498Z",
+      "tool": "search_scam_patterns",
+      "arguments": {
+        "location_id": "991d6b7e-f69b-5158-bf6d-e8c9f3ec871a",
+        "request_research": false
+      },
+      "client_seconds": 14.442,
+      "response": {
+        "contract_version": "intelligence-v1",
+        "requested_location": {
+          "id": "991d6b7e-f69b-5158-bf6d-e8c9f3ec871a",
+          "name": "Bangkok",
+          "type": "city",
+          "country_code": "TH",
+          "provisional": false
+        },
+        "research": {
+          "status": "stale",
+          "initial": true,
+          "enriched": false,
+          "in_progress": false,
+          "stale": true,
+          "complete": false,
+          "last_success_at": null,
+          "fresh_until": null
+        },
+        "items": [],
+        "total": 0,
+        "limit": 5,
+        "offset": 0,
+        "has_more": false,
+        "outcome": "research_incomplete",
+        "queue_pending": false
+      }
+    },
+    {
+      "at": "2026-11-08T06:37:27.008Z",
+      "tool": "search_scam_patterns",
+      "arguments": {
+        "location_id": "7eaf771e-8bf9-5d7a-b778-c00aa3ccecd0",
+        "request_research": false
+      },
+      "client_seconds": 36.502,
+      "response": {
+        "contract_version": "intelligence-v1",
+        "requested_location": {
+          "id": "7eaf771e-8bf9-5d7a-b778-c00aa3ccecd0",
+          "name": "Suva",
+          "type": "city",
+          "country_code": "FJ",
+          "provisional": false
+        },
+        "research": {
+          "status": "never_researched",
+          "initial": false,
+          "enriched": false,
+          "in_progress": false,
+          "stale": false,
+          "complete": false,
+          "last_success_at": null,
+          "fresh_until": null
+        },
+        "items": [],
+        "total": 0,
+        "limit": 5,
+        "offset": 0,
+        "has_more": false,
+        "outcome": "research_incomplete",
+        "queue_pending": false
+      }
+    },
+    {
+      "at": "2026-11-08T06:37:49.699Z",
+      "tool": "search_scam_patterns",
+      "arguments": {
+        "location_id": "991d6b7e-f69b-5158-bf6d-e8c9f3ec871a",
+        "request_research": true
+      },
+      "client_seconds": 22.691,
+      "response": {
+        "contract_version": "intelligence-v1",
+        "requested_location": {
+          "id": "991d6b7e-f69b-5158-bf6d-e8c9f3ec871a",
+          "name": "Bangkok",
+          "type": "city",
+          "country_code": "TH",
+          "provisional": false
+        },
+        "research": {
+          "status": "researching",
+          "initial": true,
+          "enriched": false,
+          "in_progress": true,
+          "stale": false,
+          "complete": false,
+          "last_success_at": null,
+          "fresh_until": null
+        },
+        "items": [],
+        "total": 0,
+        "limit": 5,
+        "offset": 0,
+        "has_more": false,
+        "outcome": "research_incomplete",
+        "queue_pending": false
+      }
+    },
+    {
+      "at": "2026-11-08T06:43:39.945Z",
+      "tool": "search_scam_patterns",
+      "arguments": {
+        "location_id": "991d6b7e-f69b-5158-bf6d-e8c9f3ec871a",
+        "request_research": false
+      },
+      "client_seconds": 10.556,
+      "response": {
+        "contract_version": "intelligence-v1",
+        "requested_location": {
+          "id": "991d6b7e-f69b-5158-bf6d-e8c9f3ec871a",
+          "name": "Bangkok",
+          "type": "city",
+          "country_code": "TH",
+          "provisional": false
+        },
+        "research": {
+          "status": "stale",
+          "initial": true,
+          "enriched": false,
+          "in_progress": false,
+          "stale": true,
+          "complete": false,
+          "last_success_at": null,
+          "fresh_until": null
+        },
+        "items": [
+          {
+            "id": "7a892637-5db5-4680-b73b-67d5af711eaf",
+            "title": "Around the Grand Palace in Bangkok, scammers forcefully get tourists to join in feeding birds and later ask for more mon",
+            "description": "Around the Grand Palace in Bangkok, scammers forcefully get tourists to join in feeding birds and later ask for more money than it costs to feed a family an awesome street food.",
+            "category": "warns about tourist fraud, deceptive overcharging, or closely related tourist trap",
+            "status": "candidate",
+            "location": {
+              "id": "063b1cc8-01fd-5df7-b904-baacad5a84ed",
+              "name": "Grand Palace",
+              "type": "point_of_interest",
+              "country_code": "TH",
+              "provisional": false
+            },
+            "location_path": [
+              {
+                "id": "2d2d43c4-648f-54f3-895e-28e4c0b623e8",
+                "name": "Thailand",
+                "type": "country",
+                "country_code": "TH",
+                "provisional": false
+              },
+              {
+                "id": "991d6b7e-f69b-5158-bf6d-e8c9f3ec871a",
+                "name": "Bangkok",
+                "type": "city",
+                "country_code": "TH",
+                "provisional": false
+              },
+              {
+                "id": "063b1cc8-01fd-5df7-b904-baacad5a84ed",
+                "name": "Grand Palace",
+                "type": "point_of_interest",
+                "country_code": "TH",
+                "provisional": false
+              }
+            ],
+            "scope": "descendant",
+            "research": {
+              "status": "never_researched",
+              "initial": false,
+              "enriched": false,
+              "in_progress": false,
+              "stale": false,
+              "complete": false,
+              "last_success_at": null,
+              "fresh_until": null
+            },
+            "metrics": {
+              "status": "current",
+              "as_of": "2026-11-08T06:43:38.927798Z",
+              "confidence_score": 0.047059,
+              "confidence_label": "limited",
+              "support_weight": 0.125,
+              "contradiction_weight": 0,
+              "recency_score": null,
+              "prevalence_score": null,
+              "all_time": {
+                "raw_report_count": 1,
+                "independence_weighted_report_count": 0.5
+              },
+              "occurrence_windows": {
+                "30": {
+                  "raw_report_count": 0,
+                  "independence_weighted_report_count": 0
+                },
+                "90": {
+                  "raw_report_count": 0,
+                  "independence_weighted_report_count": 0
+                },
+                "365": {
+                  "raw_report_count": 0,
+                  "independence_weighted_report_count": 0
+                }
+              },
+              "reporting_windows": {
+                "30": {
+                  "raw_report_count": 0,
+                  "independence_weighted_report_count": 0
+                },
+                "90": {
+                  "raw_report_count": 0,
+                  "independence_weighted_report_count": 0
+                },
+                "365": {
+                  "raw_report_count": 0,
+                  "independence_weighted_report_count": 0
+                }
+              },
+              "dated_reports": 0,
+              "undated_or_invalid_reports": 1,
+              "trend": "unknown",
+              "complete": false,
+              "limitations": [
+                "occurrence_date_missing"
+              ],
+              "policy_version": "public-intelligence-v1",
+              "interpretation": "corroboration and observed reporting; not truth probability or population incidence"
+            }
+          }
+        ],
+        "total": 1,
+        "limit": 5,
+        "offset": 0,
+        "has_more": false,
+        "outcome": "findings",
+        "queue_pending": false
+      }
+    },
+    {
+      "at": "2026-11-08T06:43:43.150Z",
+      "tool": "search_scam_patterns",
+      "arguments": {
+        "location_id": "7eaf771e-8bf9-5d7a-b778-c00aa3ccecd0",
+        "request_research": false
+      },
+      "client_seconds": 13.76,
+      "response": {
+        "contract_version": "intelligence-v1",
+        "requested_location": {
+          "id": "7eaf771e-8bf9-5d7a-b778-c00aa3ccecd0",
+          "name": "Suva",
+          "type": "city",
+          "country_code": "FJ",
+          "provisional": false
+        },
+        "research": {
+          "status": "stale",
+          "initial": true,
+          "enriched": false,
+          "in_progress": false,
+          "stale": true,
+          "complete": false,
+          "last_success_at": null,
+          "fresh_until": null
+        },
+        "items": [
+          {
+            "id": "87c4310f-6f2b-493e-b9a2-d586d52c0e15",
+            "title": "Taxi drivers overcharge travelers by not using meters or agreeing on fares beforehand.",
+            "description": "Taxi drivers overcharge travelers by not using meters or agreeing on fares beforehand.",
+            "category": "reports about a travel scam",
+            "status": "candidate",
+            "location": {
+              "id": "56ca2f78-caea-5e5e-827f-ec7e6a8d55c7",
+              "name": "Fiji",
+              "type": "country",
+              "country_code": "FJ",
+              "provisional": false
+            },
+            "location_path": [
+              {
+                "id": "56ca2f78-caea-5e5e-827f-ec7e6a8d55c7",
+                "name": "Fiji",
+                "type": "country",
+                "country_code": "FJ",
+                "provisional": false
+              }
+            ],
+            "scope": "ancestor",
+            "research": {
+              "status": "never_researched",
+              "initial": false,
+              "enriched": false,
+              "in_progress": false,
+              "stale": false,
+              "complete": false,
+              "last_success_at": null,
+              "fresh_until": null
+            },
+            "metrics": {
+              "status": "current",
+              "as_of": "2026-11-08T06:43:42.133916Z",
+              "confidence_score": 0.055814,
+              "confidence_label": "limited",
+              "support_weight": 0.15,
+              "contradiction_weight": 0,
+              "recency_score": null,
+              "prevalence_score": null,
+              "all_time": {
+                "raw_report_count": 1,
+                "independence_weighted_report_count": 0.5
+              },
+              "occurrence_windows": {
+                "30": {
+                  "raw_report_count": 0,
+                  "independence_weighted_report_count": 0
+                },
+                "90": {
+                  "raw_report_count": 0,
+                  "independence_weighted_report_count": 0
+                },
+                "365": {
+                  "raw_report_count": 0,
+                  "independence_weighted_report_count": 0
+                }
+              },
+              "reporting_windows": {
+                "30": {
+                  "raw_report_count": 0,
+                  "independence_weighted_report_count": 0
+                },
+                "90": {
+                  "raw_report_count": 0,
+                  "independence_weighted_report_count": 0
+                },
+                "365": {
+                  "raw_report_count": 0,
+                  "independence_weighted_report_count": 0
+                }
+              },
+              "dated_reports": 0,
+              "undated_or_invalid_reports": 1,
+              "trend": "unknown",
+              "complete": false,
+              "limitations": [
+                "occurrence_date_missing"
+              ],
+              "policy_version": "public-intelligence-v1",
+              "interpretation": "corroboration and observed reporting; not truth probability or population incidence"
+            }
+          }
+        ],
+        "total": 1,
+        "limit": 5,
+        "offset": 0,
+        "has_more": false,
+        "outcome": "findings",
+        "queue_pending": false
+      }
+    },
+    {
+      "at": "2026-11-08T06:43:44.855Z",
+      "tool": "get_scam_evidence",
+      "arguments": {
+        "pattern_id": "7a892637-5db5-4680-b73b-67d5af711eaf"
+      },
+      "client_seconds": 15.464,
+      "response": {
+        "contract_version": "intelligence-v1",
+        "hypothesis_id": "7a892637-5db5-4680-b73b-67d5af711eaf",
+        "location": {
+          "id": "063b1cc8-01fd-5df7-b904-baacad5a84ed",
+          "name": "Grand Palace",
+          "type": "point_of_interest",
+          "country_code": "TH",
+          "provisional": false
+        },
+        "research": {
+          "status": "never_researched",
+          "initial": false,
+          "enriched": false,
+          "in_progress": false,
+          "stale": false,
+          "complete": false,
+          "last_success_at": null,
+          "fresh_until": null
+        },
+        "items": [
+          {
+            "id": "ca8f2c3b-eab8-4fa9-a53b-e28e8f9bbdb3",
+            "stance": "supports",
+            "source_type": "other",
+            "provenance_class": "SECOND_HAND",
+            "label": "public_web_source",
+            "platform": "yourthaiguide.com",
+            "source_url": "https://yourthaiguide.com/top-10-bangkok-scams-you-should-avoid/",
+            "claim": "Around the Grand Palace in Bangkok, scammers forcefully get tourists to join in feeding birds and later ask for more money than it costs to feed a family an awesome street food.",
+            "excerpt": "into the purchase of birdseed. Around the Grand Palace in Bangkok, it’s usually based around somewhat forcefully getting you to join in feeding the birds, for which they will later ask for more money that it costs to feed your family an awesome street food. This article is worth a read, and even show photos of the scam unfolding.",
+            "published_at": null,
+            "occurred_at": null,
+            "source_quality": 0.25,
+            "independence_credit": 0.5,
+            "evidence_weight": 0.125,
+            "discounted": false
+          }
+        ],
+        "total": 1,
+        "limit": 5,
+        "offset": 0,
+        "has_more": false,
+        "metrics_status": "current"
+      }
+    }
+  ]
+}

@@ -1,0 +1,1481 @@
+{
+  "version": "research-benchmark-v1",
+  "mode": "live",
+  "commit": "fc936c436d3a49804f042f3e38cdce3ad4390e14",
+  "created_at": "2026-11-08T07:28:18.180960+00:00",
+  "corpus_hash": "bb639492e9464ef5aed1ed3fcd47331cbf518a86c3894f7a25b112cf3c85db8a",
+  "versions": {
+    "model": "sarvam-105b",
+    "relevance": "relevance-v1",
+    "extraction": "claims-v6",
+    "processing": "article-v1",
+    "location": "location-v3",
+    "discovery": "discovery-v2",
+    "acquisition": "acquisition-v1"
+  },
+  "limitations": [
+    "Synthetic sources; search and acquisition are controlled.",
+    "Replay timings are local execution, provider_seconds are historical recordings.",
+    "Warm means reprocessing identical source bytes, not the fresh-location fast read.",
+    "No semantic matching, live fetch or embedding performance conclusions.",
+    "Evidence-term checks do not replace human review of claim meaning."
+  ],
+  "summary": {
+    "cold": {
+      "cases": 15,
+      "grounded_claim_checks_passed": 15,
+      "geography_checks_passed": 15,
+      "public_checks_passed": 14,
+      "llm_calls": 26,
+      "tokens": 12413,
+      "usage_complete": true
+    },
+    "warm": {
+      "cases": 15,
+      "grounded_claim_checks_passed": 15,
+      "geography_checks_passed": 15,
+      "public_checks_passed": 14,
+      "llm_calls": 0,
+      "tokens": 0,
+      "usage_complete": true
+    }
+  },
+  "scorecard": {
+    "cold": {
+      "positive_claim_coverage": {
+        "passed": 9,
+        "total": 9,
+        "target": 0.8,
+        "meets_target": true
+      },
+      "correct_geography_coverage": {
+        "passed": 7,
+        "total": 7,
+        "target": 0.9,
+        "meets_target": true
+      },
+      "eligible_pattern_coverage": {
+        "passed": 5,
+        "total": 6,
+        "target": 0.8,
+        "meets_target": true
+      },
+      "negative_claim_safety": {
+        "passed": 6,
+        "total": 6,
+        "target": 1.0,
+        "meets_target": true
+      },
+      "withheld_pattern_safety": {
+        "passed": 9,
+        "total": 9,
+        "target": 1.0,
+        "meets_target": true
+      }
+    },
+    "warm": {
+      "positive_claim_coverage": {
+        "passed": 9,
+        "total": 9,
+        "target": 0.8,
+        "meets_target": true
+      },
+      "correct_geography_coverage": {
+        "passed": 7,
+        "total": 7,
+        "target": 0.9,
+        "meets_target": true
+      },
+      "eligible_pattern_coverage": {
+        "passed": 5,
+        "total": 6,
+        "target": 0.8,
+        "meets_target": true
+      },
+      "negative_claim_safety": {
+        "passed": 6,
+        "total": 6,
+        "target": 1.0,
+        "meets_target": true
+      },
+      "withheld_pattern_safety": {
+        "passed": 9,
+        "total": 9,
+        "target": 1.0,
+        "meets_target": true
+      }
+    }
+  },
+  "cases": [
+    {
+      "case": "bangkok-city",
+      "split": "development",
+      "cache": "cold",
+      "expected": {
+        "relevant": true,
+        "claim": true,
+        "evidence_terms": [
+          "demanded extra money"
+        ],
+        "location_path": [
+          "Thailand",
+          "Bangkok"
+        ],
+        "public_pattern": true
+      },
+      "candidates": 1,
+      "fetch_attempts": 1,
+      "documents": 1,
+      "relevance_passages": 1,
+      "relevant_passages": 1,
+      "stored_empty_extractions": 0,
+      "claims": 1,
+      "resolved_claims": 1,
+      "public_patterns": 1,
+      "complete": true,
+      "result_status": "ok",
+      "incomplete_control_check": null,
+      "grounded_claim_check": true,
+      "lineage_check": true,
+      "geography_check": true,
+      "public_check": true,
+      "errors": {},
+      "extraction_errors": {},
+      "llm_calls": 2,
+      "provider_seconds": 1.532,
+      "usage_complete": true,
+      "provider_timing_complete": true,
+      "stage_seconds": {
+        "discovery": 0.0,
+        "ingestion": 0.015,
+        "processing": 0.172,
+        "relevance": 0.594,
+        "extraction": 0.953,
+        "resolution": 0.016,
+        "hypothesis": 0.125
+      },
+      "tokens": 908
+    },
+    {
+      "case": "bangkok-city",
+      "split": "development",
+      "cache": "warm",
+      "expected": {
+        "relevant": true,
+        "claim": true,
+        "evidence_terms": [
+          "demanded extra money"
+        ],
+        "location_path": [
+          "Thailand",
+          "Bangkok"
+        ],
+        "public_pattern": true
+      },
+      "candidates": 1,
+      "fetch_attempts": 1,
+      "documents": 1,
+      "relevance_passages": 1,
+      "relevant_passages": 1,
+      "stored_empty_extractions": 0,
+      "claims": 1,
+      "resolved_claims": 1,
+      "public_patterns": 1,
+      "complete": true,
+      "result_status": "ok",
+      "incomplete_control_check": null,
+      "grounded_claim_check": true,
+      "lineage_check": true,
+      "geography_check": true,
+      "public_check": true,
+      "errors": {},
+      "extraction_errors": {},
+      "llm_calls": 0,
+      "provider_seconds": 0.0,
+      "usage_complete": true,
+      "provider_timing_complete": true,
+      "stage_seconds": {
+        "discovery": 0.0,
+        "ingestion": 0.016,
+        "extraction": 0.0,
+        "resolution": 0.0,
+        "hypothesis": 0.64
+      },
+      "tokens": 0
+    },
+    {
+      "case": "bangkok-landmark",
+      "split": "development",
+      "cache": "cold",
+      "expected": {
+        "relevant": true,
+        "claim": true,
+        "evidence_terms": [
+          "falsely said the palace was closed"
+        ],
+        "location_path": [
+          "Thailand",
+          "Bangkok",
+          "Grand Palace"
+        ],
+        "public_pattern": true
+      },
+      "candidates": 1,
+      "fetch_attempts": 1,
+      "documents": 1,
+      "relevance_passages": 1,
+      "relevant_passages": 1,
+      "stored_empty_extractions": 0,
+      "claims": 1,
+      "resolved_claims": 1,
+      "public_patterns": 1,
+      "complete": true,
+      "result_status": "ok",
+      "incomplete_control_check": null,
+      "grounded_claim_check": true,
+      "lineage_check": true,
+      "geography_check": true,
+      "public_check": true,
+      "errors": {},
+      "extraction_errors": {},
+      "llm_calls": 2,
+      "provider_seconds": 1.391,
+      "usage_complete": true,
+      "provider_timing_complete": true,
+      "stage_seconds": {
+        "discovery": 0.0,
+        "ingestion": 0.015,
+        "processing": 0.0,
+        "relevance": 0.485,
+        "extraction": 0.922,
+        "resolution": 0.031,
+        "hypothesis": 0.125
+      },
+      "tokens": 940
+    },
+    {
+      "case": "bangkok-landmark",
+      "split": "development",
+      "cache": "warm",
+      "expected": {
+        "relevant": true,
+        "claim": true,
+        "evidence_terms": [
+          "falsely said the palace was closed"
+        ],
+        "location_path": [
+          "Thailand",
+          "Bangkok",
+          "Grand Palace"
+        ],
+        "public_pattern": true
+      },
+      "candidates": 1,
+      "fetch_attempts": 1,
+      "documents": 1,
+      "relevance_passages": 1,
+      "relevant_passages": 1,
+      "stored_empty_extractions": 0,
+      "claims": 1,
+      "resolved_claims": 1,
+      "public_patterns": 1,
+      "complete": true,
+      "result_status": "ok",
+      "incomplete_control_check": null,
+      "grounded_claim_check": true,
+      "lineage_check": true,
+      "geography_check": true,
+      "public_check": true,
+      "errors": {},
+      "extraction_errors": {},
+      "llm_calls": 0,
+      "provider_seconds": 0.0,
+      "usage_complete": true,
+      "provider_timing_complete": true,
+      "stage_seconds": {
+        "discovery": 0.0,
+        "ingestion": 0.0,
+        "extraction": 0.0,
+        "resolution": 0.031,
+        "hypothesis": 0.265
+      },
+      "tokens": 0
+    },
+    {
+      "case": "chiang-mai-city",
+      "split": "development",
+      "cache": "cold",
+      "expected": {
+        "relevant": true,
+        "claim": true,
+        "evidence_terms": [
+          "demanded extra money"
+        ],
+        "location_path": [
+          "Thailand",
+          "Chiang Mai"
+        ],
+        "public_pattern": true
+      },
+      "candidates": 1,
+      "fetch_attempts": 1,
+      "documents": 1,
+      "relevance_passages": 1,
+      "relevant_passages": 1,
+      "stored_empty_extractions": 0,
+      "claims": 1,
+      "resolved_claims": 1,
+      "public_patterns": 0,
+      "complete": false,
+      "result_status": "partial",
+      "incomplete_control_check": null,
+      "grounded_claim_check": true,
+      "lineage_check": true,
+      "geography_check": true,
+      "public_check": false,
+      "errors": {
+        "review_required": 1
+      },
+      "extraction_errors": {
+        "invalid_entity_contract": 1
+      },
+      "llm_calls": 3,
+      "provider_seconds": 2.422,
+      "usage_complete": true,
+      "provider_timing_complete": true,
+      "stage_seconds": {
+        "discovery": 0.0,
+        "ingestion": 0.016,
+        "processing": 0.0,
+        "relevance": 0.578,
+        "extraction": 1.875,
+        "resolution": 0.016,
+        "hypothesis": 0.015
+      },
+      "tokens": 1764
+    },
+    {
+      "case": "chiang-mai-city",
+      "split": "development",
+      "cache": "warm",
+      "expected": {
+        "relevant": true,
+        "claim": true,
+        "evidence_terms": [
+          "demanded extra money"
+        ],
+        "location_path": [
+          "Thailand",
+          "Chiang Mai"
+        ],
+        "public_pattern": true
+      },
+      "candidates": 1,
+      "fetch_attempts": 1,
+      "documents": 1,
+      "relevance_passages": 1,
+      "relevant_passages": 1,
+      "stored_empty_extractions": 0,
+      "claims": 1,
+      "resolved_claims": 1,
+      "public_patterns": 0,
+      "complete": false,
+      "result_status": "partial",
+      "incomplete_control_check": null,
+      "grounded_claim_check": true,
+      "lineage_check": true,
+      "geography_check": true,
+      "public_check": false,
+      "errors": {
+        "review_required": 1
+      },
+      "extraction_errors": {},
+      "llm_calls": 0,
+      "provider_seconds": 0.0,
+      "usage_complete": true,
+      "provider_timing_complete": true,
+      "stage_seconds": {
+        "discovery": 0.0,
+        "ingestion": 0.0,
+        "extraction": 0.0,
+        "resolution": 0.015,
+        "hypothesis": 0.016
+      },
+      "tokens": 0
+    },
+    {
+      "case": "paris-city",
+      "split": "development",
+      "cache": "cold",
+      "expected": {
+        "relevant": true,
+        "claim": true,
+        "evidence_terms": [
+          "demanded payment"
+        ],
+        "location_path": [
+          "France",
+          "Paris"
+        ],
+        "public_pattern": true
+      },
+      "candidates": 1,
+      "fetch_attempts": 1,
+      "documents": 1,
+      "relevance_passages": 1,
+      "relevant_passages": 1,
+      "stored_empty_extractions": 0,
+      "claims": 1,
+      "resolved_claims": 1,
+      "public_patterns": 1,
+      "complete": true,
+      "result_status": "ok",
+      "incomplete_control_check": null,
+      "grounded_claim_check": true,
+      "lineage_check": true,
+      "geography_check": true,
+      "public_check": true,
+      "errors": {},
+      "extraction_errors": {},
+      "llm_calls": 3,
+      "provider_seconds": 1.485,
+      "usage_complete": true,
+      "provider_timing_complete": true,
+      "stage_seconds": {
+        "discovery": 0.0,
+        "ingestion": 0.0,
+        "processing": 0.016,
+        "relevance": 0.391,
+        "extraction": 1.14,
+        "resolution": 0.0,
+        "hypothesis": 0.125
+      },
+      "tokens": 1554
+    },
+    {
+      "case": "paris-city",
+      "split": "development",
+      "cache": "warm",
+      "expected": {
+        "relevant": true,
+        "claim": true,
+        "evidence_terms": [
+          "demanded payment"
+        ],
+        "location_path": [
+          "France",
+          "Paris"
+        ],
+        "public_pattern": true
+      },
+      "candidates": 1,
+      "fetch_attempts": 1,
+      "documents": 1,
+      "relevance_passages": 1,
+      "relevant_passages": 1,
+      "stored_empty_extractions": 0,
+      "claims": 1,
+      "resolved_claims": 1,
+      "public_patterns": 1,
+      "complete": true,
+      "result_status": "ok",
+      "incomplete_control_check": null,
+      "grounded_claim_check": true,
+      "lineage_check": true,
+      "geography_check": true,
+      "public_check": true,
+      "errors": {},
+      "extraction_errors": {},
+      "llm_calls": 0,
+      "provider_seconds": 0.0,
+      "usage_complete": true,
+      "provider_timing_complete": true,
+      "stage_seconds": {
+        "discovery": 0.0,
+        "ingestion": 0.0,
+        "extraction": 0.015,
+        "resolution": 0.0,
+        "hypothesis": 0.266
+      },
+      "tokens": 0
+    },
+    {
+      "case": "rome-city",
+      "split": "holdout",
+      "cache": "cold",
+      "expected": {
+        "relevant": true,
+        "claim": true,
+        "evidence_terms": [
+          "demanded an undisclosed fee"
+        ],
+        "location_path": [
+          "Italy",
+          "Rome"
+        ],
+        "public_pattern": true
+      },
+      "candidates": 1,
+      "fetch_attempts": 1,
+      "documents": 1,
+      "relevance_passages": 1,
+      "relevant_passages": 1,
+      "stored_empty_extractions": 0,
+      "claims": 1,
+      "resolved_claims": 1,
+      "public_patterns": 1,
+      "complete": true,
+      "result_status": "ok",
+      "incomplete_control_check": null,
+      "grounded_claim_check": true,
+      "lineage_check": true,
+      "geography_check": true,
+      "public_check": true,
+      "errors": {},
+      "extraction_errors": {
+        "invalid_entity_contract": 1
+      },
+      "llm_calls": 3,
+      "provider_seconds": 2.296,
+      "usage_complete": true,
+      "provider_timing_complete": true,
+      "stage_seconds": {
+        "discovery": 0.0,
+        "ingestion": 0.0,
+        "processing": 0.016,
+        "relevance": 0.531,
+        "extraction": 1.781,
+        "resolution": 0.016,
+        "hypothesis": 0.187
+      },
+      "tokens": 1804
+    },
+    {
+      "case": "rome-city",
+      "split": "holdout",
+      "cache": "warm",
+      "expected": {
+        "relevant": true,
+        "claim": true,
+        "evidence_terms": [
+          "demanded an undisclosed fee"
+        ],
+        "location_path": [
+          "Italy",
+          "Rome"
+        ],
+        "public_pattern": true
+      },
+      "candidates": 1,
+      "fetch_attempts": 1,
+      "documents": 1,
+      "relevance_passages": 1,
+      "relevant_passages": 1,
+      "stored_empty_extractions": 0,
+      "claims": 1,
+      "resolved_claims": 1,
+      "public_patterns": 1,
+      "complete": true,
+      "result_status": "ok",
+      "incomplete_control_check": null,
+      "grounded_claim_check": true,
+      "lineage_check": true,
+      "geography_check": true,
+      "public_check": true,
+      "errors": {},
+      "extraction_errors": {},
+      "llm_calls": 0,
+      "provider_seconds": 0.0,
+      "usage_complete": true,
+      "provider_timing_complete": true,
+      "stage_seconds": {
+        "discovery": 0.0,
+        "ingestion": 0.0,
+        "extraction": 0.0,
+        "resolution": 0.016,
+        "hypothesis": 0.266
+      },
+      "tokens": 0
+    },
+    {
+      "case": "suva-city",
+      "split": "holdout",
+      "cache": "cold",
+      "expected": {
+        "relevant": true,
+        "claim": true,
+        "evidence_terms": [
+          "demanded an inflated fixed fare"
+        ],
+        "location_path": [
+          "Fiji",
+          "Suva"
+        ],
+        "public_pattern": true
+      },
+      "candidates": 1,
+      "fetch_attempts": 1,
+      "documents": 1,
+      "relevance_passages": 1,
+      "relevant_passages": 1,
+      "stored_empty_extractions": 0,
+      "claims": 1,
+      "resolved_claims": 1,
+      "public_patterns": 1,
+      "complete": true,
+      "result_status": "ok",
+      "incomplete_control_check": null,
+      "grounded_claim_check": true,
+      "lineage_check": true,
+      "geography_check": true,
+      "public_check": true,
+      "errors": {},
+      "extraction_errors": {},
+      "llm_calls": 2,
+      "provider_seconds": 1.281,
+      "usage_complete": true,
+      "provider_timing_complete": true,
+      "stage_seconds": {
+        "discovery": 0.0,
+        "ingestion": 0.016,
+        "processing": 0.0,
+        "relevance": 0.406,
+        "extraction": 0.906,
+        "resolution": 0.0,
+        "hypothesis": 0.125
+      },
+      "tokens": 901
+    },
+    {
+      "case": "suva-city",
+      "split": "holdout",
+      "cache": "warm",
+      "expected": {
+        "relevant": true,
+        "claim": true,
+        "evidence_terms": [
+          "demanded an inflated fixed fare"
+        ],
+        "location_path": [
+          "Fiji",
+          "Suva"
+        ],
+        "public_pattern": true
+      },
+      "candidates": 1,
+      "fetch_attempts": 1,
+      "documents": 1,
+      "relevance_passages": 1,
+      "relevant_passages": 1,
+      "stored_empty_extractions": 0,
+      "claims": 1,
+      "resolved_claims": 1,
+      "public_patterns": 1,
+      "complete": true,
+      "result_status": "ok",
+      "incomplete_control_check": null,
+      "grounded_claim_check": true,
+      "lineage_check": true,
+      "geography_check": true,
+      "public_check": true,
+      "errors": {},
+      "extraction_errors": {},
+      "llm_calls": 0,
+      "provider_seconds": 0.0,
+      "usage_complete": true,
+      "provider_timing_complete": true,
+      "stage_seconds": {
+        "discovery": 0.0,
+        "ingestion": 0.0,
+        "extraction": 0.0,
+        "resolution": 0.016,
+        "hypothesis": 0.266
+      },
+      "tokens": 0
+    },
+    {
+      "case": "missing-geography",
+      "split": "holdout",
+      "cache": "cold",
+      "expected": {
+        "relevant": true,
+        "claim": true,
+        "evidence_terms": [
+          "demanded money"
+        ],
+        "location_path": null,
+        "public_pattern": false
+      },
+      "candidates": 1,
+      "fetch_attempts": 1,
+      "documents": 1,
+      "relevance_passages": 1,
+      "relevant_passages": 1,
+      "stored_empty_extractions": 0,
+      "claims": 1,
+      "resolved_claims": 0,
+      "public_patterns": 0,
+      "complete": false,
+      "result_status": "partial",
+      "incomplete_control_check": null,
+      "grounded_claim_check": true,
+      "lineage_check": true,
+      "geography_check": true,
+      "public_check": true,
+      "errors": {
+        "unresolved_location": 1
+      },
+      "extraction_errors": {
+        "invalid_entity_contract": 1
+      },
+      "llm_calls": 3,
+      "provider_seconds": 2.234,
+      "usage_complete": true,
+      "provider_timing_complete": true,
+      "stage_seconds": {
+        "discovery": 0.0,
+        "ingestion": 0.0,
+        "processing": 0.016,
+        "relevance": 0.422,
+        "extraction": 1.859,
+        "resolution": 0.016,
+        "hypothesis": 0.016
+      },
+      "tokens": 1800
+    },
+    {
+      "case": "missing-geography",
+      "split": "holdout",
+      "cache": "warm",
+      "expected": {
+        "relevant": true,
+        "claim": true,
+        "evidence_terms": [
+          "demanded money"
+        ],
+        "location_path": null,
+        "public_pattern": false
+      },
+      "candidates": 1,
+      "fetch_attempts": 1,
+      "documents": 1,
+      "relevance_passages": 1,
+      "relevant_passages": 1,
+      "stored_empty_extractions": 0,
+      "claims": 1,
+      "resolved_claims": 0,
+      "public_patterns": 0,
+      "complete": false,
+      "result_status": "partial",
+      "incomplete_control_check": null,
+      "grounded_claim_check": true,
+      "lineage_check": true,
+      "geography_check": true,
+      "public_check": true,
+      "errors": {
+        "unresolved_location": 1
+      },
+      "extraction_errors": {},
+      "llm_calls": 0,
+      "provider_seconds": 0.0,
+      "usage_complete": true,
+      "provider_timing_complete": true,
+      "stage_seconds": {
+        "discovery": 0.0,
+        "ingestion": 0.016,
+        "extraction": 0.0,
+        "resolution": 0.015,
+        "hypothesis": 0.0
+      },
+      "tokens": 0
+    },
+    {
+      "case": "conflicting-geography",
+      "split": "holdout",
+      "cache": "cold",
+      "expected": {
+        "relevant": true,
+        "claim": true,
+        "evidence_terms": [
+          "demanded extra money"
+        ],
+        "location_path": null,
+        "public_pattern": false
+      },
+      "candidates": 1,
+      "fetch_attempts": 1,
+      "documents": 1,
+      "relevance_passages": 1,
+      "relevant_passages": 1,
+      "stored_empty_extractions": 0,
+      "claims": 1,
+      "resolved_claims": 0,
+      "public_patterns": 0,
+      "complete": false,
+      "result_status": "partial",
+      "incomplete_control_check": null,
+      "grounded_claim_check": true,
+      "lineage_check": true,
+      "geography_check": true,
+      "public_check": true,
+      "errors": {
+        "unresolved_location": 1
+      },
+      "extraction_errors": {},
+      "llm_calls": 2,
+      "provider_seconds": 1.047,
+      "usage_complete": true,
+      "provider_timing_complete": true,
+      "stage_seconds": {
+        "discovery": 0.0,
+        "ingestion": 0.0,
+        "processing": 0.015,
+        "relevance": 0.422,
+        "extraction": 0.641,
+        "resolution": 0.015,
+        "hypothesis": 0.016
+      },
+      "tokens": 832
+    },
+    {
+      "case": "conflicting-geography",
+      "split": "holdout",
+      "cache": "warm",
+      "expected": {
+        "relevant": true,
+        "claim": true,
+        "evidence_terms": [
+          "demanded extra money"
+        ],
+        "location_path": null,
+        "public_pattern": false
+      },
+      "candidates": 1,
+      "fetch_attempts": 1,
+      "documents": 1,
+      "relevance_passages": 1,
+      "relevant_passages": 1,
+      "stored_empty_extractions": 0,
+      "claims": 1,
+      "resolved_claims": 0,
+      "public_patterns": 0,
+      "complete": false,
+      "result_status": "partial",
+      "incomplete_control_check": null,
+      "grounded_claim_check": true,
+      "lineage_check": true,
+      "geography_check": true,
+      "public_check": true,
+      "errors": {
+        "unresolved_location": 1
+      },
+      "extraction_errors": {},
+      "llm_calls": 0,
+      "provider_seconds": 0.0,
+      "usage_complete": true,
+      "provider_timing_complete": true,
+      "stage_seconds": {
+        "discovery": 0.0,
+        "ingestion": 0.015,
+        "extraction": 0.0,
+        "resolution": 0.016,
+        "hypothesis": 0.0
+      },
+      "tokens": 0
+    },
+    {
+      "case": "named-business",
+      "split": "development",
+      "cache": "cold",
+      "expected": {
+        "relevant": true,
+        "claim": true,
+        "evidence_terms": [
+          "demanded extra money"
+        ],
+        "location_path": [
+          "Thailand",
+          "Bangkok"
+        ],
+        "public_pattern": false
+      },
+      "candidates": 1,
+      "fetch_attempts": 1,
+      "documents": 1,
+      "relevance_passages": 1,
+      "relevant_passages": 1,
+      "stored_empty_extractions": 0,
+      "claims": 1,
+      "resolved_claims": 1,
+      "public_patterns": 0,
+      "complete": false,
+      "result_status": "partial",
+      "incomplete_control_check": null,
+      "grounded_claim_check": true,
+      "lineage_check": true,
+      "geography_check": true,
+      "public_check": true,
+      "errors": {
+        "review_required": 1
+      },
+      "extraction_errors": {},
+      "llm_calls": 2,
+      "provider_seconds": 1.234,
+      "usage_complete": true,
+      "provider_timing_complete": true,
+      "stage_seconds": {
+        "discovery": 0.0,
+        "ingestion": 0.016,
+        "processing": 0.0,
+        "relevance": 0.437,
+        "extraction": 0.844,
+        "resolution": 0.0,
+        "hypothesis": 0.031
+      },
+      "tokens": 892
+    },
+    {
+      "case": "named-business",
+      "split": "development",
+      "cache": "warm",
+      "expected": {
+        "relevant": true,
+        "claim": true,
+        "evidence_terms": [
+          "demanded extra money"
+        ],
+        "location_path": [
+          "Thailand",
+          "Bangkok"
+        ],
+        "public_pattern": false
+      },
+      "candidates": 1,
+      "fetch_attempts": 1,
+      "documents": 1,
+      "relevance_passages": 1,
+      "relevant_passages": 1,
+      "stored_empty_extractions": 0,
+      "claims": 1,
+      "resolved_claims": 1,
+      "public_patterns": 0,
+      "complete": false,
+      "result_status": "partial",
+      "incomplete_control_check": null,
+      "grounded_claim_check": true,
+      "lineage_check": true,
+      "geography_check": true,
+      "public_check": true,
+      "errors": {
+        "review_required": 1
+      },
+      "extraction_errors": {},
+      "llm_calls": 0,
+      "provider_seconds": 0.0,
+      "usage_complete": true,
+      "provider_timing_complete": true,
+      "stage_seconds": {
+        "discovery": 0.0,
+        "ingestion": 0.016,
+        "extraction": 0.0,
+        "resolution": 0.0,
+        "hypothesis": 0.015
+      },
+      "tokens": 0
+    },
+    {
+      "case": "tourism-negative",
+      "split": "development",
+      "cache": "cold",
+      "expected": {
+        "relevant": false,
+        "claim": false,
+        "evidence_terms": [],
+        "location_path": null,
+        "public_pattern": false
+      },
+      "candidates": 1,
+      "fetch_attempts": 1,
+      "documents": 1,
+      "relevance_passages": 1,
+      "relevant_passages": 0,
+      "stored_empty_extractions": 0,
+      "claims": 0,
+      "resolved_claims": 0,
+      "public_patterns": 0,
+      "complete": true,
+      "result_status": "empty",
+      "incomplete_control_check": null,
+      "grounded_claim_check": true,
+      "lineage_check": true,
+      "geography_check": true,
+      "public_check": true,
+      "errors": {},
+      "extraction_errors": {},
+      "llm_calls": 1,
+      "provider_seconds": 0.5,
+      "usage_complete": true,
+      "provider_timing_complete": true,
+      "stage_seconds": {
+        "discovery": 0.0,
+        "ingestion": 0.0,
+        "processing": 0.0,
+        "relevance": 0.516,
+        "extraction": 0.0
+      },
+      "tokens": 253
+    },
+    {
+      "case": "tourism-negative",
+      "split": "development",
+      "cache": "warm",
+      "expected": {
+        "relevant": false,
+        "claim": false,
+        "evidence_terms": [],
+        "location_path": null,
+        "public_pattern": false
+      },
+      "candidates": 1,
+      "fetch_attempts": 1,
+      "documents": 1,
+      "relevance_passages": 1,
+      "relevant_passages": 0,
+      "stored_empty_extractions": 0,
+      "claims": 0,
+      "resolved_claims": 0,
+      "public_patterns": 0,
+      "complete": true,
+      "result_status": "empty",
+      "incomplete_control_check": null,
+      "grounded_claim_check": true,
+      "lineage_check": true,
+      "geography_check": true,
+      "public_check": true,
+      "errors": {},
+      "extraction_errors": {},
+      "llm_calls": 0,
+      "provider_seconds": 0.0,
+      "usage_complete": true,
+      "provider_timing_complete": true,
+      "stage_seconds": {
+        "discovery": 0.0,
+        "ingestion": 0.0,
+        "extraction": 0.0
+      },
+      "tokens": 0
+    },
+    {
+      "case": "ordinary-price-negative",
+      "split": "development",
+      "cache": "cold",
+      "expected": {
+        "relevant": false,
+        "claim": false,
+        "evidence_terms": [],
+        "location_path": null,
+        "public_pattern": false
+      },
+      "candidates": 1,
+      "fetch_attempts": 1,
+      "documents": 1,
+      "relevance_passages": 1,
+      "relevant_passages": 0,
+      "stored_empty_extractions": 0,
+      "claims": 0,
+      "resolved_claims": 0,
+      "public_patterns": 0,
+      "complete": true,
+      "result_status": "empty",
+      "incomplete_control_check": null,
+      "grounded_claim_check": true,
+      "lineage_check": true,
+      "geography_check": true,
+      "public_check": true,
+      "errors": {},
+      "extraction_errors": {},
+      "llm_calls": 1,
+      "provider_seconds": 0.594,
+      "usage_complete": true,
+      "provider_timing_complete": true,
+      "stage_seconds": {
+        "discovery": 0.0,
+        "ingestion": 0.015,
+        "processing": 0.0,
+        "relevance": 0.594,
+        "extraction": 0.0
+      },
+      "tokens": 258
+    },
+    {
+      "case": "ordinary-price-negative",
+      "split": "development",
+      "cache": "warm",
+      "expected": {
+        "relevant": false,
+        "claim": false,
+        "evidence_terms": [],
+        "location_path": null,
+        "public_pattern": false
+      },
+      "candidates": 1,
+      "fetch_attempts": 1,
+      "documents": 1,
+      "relevance_passages": 1,
+      "relevant_passages": 0,
+      "stored_empty_extractions": 0,
+      "claims": 0,
+      "resolved_claims": 0,
+      "public_patterns": 0,
+      "complete": true,
+      "result_status": "empty",
+      "incomplete_control_check": null,
+      "grounded_claim_check": true,
+      "lineage_check": true,
+      "geography_check": true,
+      "public_check": true,
+      "errors": {},
+      "extraction_errors": {},
+      "llm_calls": 0,
+      "provider_seconds": 0.0,
+      "usage_complete": true,
+      "provider_timing_complete": true,
+      "stage_seconds": {
+        "discovery": 0.0,
+        "ingestion": 0.016,
+        "extraction": 0.0
+      },
+      "tokens": 0
+    },
+    {
+      "case": "closure-negative",
+      "split": "holdout",
+      "cache": "cold",
+      "expected": {
+        "relevant": false,
+        "claim": false,
+        "evidence_terms": [],
+        "location_path": null,
+        "public_pattern": false
+      },
+      "candidates": 1,
+      "fetch_attempts": 1,
+      "documents": 1,
+      "relevance_passages": 1,
+      "relevant_passages": 0,
+      "stored_empty_extractions": 0,
+      "claims": 0,
+      "resolved_claims": 0,
+      "public_patterns": 0,
+      "complete": true,
+      "result_status": "empty",
+      "incomplete_control_check": null,
+      "grounded_claim_check": true,
+      "lineage_check": true,
+      "geography_check": true,
+      "public_check": true,
+      "errors": {},
+      "extraction_errors": {},
+      "llm_calls": 1,
+      "provider_seconds": 0.422,
+      "usage_complete": true,
+      "provider_timing_complete": true,
+      "stage_seconds": {
+        "discovery": 0.0,
+        "ingestion": 0.016,
+        "processing": 0.0,
+        "relevance": 0.422,
+        "extraction": 0.0
+      },
+      "tokens": 248
+    },
+    {
+      "case": "closure-negative",
+      "split": "holdout",
+      "cache": "warm",
+      "expected": {
+        "relevant": false,
+        "claim": false,
+        "evidence_terms": [],
+        "location_path": null,
+        "public_pattern": false
+      },
+      "candidates": 1,
+      "fetch_attempts": 1,
+      "documents": 1,
+      "relevance_passages": 1,
+      "relevant_passages": 0,
+      "stored_empty_extractions": 0,
+      "claims": 0,
+      "resolved_claims": 0,
+      "public_patterns": 0,
+      "complete": true,
+      "result_status": "empty",
+      "incomplete_control_check": null,
+      "grounded_claim_check": true,
+      "lineage_check": true,
+      "geography_check": true,
+      "public_check": true,
+      "errors": {},
+      "extraction_errors": {},
+      "llm_calls": 0,
+      "provider_seconds": 0.0,
+      "usage_complete": true,
+      "provider_timing_complete": true,
+      "stage_seconds": {
+        "discovery": 0.0,
+        "ingestion": 0.0,
+        "extraction": 0.0
+      },
+      "tokens": 0
+    },
+    {
+      "case": "injection-negative",
+      "split": "holdout",
+      "cache": "cold",
+      "expected": {
+        "relevant": false,
+        "claim": false,
+        "evidence_terms": [],
+        "location_path": null,
+        "public_pattern": false
+      },
+      "candidates": 1,
+      "fetch_attempts": 1,
+      "documents": 1,
+      "relevance_passages": 1,
+      "relevant_passages": 0,
+      "stored_empty_extractions": 0,
+      "claims": 0,
+      "resolved_claims": 0,
+      "public_patterns": 0,
+      "complete": true,
+      "result_status": "empty",
+      "incomplete_control_check": null,
+      "grounded_claim_check": true,
+      "lineage_check": true,
+      "geography_check": true,
+      "public_check": true,
+      "errors": {},
+      "extraction_errors": {},
+      "llm_calls": 1,
+      "provider_seconds": 0.563,
+      "usage_complete": true,
+      "provider_timing_complete": true,
+      "stage_seconds": {
+        "discovery": 0.0,
+        "ingestion": 0.015,
+        "processing": 0.0,
+        "relevance": 0.563,
+        "extraction": 0.0
+      },
+      "tokens": 259
+    },
+    {
+      "case": "injection-negative",
+      "split": "holdout",
+      "cache": "warm",
+      "expected": {
+        "relevant": false,
+        "claim": false,
+        "evidence_terms": [],
+        "location_path": null,
+        "public_pattern": false
+      },
+      "candidates": 1,
+      "fetch_attempts": 1,
+      "documents": 1,
+      "relevance_passages": 1,
+      "relevant_passages": 0,
+      "stored_empty_extractions": 0,
+      "claims": 0,
+      "resolved_claims": 0,
+      "public_patterns": 0,
+      "complete": true,
+      "result_status": "empty",
+      "incomplete_control_check": null,
+      "grounded_claim_check": true,
+      "lineage_check": true,
+      "geography_check": true,
+      "public_check": true,
+      "errors": {},
+      "extraction_errors": {},
+      "llm_calls": 0,
+      "provider_seconds": 0.0,
+      "usage_complete": true,
+      "provider_timing_complete": true,
+      "stage_seconds": {
+        "discovery": 0.0,
+        "ingestion": 0.016,
+        "extraction": 0.0
+      },
+      "tokens": 0
+    },
+    {
+      "case": "blocked-source",
+      "split": "development",
+      "cache": "cold",
+      "expected": {
+        "relevant": false,
+        "claim": false,
+        "evidence_terms": [],
+        "location_path": null,
+        "public_pattern": false
+      },
+      "candidates": 1,
+      "fetch_attempts": 1,
+      "documents": 0,
+      "relevance_passages": 0,
+      "relevant_passages": 0,
+      "stored_empty_extractions": 0,
+      "claims": 0,
+      "resolved_claims": 0,
+      "public_patterns": 0,
+      "complete": false,
+      "result_status": "failed",
+      "incomplete_control_check": true,
+      "grounded_claim_check": true,
+      "lineage_check": true,
+      "geography_check": true,
+      "public_check": true,
+      "errors": {
+        "http_status": 1
+      },
+      "extraction_errors": {},
+      "llm_calls": 0,
+      "provider_seconds": 0.0,
+      "usage_complete": true,
+      "provider_timing_complete": true,
+      "stage_seconds": {
+        "discovery": 0.0,
+        "ingestion": 0.0
+      },
+      "tokens": 0
+    },
+    {
+      "case": "blocked-source",
+      "split": "development",
+      "cache": "warm",
+      "expected": {
+        "relevant": false,
+        "claim": false,
+        "evidence_terms": [],
+        "location_path": null,
+        "public_pattern": false
+      },
+      "candidates": 1,
+      "fetch_attempts": 1,
+      "documents": 0,
+      "relevance_passages": 0,
+      "relevant_passages": 0,
+      "stored_empty_extractions": 0,
+      "claims": 0,
+      "resolved_claims": 0,
+      "public_patterns": 0,
+      "complete": false,
+      "result_status": "failed",
+      "incomplete_control_check": true,
+      "grounded_claim_check": true,
+      "lineage_check": true,
+      "geography_check": true,
+      "public_check": true,
+      "errors": {
+        "http_status": 1
+      },
+      "extraction_errors": {},
+      "llm_calls": 0,
+      "provider_seconds": 0.0,
+      "usage_complete": true,
+      "provider_timing_complete": true,
+      "stage_seconds": {
+        "discovery": 0.0,
+        "ingestion": 0.0
+      },
+      "tokens": 0
+    },
+    {
+      "case": "empty-source",
+      "split": "development",
+      "cache": "cold",
+      "expected": {
+        "relevant": false,
+        "claim": false,
+        "evidence_terms": [],
+        "location_path": null,
+        "public_pattern": false
+      },
+      "candidates": 1,
+      "fetch_attempts": 1,
+      "documents": 1,
+      "relevance_passages": 0,
+      "relevant_passages": 0,
+      "stored_empty_extractions": 0,
+      "claims": 0,
+      "resolved_claims": 0,
+      "public_patterns": 0,
+      "complete": false,
+      "result_status": "partial",
+      "incomplete_control_check": true,
+      "grounded_claim_check": true,
+      "lineage_check": true,
+      "geography_check": true,
+      "public_check": true,
+      "errors": {
+        "empty": 1
+      },
+      "extraction_errors": {},
+      "llm_calls": 0,
+      "provider_seconds": 0.0,
+      "usage_complete": true,
+      "provider_timing_complete": true,
+      "stage_seconds": {
+        "discovery": 0.0,
+        "ingestion": 0.016,
+        "processing": 0.0
+      },
+      "tokens": 0
+    },
+    {
+      "case": "empty-source",
+      "split": "development",
+      "cache": "warm",
+      "expected": {
+        "relevant": false,
+        "claim": false,
+        "evidence_terms": [],
+        "location_path": null,
+        "public_pattern": false
+      },
+      "candidates": 1,
+      "fetch_attempts": 1,
+      "documents": 1,
+      "relevance_passages": 0,
+      "relevant_passages": 0,
+      "stored_empty_extractions": 0,
+      "claims": 0,
+      "resolved_claims": 0,
+      "public_patterns": 0,
+      "complete": false,
+      "result_status": "partial",
+      "incomplete_control_check": true,
+      "grounded_claim_check": true,
+      "lineage_check": true,
+      "geography_check": true,
+      "public_check": true,
+      "errors": {
+        "empty": 1
+      },
+      "extraction_errors": {},
+      "llm_calls": 0,
+      "provider_seconds": 0.0,
+      "usage_complete": true,
+      "provider_timing_complete": true,
+      "stage_seconds": {
+        "discovery": 0.0,
+        "ingestion": 0.015,
+        "processing": 0.0
+      },
+      "tokens": 0
+    }
+  ]
+}

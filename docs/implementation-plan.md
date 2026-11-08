@@ -170,6 +170,7 @@ next. The original 01–38 roadmap remains numbered as before; PR 32 waits for 3
 | 31D | source-acquisition-quality | Failure-aware source diversity and acquisition within existing resource/security bounds. |
 | 31E | research-continuation | Durable passage/document progress, version-valid reuse and bounded cumulative retries. |
 | 31F | research-acceptance | Controlled and live traceable results plus real ChatGPT retest; honest incomplete/empty controls. |
+| 31G | research-quality-repair | User-requested repair before PR 32: bounded empty/invalid-entity audit, grounded location prefixes, retained holds; frozen quality gate and replay. |
 
 Branch names use `codex/pr-31a-research-benchmark` and the analogous 31b–31f prefix.
 PR 31A is merged. PR 31B's grounded qualified-place policy and measured limits are
@@ -189,6 +190,13 @@ quality targets still fail. See `docs/pr31f-research-acceptance.md` and the expl
 `accepted=false` artifact. PR 32 remains gated on repairing and rerunning those targets.
 Keep Serper/Sarvam/current infrastructure. Initially retain 25/45-second execution
 limits. This targeted baseline does not replace PR 36's broader evaluation harness.
+
+Update — 2026-11-08: the user explicitly chose quality repair before PR 32.
+PR 31G's selected controlled capture/replay meets the unchanged thresholds (9/9
+claims, 7/7 geography, 5/6 eligible public patterns; perfect safety controls).
+See `docs/pr31g-research-quality-repair.md` for unsuccessful trials, aggregate usage,
+cache/hold safeguards and limits. Review/merge and live reacceptance of the repaired
+release remain required; the earlier PR 31F host evidence tests the older release.
 
 ## PR 01 detailed implementation plan
 

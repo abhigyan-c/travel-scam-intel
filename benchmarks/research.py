@@ -35,7 +35,7 @@ from app.research import ResearchLimits, research_location
 from app.services.intelligence import IntelligenceService
 
 DATA = Path(__file__).parent / "data"
-CURRENT_RECORDING = DATA / "31c/sarvam-recording.json"
+CURRENT_RECORDING = DATA / "31g/sarvam-recording.json"
 
 
 def fingerprint(value):

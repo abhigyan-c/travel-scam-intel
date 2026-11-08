@@ -13,7 +13,7 @@ from app.models import Claim, Document, Location, LocationAlias
 from app.models.document import DocumentStatus
 from app.models.location import LocationType
 
-RESOLUTION_VERSION = "location-v2"
+RESOLUTION_VERSION = "location-v3"
 
 
 class LocationNode(BaseModel):
@@ -431,7 +431,13 @@ async def resolve_claim(
             text=text, status="unresolved", reason="ungrounded_location"
         )
     else:
-        resolution = await resolve_location(session, text, allow_qualified=grounded, **context)
+        # Remove only a source-copied locative prefix, never supply the search city.
+        component = re.sub(r"^(?:in|at)\s+", "", text, count=1, flags=re.I) if grounded else text
+        resolution = await resolve_location(session, component, allow_qualified=grounded, **context)
+        if component != text:
+            resolution = resolution.model_copy(
+                update={"text": text, "component_text": resolution.component_text or component}
+            )
     await session.execute(
         update(Claim)
         .where(Claim.id == claim_id)

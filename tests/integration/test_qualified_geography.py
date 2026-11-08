@@ -8,7 +8,7 @@ import pytest
 from sqlalchemy import func, select
 
 from app.core.config import Settings
-from app.db.resolution import normalize_name, resolve_claim, resolve_location
+from app.db.resolution import RESOLUTION_VERSION, normalize_name, resolve_claim, resolve_location
 from app.extraction import ClaimBatch, ExtractedClaim
 from app.integrations.sarvam import Completion
 from app.models import Claim, Document, Location, LocationAlias, Source
@@ -27,8 +27,37 @@ async def place(session, name):
     )
 
 
-async def quoted_claim(session, location, *, held=True):
-    quote = f"At {location}, a stranger falsely said the attraction was closed."
+@pytest.mark.parametrize("prefix", ["In", "At"])
+async def test_source_locative_prefix_resolves_without_rewriting_claim_or_clearing_hold(
+    session, prefix
+):
+    bangkok = await place(session, "Bangkok")
+    location = f"{prefix} Bangkok"
+    claim, _ = await quoted_claim(
+        session, location, quote=f"{location}, a stranger falsely said the attraction was closed."
+    )
+    result = await resolve_claim(session, claim.id, parent_id=bangkok.id, create_provisional=True)
+    assert result.location_id == bangkok.id
+    assert result.text == location and result.component_text == "Bangkok"
+    await session.refresh(claim)
+    assert claim.structured_data["unresolved_location"] == location
+    assert claim.structured_data["publication_status"] == "held"
+
+
+async def test_source_prefix_does_not_fill_unknown_or_ungrounded_place_from_search_target(session):
+    bangkok = await place(session, "Bangkok")
+    claim, _ = await quoted_claim(session, "At the old station")
+    result = await resolve_claim(session, claim.id, parent_id=bangkok.id, create_provisional=True)
+    assert result.location_id is None
+    await session.refresh(claim)
+    claim.structured_data = {**claim.structured_data, "unresolved_location": "In Bangkok"}
+    await session.flush()
+    result = await resolve_claim(session, claim.id, parent_id=bangkok.id, create_provisional=True)
+    assert result.location_id is None and result.reason == "ungrounded_location"
+
+
+async def quoted_claim(session, location, *, held=True, quote=None):
+    quote = quote or f"At {location}, a stranger falsely said the attraction was closed."
     source = Source(
         platform="fixture", canonical_url=f"https://example.org/{uuid4()}", source_type="other"
     )
@@ -93,7 +122,7 @@ async def test_named_quoted_landmark_is_provisional_repeatable_and_stays_held(se
     original = dict(claim.structured_data)
     result = await resolve_claim(session, claim.id, parent_id=bangkok.id, create_provisional=True)
     assert result.status == "provisional" and result.created
-    assert result.version == "location-v2" and result.component_text == name
+    assert result.version == RESOLUTION_VERSION and result.component_text == name
     row = await session.get(Location, result.location_id)
     assert row.parent_id == bangkok.id and row.type == "point_of_interest"
     assert row.country_code == "TH" and row.latitude is None and row.longitude is None

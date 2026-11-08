@@ -1,0 +1,490 @@
+{
+  "corpus_hash": "bb639492e9464ef5aed1ed3fcd47331cbf518a86c3894f7a25b112cf3c85db8a",
+  "split": "development",
+  "rows": [
+    {
+      "case": "bangkok-city",
+      "expected": {
+        "relevant": true,
+        "claim": true,
+        "evidence_terms": [
+          "demanded extra money"
+        ],
+        "location_path": [
+          "Thailand",
+          "Bangkok"
+        ],
+        "public_pattern": true
+      },
+      "passed": true,
+      "response": {
+        "data": {
+          "claims": [
+            {
+              "claim": "A driver demanded extra money after the traveler agreed to a fixed fare.",
+              "evidence_quote": "I was in Bangkok when a driver demanded extra money after I agreed to a fixed fare.",
+              "location": "Bangkok",
+              "approach": [],
+              "methods": [],
+              "warning_signs": [],
+              "entities": [
+                "driver"
+              ],
+              "occurred_at": null,
+              "first_hand": true,
+              "confidence": 1.0,
+              "sensitive": false
+            }
+          ]
+        },
+        "error": null,
+        "model": "sarvam-105b",
+        "requests": 1,
+        "usage": {
+          "completion_tokens": 143,
+          "prompt_tokens": 638,
+          "total_tokens": 781
+        }
+      }
+    },
+    {
+      "case": "bangkok-landmark",
+      "expected": {
+        "relevant": true,
+        "claim": true,
+        "evidence_terms": [
+          "falsely said the palace was closed"
+        ],
+        "location_path": [
+          "Thailand",
+          "Bangkok",
+          "Grand Palace"
+        ],
+        "public_pattern": true
+      },
+      "passed": false,
+      "response": {
+        "data": null,
+        "error": "invalid_grounding",
+        "model": "sarvam-105b",
+        "requests": 1,
+        "usage": {
+          "completion_tokens": 205,
+          "prompt_tokens": 643,
+          "total_tokens": 848
+        },
+        "validation_errors": [
+          "methods"
+        ]
+      }
+    },
+    {
+      "case": "chiang-mai-city",
+      "expected": {
+        "relevant": true,
+        "claim": true,
+        "evidence_terms": [
+          "demanded extra money"
+        ],
+        "location_path": [
+          "Thailand",
+          "Chiang Mai"
+        ],
+        "public_pattern": true
+      },
+      "passed": true,
+      "response": {
+        "data": {
+          "claims": [
+            {
+              "claim": "A driver in Chiang Mai promised a fixed fare but then demanded extra money upon arrival.",
+              "evidence_quote": "In Chiang Mai, a driver promised a fixed fare but demanded extra money when we arrived.",
+              "location": "Chiang Mai",
+              "approach": [],
+              "methods": [],
+              "warning_signs": [],
+              "entities": [
+                "driver"
+              ],
+              "occurred_at": null,
+              "first_hand": true,
+              "confidence": 1.0,
+              "sensitive": false
+            }
+          ]
+        },
+        "error": null,
+        "model": "sarvam-105b",
+        "requests": 1,
+        "usage": {
+          "completion_tokens": 147,
+          "prompt_tokens": 638,
+          "total_tokens": 785
+        }
+      }
+    },
+    {
+      "case": "paris-city",
+      "expected": {
+        "relevant": true,
+        "claim": true,
+        "evidence_terms": [
+          "demanded payment"
+        ],
+        "location_path": [
+          "France",
+          "Paris"
+        ],
+        "public_pattern": true
+      },
+      "passed": true,
+      "response": {
+        "data": {
+          "claims": [
+            {
+              "claim": "A person in Paris offered a free bracelet but then demanded payment after fastening it to the traveler's wrist.",
+              "evidence_quote": "In Paris, someone offered a free bracelet but demanded payment after fastening it to my wrist.",
+              "location": "In Paris",
+              "approach": [
+                "offered a free bracelet"
+              ],
+              "methods": [
+                "demanded payment after fastening it to my wrist"
+              ],
+              "warning_signs": [],
+              "entities": [],
+              "occurred_at": null,
+              "first_hand": true,
+              "confidence": 1.0,
+              "sensitive": false
+            }
+          ]
+        },
+        "error": null,
+        "model": "sarvam-105b",
+        "requests": 1,
+        "usage": {
+          "completion_tokens": 159,
+          "prompt_tokens": 638,
+          "total_tokens": 797
+        }
+      }
+    },
+    {
+      "case": "named-business",
+      "expected": {
+        "relevant": true,
+        "claim": true,
+        "evidence_terms": [
+          "demanded extra money"
+        ],
+        "location_path": [
+          "Thailand",
+          "Bangkok"
+        ],
+        "public_pattern": false
+      },
+      "passed": true,
+      "response": {
+        "data": {
+          "claims": [
+            {
+              "claim": "Example Fictional Tours demanded extra money after promising a fixed fare.",
+              "evidence_quote": "In Bangkok, Example Fictional Tours demanded extra money after promising a fixed fare.",
+              "location": "Bangkok",
+              "approach": [],
+              "methods": [],
+              "warning_signs": [],
+              "entities": [
+                "Example Fictional Tours"
+              ],
+              "occurred_at": null,
+              "first_hand": null,
+              "confidence": 1.0,
+              "sensitive": true
+            }
+          ]
+        },
+        "error": null,
+        "model": "sarvam-105b",
+        "requests": 1,
+        "usage": {
+          "completion_tokens": 146,
+          "prompt_tokens": 637,
+          "total_tokens": 783
+        }
+      }
+    },
+    {
+      "case": "tourism-negative",
+      "expected": {
+        "relevant": false,
+        "claim": false,
+        "evidence_terms": [],
+        "location_path": null,
+        "public_pattern": false
+      },
+      "passed": true,
+      "response": {
+        "data": {
+          "claims": []
+        },
+        "error": null,
+        "model": "sarvam-105b",
+        "requests": 1,
+        "usage": {
+          "completion_tokens": 10,
+          "prompt_tokens": 638,
+          "total_tokens": 648
+        }
+      }
+    },
+    {
+      "case": "ordinary-price-negative",
+      "expected": {
+        "relevant": false,
+        "claim": false,
+        "evidence_terms": [],
+        "location_path": null,
+        "public_pattern": false
+      },
+      "passed": true,
+      "response": {
+        "data": {
+          "claims": []
+        },
+        "error": null,
+        "model": "sarvam-105b",
+        "requests": 1,
+        "usage": {
+          "completion_tokens": 10,
+          "prompt_tokens": 639,
+          "total_tokens": 649
+        }
+      }
+    }
+  ],
+  "records": {
+    "bf44649395724dca74aa196946cc481a5f442e5a240025a7682efc8eb200c076": [
+      {
+        "seconds": 1.219,
+        "completion": {
+          "data": {
+            "claims": [
+              {
+                "claim": "A driver demanded extra money after the traveler agreed to a fixed fare.",
+                "evidence_quote": "I was in Bangkok when a driver demanded extra money after I agreed to a fixed fare.",
+                "location": "Bangkok",
+                "approach": [],
+                "methods": [],
+                "warning_signs": [],
+                "entities": [
+                  "driver"
+                ],
+                "occurred_at": null,
+                "first_hand": true,
+                "confidence": 1.0,
+                "sensitive": false
+              }
+            ]
+          },
+          "error": null,
+          "model": "sarvam-105b",
+          "requests": 1,
+          "usage": {
+            "completion_tokens": 143,
+            "prompt_tokens": 638,
+            "total_tokens": 781
+          }
+        },
+        "usage_complete": true
+      }
+    ],
+    "66aee353759a6f82107b44dab18d851e7f3a01a0f69a307dd011d74326479140": [
+      {
+        "seconds": 1.343,
+        "completion": {
+          "data": {
+            "claims": [
+              {
+                "claim": "A man falsely claimed the Grand Palace was closed and directed the narrator to a commission shop.",
+                "evidence_quote": "At the Grand Palace in Bangkok, a man falsely said the palace was closed and directed me to a commission shop.",
+                "location": "At the Grand Palace in Bangkok",
+                "approach": [
+                  "falsely said the palace was closed and directed me to a commission shop"
+                ],
+                "methods": [
+                  "false claim of closure"
+                ],
+                "warning_signs": [
+                  "falsely said the palace was closed"
+                ],
+                "entities": [
+                  "man"
+                ],
+                "occurred_at": null,
+                "first_hand": true,
+                "confidence": 0.95,
+                "sensitive": true
+              }
+            ]
+          },
+          "error": null,
+          "model": "sarvam-105b",
+          "requests": 1,
+          "usage": {
+            "completion_tokens": 205,
+            "prompt_tokens": 643,
+            "total_tokens": 848
+          }
+        },
+        "usage_complete": true
+      }
+    ],
+    "f214e9ac9fc91550edbec25269147b17e3c61cbaddc35851114adbbdc9f8365a": [
+      {
+        "seconds": 0.969,
+        "completion": {
+          "data": {
+            "claims": [
+              {
+                "claim": "A driver in Chiang Mai promised a fixed fare but then demanded extra money upon arrival.",
+                "evidence_quote": "In Chiang Mai, a driver promised a fixed fare but demanded extra money when we arrived.",
+                "location": "Chiang Mai",
+                "approach": [],
+                "methods": [],
+                "warning_signs": [],
+                "entities": [
+                  "driver"
+                ],
+                "occurred_at": null,
+                "first_hand": true,
+                "confidence": 1.0,
+                "sensitive": false
+              }
+            ]
+          },
+          "error": null,
+          "model": "sarvam-105b",
+          "requests": 1,
+          "usage": {
+            "completion_tokens": 147,
+            "prompt_tokens": 638,
+            "total_tokens": 785
+          }
+        },
+        "usage_complete": true
+      }
+    ],
+    "7b765d429a6cf5d398b0bc2f7b29a9b378e222c98b3d17761349a2ee1f40cb4d": [
+      {
+        "seconds": 1.125,
+        "completion": {
+          "data": {
+            "claims": [
+              {
+                "claim": "A person in Paris offered a free bracelet but then demanded payment after fastening it to the traveler's wrist.",
+                "evidence_quote": "In Paris, someone offered a free bracelet but demanded payment after fastening it to my wrist.",
+                "location": "In Paris",
+                "approach": [
+                  "offered a free bracelet"
+                ],
+                "methods": [
+                  "demanded payment after fastening it to my wrist"
+                ],
+                "warning_signs": [],
+                "entities": [],
+                "occurred_at": null,
+                "first_hand": true,
+                "confidence": 1.0,
+                "sensitive": false
+              }
+            ]
+          },
+          "error": null,
+          "model": "sarvam-105b",
+          "requests": 1,
+          "usage": {
+            "completion_tokens": 159,
+            "prompt_tokens": 638,
+            "total_tokens": 797
+          }
+        },
+        "usage_complete": true
+      }
+    ],
+    "e208902474e6c9b3948aa63164c84a2c1c086a640970d00debc742c3d1aa6cb5": [
+      {
+        "seconds": 1.031,
+        "completion": {
+          "data": {
+            "claims": [
+              {
+                "claim": "Example Fictional Tours demanded extra money after promising a fixed fare.",
+                "evidence_quote": "In Bangkok, Example Fictional Tours demanded extra money after promising a fixed fare.",
+                "location": "Bangkok",
+                "approach": [],
+                "methods": [],
+                "warning_signs": [],
+                "entities": [
+                  "Example Fictional Tours"
+                ],
+                "occurred_at": null,
+                "first_hand": null,
+                "confidence": 1.0,
+                "sensitive": true
+              }
+            ]
+          },
+          "error": null,
+          "model": "sarvam-105b",
+          "requests": 1,
+          "usage": {
+            "completion_tokens": 146,
+            "prompt_tokens": 637,
+            "total_tokens": 783
+          }
+        },
+        "usage_complete": true
+      }
+    ],
+    "e7cdfc25a057c2f7a13159fd41836b53564beb1c6b00a5c061e0a4f9588da853": [
+      {
+        "seconds": 0.266,
+        "completion": {
+          "data": {
+            "claims": []
+          },
+          "error": null,
+          "model": "sarvam-105b",
+          "requests": 1,
+          "usage": {
+            "completion_tokens": 10,
+            "prompt_tokens": 638,
+            "total_tokens": 648
+          }
+        },
+        "usage_complete": true
+      }
+    ],
+    "bdea425e2107eec50b160795772dfa964597d6e2b978c8a0222cda26442bdf1b": [
+      {
+        "seconds": 0.25,
+        "completion": {
+          "data": {
+            "claims": []
+          },
+          "error": null,
+          "model": "sarvam-105b",
+          "requests": 1,
+          "usage": {
+            "completion_tokens": 10,
+            "prompt_tokens": 639,
+            "total_tokens": 649
+          }
+        },
+        "usage_complete": true
+      }
+    ]
+  }
+}

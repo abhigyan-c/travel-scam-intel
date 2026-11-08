@@ -29,6 +29,17 @@ gates are in `docs/implementation-plan.md`; PR 31A's protocol is in
 
 These decisions take precedence over conflicting examples elsewhere in this document.
 
+Update — 2026-11-08: the user requires “one request -> automatic progress -> sourced
+report,” without manually prompting to check research again. PR 32 adds bounded
+automatic waiting/report contracts; PR 33 adds an updating progress/report view and
+tests host narrative completion. See
+[`docs/automatic-research-reports.md`](../automatic-research-reports.md).
+This supersedes historical instructions that ChatGPT must always end its initial
+answer before deeper work completes. Keep individual MCP calls short and existing
+research budgets bounded; a five-to-ten-minute watch does not increase paid work.
+Do not promise unsupported host continuation or closed-view notifications, fabricate
+findings, or waive the failed PR 31F quality gate. This is planning, not implementation.
+
 - Plan all 38 PRs, with detailed implementation planning beginning at PR 01. Implement one numbered PR at a time and preserve the review gates.
 - Create each PR branch from the latest `develop` and target `develop`. Use `codex/pr-NN-short-description`, for example `codex/pr-01-repository-foundation`.
 - Use Serper.dev for search discovery. Request its API key when real integration validation requires it.
@@ -2577,6 +2588,11 @@ Demonstrate a real ChatGPT read flow including a first-ever location query.
 
 Make MCP practical in real conversations.
 
+Include the automatic research-report contracts and bounded conversational waiting
+in `docs/automatic-research-reports.md`: stable root identity, compatible immediate
+reads, idempotent start/join, read-only waits and report/evidence retrieval. Verify
+the one-prompt flow in real ChatGPT; tool instructions alone do not prove host support.
+
 Improve:
 
 ```text
@@ -2602,6 +2618,12 @@ Do not overload ChatGPT context with every evidence record by default.
 Add UI only where visual interaction is better than conversation.
 
 Create scam cards and an evidence viewer.
+
+Also deliver one updating progress/report view following
+`docs/automatic-research-reports.md`. Active-view completion must not require the
+traveler to type “check again.” Test a delayed job, reconnect, bounded failures and
+one completion delivery. Automatic assistant narration and automatic report rendering
+are distinct host acceptance checks; disclose any remaining narrative limitation.
 
 Possible filters:
 

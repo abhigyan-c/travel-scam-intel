@@ -97,6 +97,15 @@ Public evidence responses show appropriate excerpts and provenance, never privat
 
 The partial-result contract is implemented at PR 24 and finalized through PR 27/28. At PR 31, validate actual ChatGPT MCP timeout behavior. If the host cannot accommodate fast research, return current results plus research-in-progress metadata immediately and provide a later status/result read; never wait for deep enrichment.
 
+Update — 2026-11-08: the user requires one request to a sourced report without
+manual “check again” prompts. Individual MCP calls remain short, but PR 32 adds
+bounded automatic waiting and PR 33 adds an automatically updating progress/report
+view, with narrative completion tested separately in ChatGPT. The detailed
+[automatic research report plan](automatic-research-reports.md) supersedes the
+earlier assumption that the conversation must end before enrichment finishes.
+Research budgets remain unchanged; a five-to-ten-minute watch is not additional
+paid research. Host limitations and terminal partials must remain explicit.
+
 ## PR-by-PR sequence
 
 Every row implies a distinct branch `codex/pr-NN-<slug>` and PR targeting `develop`. A gate marks mandatory manual review after that PR.
@@ -134,8 +143,8 @@ Every row implies a distinct branch `codex/pr-NN-<slug>` and PR targeting `devel
 | 29 | emerging-patterns | Growth/novelty/geographic signals, historical comparisons and publication review queue. | Dataset novelty distinct from objective novelty; candidates not automatically published. |
 | 30 | research-scheduler | Periodic deterministic selection, demand windows, tiers, hypothesis/location research, usage limits and recovery. | Priorities, demand decay, concurrent cycles and resource limits tested; same ingestion pipeline. |
 | 31 | mcp-integration | MCP read/match/report tools, shared services, research metadata and host-compatible transport. | Real ChatGPT reads, first-ever query and timeout/continuation behavior. **Gate: ChatGPT integration.** |
-| 32 | mcp-quality | Tool descriptions, compact results, evidence pagination, errors, provenance and location clarification. | Representative conversations remain useful without large evidence dumps. |
-| 33 | scam-explorer | ChatGPT scam cards, limited filters and evidence viewer. | Read flow shows confidence, recency, actual geographic scope and research state. |
+| 32 | mcp-quality | Tool descriptions, compact results, evidence pagination, errors, provenance and location clarification; durable report-run identity and bounded automatic request/wait/report flow. | Representative conversations remain useful without large evidence dumps; real ChatGPT single-prompt waiting/report test with host limitations recorded. No duplicate research or budget resets. |
+| 33 | scam-explorer | ChatGPT scam cards, limited filters, evidence viewer and one automatically updating progress/report view. | Read flow shows confidence, recency, actual scope and research state; no manual re-prompt during supported active-view completion. Test automatic narrative separately from in-place report rendering, including five-minute delay and reconnect cases. |
 | 34 | reporting-ui | Editable report confirmation, anonymous submission, optional evidence and recoverable errors. | Real ChatGPT report flow with preserved input on failure. **Gate: customer flow.** |
 | 35 | admin-dashboard | Token-protected minimal UI/API, review queues, merges/splits, job inspection, reprocessing and audit records. | Operator can review held allegations/candidates and failed jobs; unauthorized operations rejected. |
 | 36 | evaluation-harness | Labeled fixtures for extraction/resolution/matches/duplicates/stance; confidence and scheduler regression evaluation. | Reproducible quality metrics and false-merge tracking. **Gate: evaluation baseline.** |

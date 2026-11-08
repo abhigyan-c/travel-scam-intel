@@ -8,6 +8,7 @@ from sqlalchemy import func, select
 
 from app.db.embeddings import search_candidates
 from app.db.hypothesis_lifecycle import (
+    LIFECYCLE_VERSION,
     Draft,
     Review,
     apply_resolution,
@@ -137,7 +138,7 @@ async def test_new_candidate_defaults_dates_and_idempotent_application(session, 
     attached = await session.scalar(select(Evidence).where(Evidence.hypothesis_id == row.id))
     assert attached.claim_id == item.id and attached.archived_at is None
     assert event.details["claim_id"] == str(item.id)
-    assert event.details["version"] == "lifecycle-v1"
+    assert event.details["version"] == LIFECYCLE_VERSION
 
 
 async def test_semantic_decisions_need_review_and_preserve_publication_hold(session, setup):

@@ -10,7 +10,7 @@ from sqlalchemy.dialects.postgresql import insert
 from app.db.embeddings import current_embedding, search_candidates
 from app.db.resolution import _descendants, get_location_path
 from app.embeddings import text_hash
-from app.hypothesis_resolution import SYSTEM_PROMPT, VERSION, Decision
+from app.hypothesis_resolution import SYSTEM_PROMPT, VERSION, Decision, public_new_candidate
 from app.integrations.sarvam import MODEL
 from app.models import Claim, Hypothesis, HypothesisResolution
 from app.models.hypothesis import HypothesisStatus
@@ -299,14 +299,17 @@ async def resolve_hypothesis(
     needs_review = decision is None or bool(error)
     reasons = ["multiple_exact_matches"] if context.get("method") == "ambiguous_exact" else []
     if decision is not None:
-        if context.get("method") == "semantic":
+        ordinary_new = public_new_candidate(decision.model_dump(), snapshot)
+        if context.get("method") == "semantic" and not ordinary_new:
             reasons.append("semantic_decision_requires_review")
-        if decision.confidence < confidence_threshold or decision.ambiguous:
+        if (decision.confidence < confidence_threshold and not ordinary_new) or decision.ambiguous:
             reasons.append("low_confidence_or_ambiguous")
         if decision.decision == "CONTRADICTS":
             reasons.append("contradiction_requires_review")
-        if decision.decision == "NEW" and context.get("coverage", {}).get("total", 0) > len(
-            context["candidates"]
+        if (
+            decision.decision == "NEW"
+            and not ordinary_new
+            and context.get("coverage", {}).get("total", 0) > len(context["candidates"])
         ):
             reasons.append("candidate_set_truncated")
         target = next(

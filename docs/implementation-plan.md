@@ -171,6 +171,7 @@ next. The original 01–38 roadmap remains numbered as before; PR 32 waits for 3
 | 31E | research-continuation | Durable passage/document progress, version-valid reuse and bounded cumulative retries. |
 | 31F | research-acceptance | Controlled and live traceable results plus real ChatGPT retest; honest incomplete/empty controls. |
 | 31G | research-quality-repair | User-requested repair before PR 32: bounded empty/invalid-entity audit, grounded location prefixes, retained holds; frozen quality gate and replay. |
+| 31H | public-candidate-growth | User-requested ordinary low-confidence candidate visibility, disclaimers, populated-data growth, claim-level continuation and no zero-budget successor jobs. |
 
 Branch names use `codex/pr-31a-research-benchmark` and the analogous 31b–31f prefix.
 PR 31A is merged. PR 31B's grounded qualified-place policy and measured limits are
@@ -197,6 +198,14 @@ claims, 7/7 geography, 5/6 eligible public patterns; perfect safety controls).
 See `docs/pr31g-research-quality-repair.md` for unsuccessful trials, aggregate usage,
 cache/hold safeguards and limits. Review/merge and live reacceptance of the repaired
 release remain required; the earlier PR 31F host evidence tests the older release.
+
+Update — 2026-11-08: live reacceptance of merged 31G exposed blanket semantic review
+blocking populated-destination growth and document-wide stopping on a single blocked
+claim. The user authorized showing ordinary low-confidence findings with a disclaimer.
+See `docs/pr31h-public-candidate-growth.md`: eligible unambiguous NEW candidates may
+be public without operator approval, while held/sensitive content and changes to
+existing patterns retain safeguards. PR 31H also addresses productive continuation;
+PR 32's status/waiting contract work is not a substitute for this repair.
 
 ## PR 01 detailed implementation plan
 

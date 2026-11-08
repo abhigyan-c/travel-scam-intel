@@ -265,7 +265,7 @@ async def test_missing_narrative_place_can_use_explicit_submission_context(api):
         assert claim.structured_data["location_resolution"]["method"] == "submission_context"
 
 
-async def test_semantic_matches_remain_pending_instead_of_bypassing_operator_review(api):
+async def test_ordinary_semantic_new_report_can_be_processed_as_unverified_candidate(api):
     _, ctx, identity, extracted = api
     await get_location_intelligence(ctx, identity)
     extracted.claim = "A different reported fare negotiation pattern."
@@ -273,10 +273,35 @@ async def test_semantic_matches_remain_pending_instead_of_bypassing_operator_rev
     await run_job(ctx, str(report.processing_job_id))
     async with ctx["sessions"]() as session:
         stored = await session.get(UserReport, report.id)
+        assert stored.processing_status == stored.moderation_status == "processed"
+        assert "review_required" not in stored.processing_details.get("error_codes", [])
+        assert await session.scalar(select(func.count()).select_from(Hypothesis)) == 2
+        assert await session.scalar(select(func.count()).select_from(Evidence)) == 2
+
+
+async def test_semantic_report_attachment_to_existing_pattern_still_requires_review(api):
+    from app.hypothesis_resolution import Decision
+
+    _, ctx, identity, extracted = api
+    initial = await get_location_intelligence(ctx, identity)
+    extracted.claim = "The same fare mechanism described in different wording."
+    original = ctx["llm"].complete.side_effect
+
+    async def complete(**kwargs):
+        value = await original(**kwargs)
+        if kwargs["schema"] is Decision:
+            value.data.decision = "SAME"
+            value.data.target_id = str(initial.hypotheses[0]["id"])
+        return value
+
+    ctx["llm"].complete.side_effect = complete
+    _, report = await submit(api)
+    await run_job(ctx, str(report.processing_job_id))
+    async with ctx["sessions"]() as session:
+        stored = await session.get(UserReport, report.id)
         assert stored.processing_status == stored.moderation_status == "needs_review"
         assert "review_required" in stored.processing_details["error_codes"]
         assert await session.scalar(select(func.count()).select_from(Hypothesis)) == 1
-        assert await session.scalar(select(func.count()).select_from(Evidence)) == 1
 
 
 async def test_receipt_replay_and_job_redelivery_do_not_repeat_processing(api):

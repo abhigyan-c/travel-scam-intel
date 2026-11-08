@@ -14,11 +14,13 @@ from app.integrations.fetch import FetchError
 
 def versions():
     from app.acquisition import POLICY_VERSION
+    from app.db.hypothesis_lifecycle import LIFECYCLE_VERSION
     from app.db.resolution import RESOLUTION_VERSION
     from app.discovery import DISCOVERY_VERSION
     from app.embeddings import MODEL as embedding
     from app.embeddings import REVISION
     from app.extraction import PROMPT_VERSION as extraction
+    from app.hypothesis_resolution import VERSION as hypothesis
     from app.integrations.sarvam import MODEL
     from app.processing import PROCESSING_VERSION
     from app.relevance import PROMPT_VERSION as relevance
@@ -30,6 +32,8 @@ def versions():
         relevance=relevance,
         extraction=extraction,
         location=RESOLUTION_VERSION,
+        hypothesis=hypothesis,
+        lifecycle=LIFECYCLE_VERSION,
         llm=MODEL,
         embedding=embedding,
         embedding_revision=REVISION,
@@ -185,6 +189,39 @@ class Progress:
         return bool(
             self.pending()
             or any(
+                not self.cursor.queries.get(q, {}).get("complete")
+                and self.cursor.queries.get(q, {}).get("attempts", 0) < 2
+                for q in self.cursor.plan
+            )
+        )
+
+    def candidate_can_advance(self, item):
+        applied = item.get("applied", {})
+        if any(c not in applied for c in item.get("summary", {}).get("claim_ids", [])):
+            return True
+        if any(
+            h not in item.get("embedded", {})
+            for value in applied.values()
+            for h in value.get("hypothesis_ids", [])
+        ):
+            return True
+        if self.remaining("llm_calls") <= 0:
+            return False
+        if item.get("document_id"):
+            return bool(item.get("charged_document") or self.remaining("documents") > 0)
+        return self.remaining("fetches") > 0 and self.remaining("documents") > 0
+
+    def can_advance(self):
+        return any(
+            self.candidate_can_advance(item)
+            for item in self.cursor.candidates.values()
+            if not item.get("done") and not item.get("terminal")
+        ) or bool(
+            self.remaining("llm_calls") > 0
+            and self.remaining("queries") > 0
+            and self.remaining("fetches") > 0
+            and self.remaining("documents") > 0
+            and any(
                 not self.cursor.queries.get(q, {}).get("complete")
                 and self.cursor.queries.get(q, {}).get("attempts", 0) < 2
                 for q in self.cursor.plan

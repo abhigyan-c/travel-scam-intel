@@ -498,28 +498,98 @@ async def test_sensitive_claim_is_retained_for_review_and_not_published(environm
         assert resolution.needs_review
 
 
-async def test_semantic_resolution_stays_pending_without_synthetic_operator_approval(environment):
+async def test_populated_location_accepts_ordinary_low_confidence_new_candidate(environment):
     ctx, identity, claim = environment
     await get_location_intelligence(ctx, identity)
     # A new extraction version proposes a different pattern in the existing scope.
     claim.claim = "A traveler reports a separate fare negotiation problem."
+    original = ctx["llm"].complete.side_effect
+
+    async def complete(**kwargs):
+        value = await original(**kwargs)
+        if kwargs["schema"] is Decision:
+            value.data.confidence = 0.2
+        return value
+
+    ctx["llm"].complete.side_effect = complete
     # A new URL/raw document gives a second ordinary claim without changing the first.
     ctx["provider"].search.return_value.results = [
         SearchResult(url=f"https://example.org/{uuid4()}", position=1, query="q")
     ]
     final = await finish_enrichment(ctx, identity)
-    assert not final.complete and len(final.hypotheses) == 1
+    assert final.complete and len(final.hypotheses) == 2
     async with ctx["sessions"]() as session:
         decisions = (
             await session.scalars(
                 select(HypothesisResolution).where(HypothesisResolution.needs_review.is_(True))
             )
         ).all()
-        assert any(
-            "semantic_decision_requires_review" in row.details["review_reasons"]
-            for row in decisions
-        )
-        assert await session.scalar(select(func.count()).select_from(Hypothesis)) == 1
+        assert decisions == []
+        assert await session.scalar(select(func.count()).select_from(Hypothesis)) == 2
+    from app.services.intelligence import IntelligenceService
+
+    public = await IntelligenceService(ctx["sessions"]).search_location_scams(identity)
+    assert public.total == 2
+    assert all(any("Unverified" in text for text in c.metrics.limitations) for c in public.items)
+    assert all(c.status == "candidate" for c in public.items)
+
+
+async def test_unresolved_first_claim_does_not_abandon_later_article_passages(environment):
+    import json
+
+    ctx, identity, original_claim = environment
+    ctx["settings"] = ctx["settings"].model_copy(update={"research_max_llm_calls": 3})
+    first = "Near the old station, a driver falsely claimed a hotel was closed."
+    body = first + " " + ("Ordinary visitor information and opening hours. " * 105) + BODY
+    ctx["fetcher"].fetch.side_effect = lambda url: FetchedPage(url, body.encode(), "text/plain")
+    ctx["storage"].get_object.side_effect = lambda **kwargs: {
+        "Body": io.BytesIO(body.encode()),
+        "ContentType": "text/plain",
+    }
+
+    async def complete(**kwargs):
+        if kwargs["schema"] is Relevance:
+            return Completion(
+                data=Relevance(relevant=True, category="fare", confidence=0.9, reason="Fixture"),
+                requests=1,
+            )
+        passage = json.loads(kwargs["user"])["passage"]
+        claim = original_claim.model_copy(deep=True)
+        if BODY not in passage:
+            claim.evidence_quote = first
+            claim.location = "the old station"
+            claim.claim = "A driver allegedly reported a false closure."
+            claim.methods = ["falsely claimed"]
+            claim.approach = []
+            claim.occurred_at = None
+        return Completion(data=ClaimBatch(claims=[claim]), requests=1)
+
+    ctx["llm"].complete.side_effect = complete
+    initial = await get_location_intelligence(ctx, identity)
+    assert not initial.hypotheses
+    final = await finish_enrichment(ctx, identity)
+    assert len(final.hypotheses) == 1
+    assert not final.complete  # The earlier unresolved claim remains an honest gap.
+    async with ctx["sessions"]() as session:
+        assert await session.scalar(select(func.count()).select_from(Claim)) == 2
+
+
+async def test_exhausted_root_does_not_enqueue_a_zero_call_continuation(environment):
+    ctx, identity, _ = environment
+    ctx["settings"] = ctx["settings"].model_copy(update={"research_max_llm_calls": 1})
+    body = (BODY + " ") * 250
+    ctx["fetcher"].fetch.side_effect = lambda url: FetchedPage(url, body.encode(), "text/plain")
+    ctx["storage"].get_object.side_effect = lambda **kwargs: {
+        "Body": io.BytesIO(body.encode()),
+        "ContentType": "text/plain",
+    }
+    await get_location_intelligence(ctx, identity)
+    final = await finish_enrichment(ctx, identity)
+    assert not final.in_progress and not final.complete
+    assert final.progress["stop_reason"] == "resource_limit"
+    assert final.progress["continuation"]["used"]["llm_calls"] == 3
+    async with ctx["sessions"]() as session:
+        assert await session.scalar(select(func.count()).select_from(ResearchJob)) == 2
 
 
 async def test_cancellation_retains_committed_stage_and_retry_continues(environment):

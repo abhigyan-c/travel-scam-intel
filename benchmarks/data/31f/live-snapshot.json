@@ -1,0 +1,3754 @@
+{
+  "version": "live-research-snapshot-v1",
+  "observations": [
+    {
+      "location_id": "991d6b7e-f69b-5158-bf6d-e8c9f3ec871a",
+      "location": "Bangkok",
+      "captured_at": "2026-11-08T06:46:10.276311+00:00",
+      "public": {
+        "contract_version": "intelligence-v1",
+        "requested_location": {
+          "id": "991d6b7e-f69b-5158-bf6d-e8c9f3ec871a",
+          "name": "Bangkok",
+          "type": "city",
+          "country_code": "TH",
+          "provisional": false
+        },
+        "research": {
+          "status": "stale",
+          "initial": true,
+          "enriched": false,
+          "in_progress": false,
+          "stale": true,
+          "complete": false,
+          "last_success_at": null,
+          "fresh_until": null
+        },
+        "items": [
+          {
+            "id": "7a892637-5db5-4680-b73b-67d5af711eaf",
+            "title": "Around the Grand Palace in Bangkok, scammers forcefully get tourists to join in feeding birds and later ask for more mon",
+            "description": "Around the Grand Palace in Bangkok, scammers forcefully get tourists to join in feeding birds and later ask for more money than it costs to feed a family an awesome street food.",
+            "category": "warns about tourist fraud, deceptive overcharging, or closely related tourist trap",
+            "status": "candidate",
+            "location": {
+              "id": "063b1cc8-01fd-5df7-b904-baacad5a84ed",
+              "name": "Grand Palace",
+              "type": "point_of_interest",
+              "country_code": "TH",
+              "provisional": false
+            },
+            "location_path": [
+              {
+                "id": "2d2d43c4-648f-54f3-895e-28e4c0b623e8",
+                "name": "Thailand",
+                "type": "country",
+                "country_code": "TH",
+                "provisional": false
+              },
+              {
+                "id": "991d6b7e-f69b-5158-bf6d-e8c9f3ec871a",
+                "name": "Bangkok",
+                "type": "city",
+                "country_code": "TH",
+                "provisional": false
+              },
+              {
+                "id": "063b1cc8-01fd-5df7-b904-baacad5a84ed",
+                "name": "Grand Palace",
+                "type": "point_of_interest",
+                "country_code": "TH",
+                "provisional": false
+              }
+            ],
+            "scope": "descendant",
+            "research": {
+              "status": "never_researched",
+              "initial": false,
+              "enriched": false,
+              "in_progress": false,
+              "stale": false,
+              "complete": false,
+              "last_success_at": null,
+              "fresh_until": null
+            },
+            "metrics": {
+              "status": "current",
+              "as_of": "2026-11-08T06:46:09.484977Z",
+              "confidence_score": 0.047059,
+              "confidence_label": "limited",
+              "support_weight": 0.125,
+              "contradiction_weight": 0.0,
+              "recency_score": null,
+              "prevalence_score": null,
+              "all_time": {
+                "raw_report_count": 1,
+                "independence_weighted_report_count": 0.5
+              },
+              "occurrence_windows": {
+                "30": {
+                  "raw_report_count": 0,
+                  "independence_weighted_report_count": 0.0
+                },
+                "90": {
+                  "raw_report_count": 0,
+                  "independence_weighted_report_count": 0.0
+                },
+                "365": {
+                  "raw_report_count": 0,
+                  "independence_weighted_report_count": 0.0
+                }
+              },
+              "reporting_windows": {
+                "30": {
+                  "raw_report_count": 0,
+                  "independence_weighted_report_count": 0.0
+                },
+                "90": {
+                  "raw_report_count": 0,
+                  "independence_weighted_report_count": 0.0
+                },
+                "365": {
+                  "raw_report_count": 0,
+                  "independence_weighted_report_count": 0.0
+                }
+              },
+              "dated_reports": 0,
+              "undated_or_invalid_reports": 1,
+              "trend": "unknown",
+              "complete": false,
+              "limitations": [
+                "occurrence_date_missing"
+              ],
+              "policy_version": "public-intelligence-v1",
+              "interpretation": "corroboration and observed reporting; not truth probability or population incidence"
+            }
+          }
+        ],
+        "total": 1,
+        "limit": 5,
+        "offset": 0,
+        "has_more": false,
+        "outcome": "findings"
+      },
+      "progress": {
+        "run_id": "fe29e055-791e-4a8b-87f3-895b1d25916e",
+        "caps": {
+          "fetches": 20,
+          "queries": 6,
+          "documents": 10,
+          "llm_calls": 24
+        },
+        "reserved": {
+          "fetches": 20,
+          "queries": 6,
+          "documents": 7,
+          "llm_calls": 24
+        },
+        "seconds_cap": 135.0,
+        "seconds_reserved": 135.0,
+        "jobs": 3,
+        "queries": [
+          {
+            "query": "Bangkok, Thailand taxi scams",
+            "attempts": 1,
+            "complete": true,
+            "usage": {
+              "error": null,
+              "requests": 1,
+              "reported_credits": 1,
+              "returned_results": 10
+            }
+          },
+          {
+            "query": "Bangkok, Thailand scams Reddit",
+            "attempts": 1,
+            "complete": true,
+            "usage": {
+              "error": null,
+              "requests": 1,
+              "reported_credits": 1,
+              "returned_results": 9
+            }
+          },
+          {
+            "query": "Bangkok, Thailand tourist fraud",
+            "attempts": 1,
+            "complete": true,
+            "usage": {
+              "error": null,
+              "requests": 1,
+              "reported_credits": 1,
+              "returned_results": 9
+            }
+          },
+          {
+            "query": "Bangkok, Thailand tourist scams",
+            "attempts": 1,
+            "complete": true,
+            "usage": {
+              "error": null,
+              "requests": 1,
+              "reported_credits": 1,
+              "returned_results": 10
+            }
+          },
+          {
+            "query": "Bangkok, Thailand common scams travel blog",
+            "attempts": 1,
+            "complete": true,
+            "usage": {
+              "error": null,
+              "requests": 1,
+              "reported_credits": 1,
+              "returned_results": 9
+            }
+          },
+          {
+            "query": "Bangkok, Thailand tourist traps travel blog",
+            "attempts": 1,
+            "complete": true,
+            "usage": {
+              "error": null,
+              "requests": 1,
+              "reported_credits": 1,
+              "returned_results": 10
+            }
+          }
+        ],
+        "candidates": 44,
+        "candidate_errors": [
+          {
+            "url": "https://www.facebook.com/GregorBrownOfficial/videos/thailand-travel-scams-stay-alert-protect-yourself/1342186831396102/",
+            "code": "run_fetch_limit",
+            "stage": "ingestion"
+          },
+          {
+            "url": "https://www.tripadvisor.com/ShowTopic-g293916-i3687-k4363703-o10-AVOID_at_any_cost_Tourism_Authority_of_Thailand_Bangkok-Bangkok.html",
+            "code": "run_fetch_limit",
+            "stage": "ingestion"
+          },
+          {
+            "url": "https://globetrottergirls.com/getting-scammed-in-bangkok/",
+            "code": "run_fetch_limit",
+            "stage": "ingestion"
+          },
+          {
+            "url": "https://www.quora.com/Why-do-some-Bangkok-taxis-try-to-overcharge-tourists-and-how-can-you-avoid-getting-scammed",
+            "code": "run_fetch_limit",
+            "stage": "ingestion"
+          },
+          {
+            "url": "https://touristbangkok.com/tourist-scams/",
+            "code": "run_fetch_limit",
+            "stage": "ingestion"
+          },
+          {
+            "url": "https://www.thecaravelgu.com/blog/avoiding-tourist-traps-in-bangkok",
+            "code": "http_status",
+            "stage": "ingestion",
+            "http_status": 404
+          },
+          {
+            "url": "https://www.tripadvisor.com/ShowTopic-g293916-i3687-k10104855-Taxi_scams_no_matter_how_careful_you_are-Bangkok.html",
+            "code": "run_fetch_limit",
+            "stage": "ingestion"
+          },
+          {
+            "url": "https://www.travelfish.org/transport_detail/thailand/bangkok_and_surrounds/bangkok/bangkok/56",
+            "code": "run_fetch_limit",
+            "stage": "ingestion"
+          },
+          {
+            "url": "https://www.facebook.com/KhaosodEnglish/posts/too-bad-thailand-ranks-third-in-the-world-for-taxi-scams-source-reddit-threads-a/1407646834741154/",
+            "code": "run_fetch_limit",
+            "stage": "ingestion"
+          },
+          {
+            "url": "https://www.facebook.com/groups/travelthailandgroup/posts/2033134984141947/",
+            "code": "run_fetch_limit",
+            "stage": "ingestion"
+          },
+          {
+            "url": "https://www.airalo.com/blog/thailand-scams?srsltid=AYCX9vJicqb-QYbR25nRZnEGrkfiRHH8__O6ce5ZKS0NTcMxttk02Ekx",
+            "code": "incomplete",
+            "stage": "relevance"
+          },
+          {
+            "url": "https://www.airalo.com/blog/thailand-scams?srsltid=AYCX9vJicqb-QYbR25nRZnEGrkfiRHH8__O6ce5ZKS0NTcMxttk02Ekx",
+            "code": "incomplete",
+            "stage": "extraction"
+          },
+          {
+            "code": "host_deferred",
+            "stage": "acquisition"
+          },
+          {
+            "url": "https://thaiwander.com/how-to-avoid-tourist-traps-in-bangkok-tips-from-travel-experts/",
+            "code": "run_fetch_limit",
+            "stage": "ingestion"
+          },
+          {
+            "code": "host_deferred",
+            "stage": "acquisition"
+          },
+          {
+            "url": "https://www.quora.com/How-can-you-avoid-tourist-traps-and-overpriced-places-when-visiting-Bangkok",
+            "code": "run_fetch_limit",
+            "stage": "ingestion"
+          },
+          {
+            "url": "https://www.facebook.com/groups/1206669499358683/posts/28420631040869161/",
+            "code": "empty",
+            "stage": "processing"
+          },
+          {
+            "url": "https://www.bangkokscams.com/",
+            "code": "run_fetch_limit",
+            "stage": "ingestion"
+          },
+          {
+            "url": "https://www.youtube.com/watch?v=ltATD0FqiiU",
+            "code": "run_fetch_limit",
+            "stage": "ingestion"
+          },
+          {
+            "url": "https://www.airalo.com/blog/thailand-scams?srsltid=AYCX9vJDtAwCpONhoiC6XYP_B0lWKmsfB43RJ2zLvGiTvO1xFiyc1F0G",
+            "code": "incomplete",
+            "stage": "extraction"
+          },
+          {
+            "code": "unresolved_location",
+            "stage": "hypothesis"
+          },
+          {
+            "code": "host_deferred",
+            "stage": "acquisition"
+          },
+          {
+            "url": "https://th.usembassy.gov/common-scams-to-avoid/",
+            "code": "http_status",
+            "stage": "ingestion",
+            "http_status": 407
+          },
+          {
+            "url": "https://grrrltraveler.com/scams-in-bangkok/",
+            "code": "incomplete",
+            "stage": "relevance"
+          },
+          {
+            "url": "https://grrrltraveler.com/scams-in-bangkok/",
+            "code": "incomplete",
+            "stage": "extraction"
+          },
+          {
+            "url": "https://library.siam-legal.com/how-to-avoid-common-scams-in-thailand/",
+            "code": "run_fetch_limit",
+            "stage": "ingestion"
+          },
+          {
+            "url": "https://www.instagram.com/reel/DVYOhvsgBGm/?hl=en",
+            "code": "run_fetch_limit",
+            "stage": "ingestion"
+          },
+          {
+            "url": "https://www.tielandtothailand.com/avoiding-tuk-tuk-taxi-scams-thailand/",
+            "code": "redirect_limit_or_missing_location",
+            "stage": "ingestion"
+          },
+          {
+            "url": "https://northabroad.com/bangkok-travel-guide/",
+            "code": "run_fetch_limit",
+            "stage": "ingestion"
+          },
+          {
+            "url": "https://www.lensofjen.org/a-detour-by-design-in-bangkok/",
+            "code": "incomplete",
+            "stage": "extraction"
+          },
+          {
+            "code": "unresolved_location",
+            "stage": "hypothesis"
+          },
+          {
+            "url": "https://www.airalo.com/blog/thailand-scams?srsltid=AYCX9vKL66Yky1UTTF0LSeulgcqQxpmsQXL4nts8STKLojofUk6VAwZ9",
+            "code": "run_fetch_limit",
+            "stage": "ingestion"
+          },
+          {
+            "code": "unresolved_location",
+            "stage": "hypothesis"
+          },
+          {
+            "url": "https://www.reddit.com/r/ThailandTourism/comments/zlm0lt/tourist_traps/",
+            "code": "http_status",
+            "stage": "ingestion",
+            "http_status": 403
+          },
+          {
+            "url": "https://www.swisshelpingpoint.com/en/touristenfallen-in-bangkok/",
+            "code": "run_fetch_limit",
+            "stage": "ingestion"
+          },
+          {
+            "url": "https://www.tripadvisor.com/ShowTopic-g293916-i3687-k11081657-o10-It_s_a_Tourist_Trap-Bangkok.html",
+            "code": "run_fetch_limit",
+            "stage": "ingestion"
+          },
+          {
+            "url": "https://www.scmp.com/week-asia/economics/article/3311392/bangkok-names-among-worst-cities-tourist-scams-taxi-fraud-soars-report-warns",
+            "code": "run_fetch_limit",
+            "stage": "ingestion"
+          }
+        ],
+        "document_ids": [
+          "86975ca6-7bae-49fb-99c2-4926a88cd785",
+          "8e4d2434-dfe6-48ca-8dd2-1dcaa65c5382",
+          "2202e52f-e66e-4f30-9bd6-3630b45dc0e5",
+          "b338f7a2-d568-47ef-9250-e7c4cf431852",
+          "bfb695b8-7356-4b3c-8af1-e93bd596fb2a",
+          "1b2e18db-2032-435c-925f-3623cafb2169",
+          "d9589646-0d41-4d3e-8b49-8b149b0c7943",
+          "c1050dad-9363-46cc-9f0a-8cbe6e028d2c"
+        ]
+      },
+      "jobs": [
+        {
+          "id": "375ce635-144c-40d5-a478-323b3415e770",
+          "phase": "continuation",
+          "status": "succeeded",
+          "attempts": 1,
+          "created_at": "2026-11-08T06:39:08.596226+00:00",
+          "updated_at": "2026-11-08T06:39:10.906759+00:00",
+          "error_code": "research_incomplete",
+          "result_status": "partial",
+          "complete": false,
+          "errors": [
+            {
+              "url": "https://grrrltraveler.com/scams-in-bangkok/",
+              "code": "incomplete",
+              "stage": "relevance"
+            },
+            {
+              "url": "https://grrrltraveler.com/scams-in-bangkok/",
+              "code": "incomplete",
+              "stage": "extraction"
+            },
+            {
+              "url": "https://www.airalo.com/blog/thailand-scams?srsltid=AYCX9vJicqb-QYbR25nRZnEGrkfiRHH8__O6ce5ZKS0NTcMxttk02Ekx",
+              "code": "incomplete",
+              "stage": "relevance"
+            },
+            {
+              "url": "https://www.airalo.com/blog/thailand-scams?srsltid=AYCX9vJicqb-QYbR25nRZnEGrkfiRHH8__O6ce5ZKS0NTcMxttk02Ekx",
+              "code": "incomplete",
+              "stage": "extraction"
+            },
+            {
+              "url": "https://www.facebook.com/KhaosodEnglish/posts/too-bad-thailand-ranks-third-in-the-world-for-taxi-scams-source-reddit-threads-a/1407646834741154/",
+              "code": "run_fetch_limit",
+              "stage": "ingestion"
+            },
+            {
+              "url": "https://www.swisshelpingpoint.com/en/touristenfallen-in-bangkok/",
+              "code": "run_fetch_limit",
+              "stage": "ingestion"
+            },
+            {
+              "url": "https://www.travelfish.org/transport_detail/thailand/bangkok_and_surrounds/bangkok/bangkok/56",
+              "code": "run_fetch_limit",
+              "stage": "ingestion"
+            },
+            {
+              "url": "https://www.quora.com/How-can-you-avoid-tourist-traps-and-overpriced-places-when-visiting-Bangkok",
+              "code": "run_fetch_limit",
+              "stage": "ingestion"
+            },
+            {
+              "url": "https://www.youtube.com/watch?v=ltATD0FqiiU",
+              "code": "run_fetch_limit",
+              "stage": "ingestion"
+            },
+            {
+              "url": "https://www.scmp.com/week-asia/economics/article/3311392/bangkok-names-among-worst-cities-tourist-scams-taxi-fraud-soars-report-warns",
+              "code": "run_fetch_limit",
+              "stage": "ingestion"
+            },
+            {
+              "url": "https://library.siam-legal.com/how-to-avoid-common-scams-in-thailand/",
+              "code": "run_fetch_limit",
+              "stage": "ingestion"
+            },
+            {
+              "url": "https://northabroad.com/bangkok-travel-guide/",
+              "code": "run_fetch_limit",
+              "stage": "ingestion"
+            },
+            {
+              "url": "https://www.tripadvisor.com/ShowTopic-g293916-i3687-k10104855-Taxi_scams_no_matter_how_careful_you_are-Bangkok.html",
+              "code": "run_fetch_limit",
+              "stage": "ingestion"
+            },
+            {
+              "url": "https://touristbangkok.com/tourist-scams/",
+              "code": "run_fetch_limit",
+              "stage": "ingestion"
+            },
+            {
+              "url": "https://globetrottergirls.com/getting-scammed-in-bangkok/",
+              "code": "run_fetch_limit",
+              "stage": "ingestion"
+            },
+            {
+              "url": "https://www.instagram.com/reel/DVYOhvsgBGm/?hl=en",
+              "code": "run_fetch_limit",
+              "stage": "ingestion"
+            },
+            {
+              "url": "https://www.bangkokscams.com/",
+              "code": "run_fetch_limit",
+              "stage": "ingestion"
+            },
+            {
+              "url": "https://www.airalo.com/blog/thailand-scams?srsltid=AYCX9vKL66Yky1UTTF0LSeulgcqQxpmsQXL4nts8STKLojofUk6VAwZ9",
+              "code": "run_fetch_limit",
+              "stage": "ingestion"
+            },
+            {
+              "url": "https://thaiwander.com/how-to-avoid-tourist-traps-in-bangkok-tips-from-travel-experts/",
+              "code": "run_fetch_limit",
+              "stage": "ingestion"
+            },
+            {
+              "url": "https://www.facebook.com/GregorBrownOfficial/videos/thailand-travel-scams-stay-alert-protect-yourself/1342186831396102/",
+              "code": "run_fetch_limit",
+              "stage": "ingestion"
+            },
+            {
+              "url": "https://www.quora.com/Why-do-some-Bangkok-taxis-try-to-overcharge-tourists-and-how-can-you-avoid-getting-scammed",
+              "code": "run_fetch_limit",
+              "stage": "ingestion"
+            },
+            {
+              "url": "https://www.tripadvisor.com/ShowTopic-g293916-i3687-k11081657-o10-It_s_a_Tourist_Trap-Bangkok.html",
+              "code": "run_fetch_limit",
+              "stage": "ingestion"
+            },
+            {
+              "url": "https://www.facebook.com/groups/travelthailandgroup/posts/2033134984141947/",
+              "code": "run_fetch_limit",
+              "stage": "ingestion"
+            },
+            {
+              "url": "https://www.tripadvisor.com/ShowTopic-g293916-i3687-k4363703-o10-AVOID_at_any_cost_Tourism_Authority_of_Thailand_Bangkok-Bangkok.html",
+              "code": "run_fetch_limit",
+              "stage": "ingestion"
+            },
+            {
+              "code": "host_deferred",
+              "count": 3,
+              "stage": "acquisition"
+            },
+            {
+              "code": "resource_limit_or_deadline",
+              "stage": "research"
+            },
+            {
+              "url": "https://www.thecaravelgu.com/blog/avoiding-tourist-traps-in-bangkok",
+              "code": "http_status",
+              "stage": "ingestion",
+              "http_status": 404
+            },
+            {
+              "code": "host_deferred",
+              "stage": "acquisition"
+            },
+            {
+              "url": "https://www.facebook.com/groups/1206669499358683/posts/28420631040869161/",
+              "code": "empty",
+              "stage": "processing"
+            },
+            {
+              "url": "https://www.airalo.com/blog/thailand-scams?srsltid=AYCX9vJDtAwCpONhoiC6XYP_B0lWKmsfB43RJ2zLvGiTvO1xFiyc1F0G",
+              "code": "incomplete",
+              "stage": "extraction"
+            },
+            {
+              "code": "unresolved_location",
+              "stage": "hypothesis"
+            },
+            {
+              "url": "https://th.usembassy.gov/common-scams-to-avoid/",
+              "code": "http_status",
+              "stage": "ingestion",
+              "http_status": 407
+            },
+            {
+              "url": "https://www.tielandtothailand.com/avoiding-tuk-tuk-taxi-scams-thailand/",
+              "code": "redirect_limit_or_missing_location",
+              "stage": "ingestion"
+            },
+            {
+              "url": "https://www.lensofjen.org/a-detour-by-design-in-bangkok/",
+              "code": "incomplete",
+              "stage": "extraction"
+            },
+            {
+              "url": "https://www.reddit.com/r/ThailandTourism/comments/zlm0lt/tourist_traps/",
+              "code": "http_status",
+              "stage": "ingestion",
+              "http_status": 403
+            },
+            {
+              "code": "continuation_pending",
+              "stage": "research"
+            }
+          ],
+          "usage": {
+            "llm": [],
+            "search": [],
+            "llm_calls": 0,
+            "reservation_note": "Pre-call reservations; interrupted usage may be unknown.",
+            "run_reservations": {
+              "fetches": 20,
+              "queries": 6,
+              "documents": 7,
+              "llm_calls": 24
+            }
+          },
+          "diagnostics": {
+            "llm": [],
+            "search": [],
+            "discovery": {
+              "version": "discovery-v2",
+              "filtered": 0,
+              "truncated": false
+            },
+            "llm_calls": 0,
+            "acquisition": {
+              "version": "acquisition-v1",
+              "deferred": {
+                "repeated_access_denied": 3
+              },
+              "host_attempts": {
+                "scmp.com": 1,
+                "quora.com": 2,
+                "airalo.com": 2,
+                "youtube.com": 1,
+                "facebook.com": 3,
+                "instagram.com": 1,
+                "thaiwander.com": 1,
+                "travelfish.org": 1,
+                "northabroad.com": 1,
+                "tripadvisor.com": 3,
+                "bangkokscams.com": 1,
+                "grrrltraveler.com": 1,
+                "touristbangkok.com": 1,
+                "globetrottergirls.com": 1,
+                "swisshelpingpoint.com": 1,
+                "library.siam-legal.com": 1
+              }
+            },
+            "active_stage": "ingestion",
+            "stage_timings": [
+              {
+                "stage": "discovery",
+                "seconds": 0.0
+              },
+              {
+                "stage": "relevance",
+                "seconds": 0.094
+              },
+              {
+                "stage": "extraction",
+                "seconds": 0.024
+              },
+              {
+                "stage": "relevance",
+                "seconds": 0.089
+              },
+              {
+                "stage": "extraction",
+                "seconds": 0.021
+              },
+              {
+                "stage": "ingestion",
+                "seconds": 0.024
+              },
+              {
+                "stage": "ingestion",
+                "seconds": 0.02
+              },
+              {
+                "stage": "ingestion",
+                "seconds": 0.019
+              },
+              {
+                "stage": "ingestion",
+                "seconds": 0.019
+              },
+              {
+                "stage": "ingestion",
+                "seconds": 0.017
+              },
+              {
+                "stage": "ingestion",
+                "seconds": 0.018
+              },
+              {
+                "stage": "ingestion",
+                "seconds": 0.018
+              },
+              {
+                "stage": "ingestion",
+                "seconds": 0.019
+              },
+              {
+                "stage": "ingestion",
+                "seconds": 0.019
+              },
+              {
+                "stage": "ingestion",
+                "seconds": 0.019
+              },
+              {
+                "stage": "ingestion",
+                "seconds": 0.02
+              },
+              {
+                "stage": "ingestion",
+                "seconds": 0.019
+              },
+              {
+                "stage": "ingestion",
+                "seconds": 0.019
+              },
+              {
+                "stage": "ingestion",
+                "seconds": 0.018
+              },
+              {
+                "stage": "ingestion",
+                "seconds": 0.018
+              },
+              {
+                "stage": "ingestion",
+                "seconds": 0.018
+              },
+              {
+                "stage": "ingestion",
+                "seconds": 0.016
+              },
+              {
+                "stage": "ingestion",
+                "seconds": 0.017
+              },
+              {
+                "stage": "ingestion",
+                "seconds": 0.017
+              },
+              {
+                "stage": "ingestion",
+                "seconds": 0.018
+              }
+            ]
+          }
+        },
+        {
+          "id": "91ee6354-a88c-4837-b99f-0d393794ed1f",
+          "phase": "continuation",
+          "status": "succeeded",
+          "attempts": 1,
+          "created_at": "2026-11-08T06:38:33.819517+00:00",
+          "updated_at": "2026-11-08T06:39:08.596226+00:00",
+          "error_code": "research_incomplete",
+          "result_status": "partial",
+          "complete": false,
+          "errors": [
+            {
+              "url": "https://www.airalo.com/blog/thailand-scams?srsltid=AYCX9vJDtAwCpONhoiC6XYP_B0lWKmsfB43RJ2zLvGiTvO1xFiyc1F0G",
+              "code": "incomplete",
+              "stage": "extraction"
+            },
+            {
+              "code": "unresolved_location",
+              "stage": "hypothesis"
+            },
+            {
+              "url": "https://th.usembassy.gov/common-scams-to-avoid/",
+              "code": "http_status",
+              "stage": "ingestion",
+              "http_status": 407
+            },
+            {
+              "url": "https://www.reddit.com/r/ThailandTourism/comments/zlm0lt/tourist_traps/",
+              "code": "http_status",
+              "stage": "ingestion",
+              "http_status": 403
+            },
+            {
+              "url": "https://www.thecaravelgu.com/blog/avoiding-tourist-traps-in-bangkok",
+              "code": "http_status",
+              "stage": "ingestion",
+              "http_status": 404
+            },
+            {
+              "url": "https://www.tielandtothailand.com/avoiding-tuk-tuk-taxi-scams-thailand/",
+              "code": "redirect_limit_or_missing_location",
+              "stage": "ingestion"
+            },
+            {
+              "url": "https://www.facebook.com/groups/1206669499358683/posts/28420631040869161/",
+              "code": "empty",
+              "stage": "processing"
+            },
+            {
+              "url": "https://www.lensofjen.org/a-detour-by-design-in-bangkok/",
+              "code": "incomplete",
+              "stage": "extraction"
+            },
+            {
+              "code": "unresolved_location",
+              "stage": "hypothesis"
+            },
+            {
+              "url": "https://grrrltraveler.com/scams-in-bangkok/",
+              "code": "incomplete",
+              "stage": "relevance"
+            },
+            {
+              "url": "https://grrrltraveler.com/scams-in-bangkok/",
+              "code": "incomplete",
+              "stage": "extraction"
+            },
+            {
+              "url": "https://www.airalo.com/blog/thailand-scams?srsltid=AYCX9vJicqb-QYbR25nRZnEGrkfiRHH8__O6ce5ZKS0NTcMxttk02Ekx",
+              "code": "incomplete",
+              "stage": "relevance"
+            },
+            {
+              "url": "https://www.airalo.com/blog/thailand-scams?srsltid=AYCX9vJicqb-QYbR25nRZnEGrkfiRHH8__O6ce5ZKS0NTcMxttk02Ekx",
+              "code": "incomplete",
+              "stage": "extraction"
+            },
+            {
+              "url": "https://www.swisshelpingpoint.com/en/touristenfallen-in-bangkok/",
+              "code": "http_status",
+              "stage": "ingestion",
+              "http_status": 421
+            },
+            {
+              "url": "https://www.travelfish.org/transport_detail/thailand/bangkok_and_surrounds/bangkok/bangkok/56",
+              "code": "http_status",
+              "stage": "ingestion",
+              "http_status": 403
+            },
+            {
+              "url": "https://www.quora.com/How-can-you-avoid-tourist-traps-and-overpriced-places-when-visiting-Bangkok",
+              "code": "http_status",
+              "stage": "ingestion",
+              "http_status": 403
+            },
+            {
+              "url": "https://www.scmp.com/week-asia/economics/article/3311392/bangkok-names-among-worst-cities-tourist-scams-taxi-fraud-soars-report-warns",
+              "code": "run_fetch_limit",
+              "stage": "ingestion"
+            },
+            {
+              "url": "https://library.siam-legal.com/how-to-avoid-common-scams-in-thailand/",
+              "code": "run_fetch_limit",
+              "stage": "ingestion"
+            },
+            {
+              "url": "https://northabroad.com/bangkok-travel-guide/",
+              "code": "run_fetch_limit",
+              "stage": "ingestion"
+            },
+            {
+              "url": "https://www.tripadvisor.com/ShowTopic-g293916-i3687-k10104855-Taxi_scams_no_matter_how_careful_you_are-Bangkok.html",
+              "code": "run_fetch_limit",
+              "stage": "ingestion"
+            },
+            {
+              "url": "https://touristbangkok.com/tourist-scams/",
+              "code": "run_fetch_limit",
+              "stage": "ingestion"
+            },
+            {
+              "url": "https://globetrottergirls.com/getting-scammed-in-bangkok/",
+              "code": "run_fetch_limit",
+              "stage": "ingestion"
+            },
+            {
+              "url": "https://www.instagram.com/reel/DVYOhvsgBGm/?hl=en",
+              "code": "run_fetch_limit",
+              "stage": "ingestion"
+            },
+            {
+              "url": "https://www.bangkokscams.com/",
+              "code": "run_fetch_limit",
+              "stage": "ingestion"
+            },
+            {
+              "code": "resource_limit_or_deadline",
+              "stage": "research"
+            },
+            {
+              "code": "continuation_pending",
+              "stage": "research"
+            }
+          ],
+          "usage": {
+            "llm": [
+              {
+                "error": null,
+                "model": "sarvam-105b",
+                "usage": {
+                  "total_tokens": 1716,
+                  "prompt_tokens": 1450,
+                  "completion_tokens": 266
+                },
+                "requests": 1
+              },
+              {
+                "error": null,
+                "model": "sarvam-105b",
+                "usage": {
+                  "total_tokens": 1652,
+                  "prompt_tokens": 1393,
+                  "completion_tokens": 259
+                },
+                "requests": 1
+              },
+              {
+                "error": null,
+                "model": "sarvam-105b",
+                "usage": {
+                  "total_tokens": 1560,
+                  "prompt_tokens": 1401,
+                  "completion_tokens": 159
+                },
+                "requests": 1
+              },
+              {
+                "error": null,
+                "model": "sarvam-105b",
+                "usage": {
+                  "total_tokens": 1331,
+                  "prompt_tokens": 1228,
+                  "completion_tokens": 103
+                },
+                "requests": 1
+              },
+              {
+                "error": null,
+                "model": "sarvam-105b",
+                "usage": {
+                  "total_tokens": 1297,
+                  "prompt_tokens": 1208,
+                  "completion_tokens": 89
+                },
+                "requests": 1
+              },
+              {
+                "error": null,
+                "model": "sarvam-105b",
+                "usage": {
+                  "total_tokens": 1276,
+                  "prompt_tokens": 1193,
+                  "completion_tokens": 83
+                },
+                "requests": 1
+              },
+              {
+                "error": null,
+                "model": "sarvam-105b",
+                "usage": {
+                  "total_tokens": 1849,
+                  "prompt_tokens": 1550,
+                  "completion_tokens": 299
+                },
+                "requests": 1
+              },
+              {
+                "error": null,
+                "model": "sarvam-105b",
+                "usage": {
+                  "total_tokens": 1766,
+                  "prompt_tokens": 1530,
+                  "completion_tokens": 236
+                },
+                "requests": 1
+              },
+              {
+                "error": null,
+                "model": "sarvam-105b",
+                "usage": {
+                  "total_tokens": 1754,
+                  "prompt_tokens": 1515,
+                  "completion_tokens": 239
+                },
+                "requests": 1
+              },
+              {
+                "error": null,
+                "model": "sarvam-105b",
+                "usage": {
+                  "total_tokens": 276,
+                  "prompt_tokens": 224,
+                  "completion_tokens": 52
+                },
+                "requests": 1
+              }
+            ],
+            "search": [],
+            "llm_calls": 10,
+            "reservation_note": "Pre-call reservations; interrupted usage may be unknown.",
+            "run_reservations": {
+              "fetches": 20,
+              "queries": 6,
+              "documents": 7,
+              "llm_calls": 24
+            }
+          },
+          "diagnostics": {
+            "llm": [
+              {
+                "error": null,
+                "model": "sarvam-105b",
+                "usage": {
+                  "total_tokens": 1716,
+                  "prompt_tokens": 1450,
+                  "completion_tokens": 266
+                },
+                "requests": 1
+              },
+              {
+                "error": null,
+                "model": "sarvam-105b",
+                "usage": {
+                  "total_tokens": 1652,
+                  "prompt_tokens": 1393,
+                  "completion_tokens": 259
+                },
+                "requests": 1
+              },
+              {
+                "error": null,
+                "model": "sarvam-105b",
+                "usage": {
+                  "total_tokens": 1560,
+                  "prompt_tokens": 1401,
+                  "completion_tokens": 159
+                },
+                "requests": 1
+              },
+              {
+                "error": null,
+                "model": "sarvam-105b",
+                "usage": {
+                  "total_tokens": 1331,
+                  "prompt_tokens": 1228,
+                  "completion_tokens": 103
+                },
+                "requests": 1
+              },
+              {
+                "error": null,
+                "model": "sarvam-105b",
+                "usage": {
+                  "total_tokens": 1297,
+                  "prompt_tokens": 1208,
+                  "completion_tokens": 89
+                },
+                "requests": 1
+              },
+              {
+                "error": null,
+                "model": "sarvam-105b",
+                "usage": {
+                  "total_tokens": 1276,
+                  "prompt_tokens": 1193,
+                  "completion_tokens": 83
+                },
+                "requests": 1
+              },
+              {
+                "error": null,
+                "model": "sarvam-105b",
+                "usage": {
+                  "total_tokens": 1849,
+                  "prompt_tokens": 1550,
+                  "completion_tokens": 299
+                },
+                "requests": 1
+              },
+              {
+                "error": null,
+                "model": "sarvam-105b",
+                "usage": {
+                  "total_tokens": 1766,
+                  "prompt_tokens": 1530,
+                  "completion_tokens": 236
+                },
+                "requests": 1
+              },
+              {
+                "error": null,
+                "model": "sarvam-105b",
+                "usage": {
+                  "total_tokens": 1754,
+                  "prompt_tokens": 1515,
+                  "completion_tokens": 239
+                },
+                "requests": 1
+              },
+              {
+                "error": null,
+                "model": "sarvam-105b",
+                "usage": {
+                  "total_tokens": 276,
+                  "prompt_tokens": 224,
+                  "completion_tokens": 52
+                },
+                "requests": 1
+              }
+            ],
+            "search": [],
+            "discovery": {
+              "version": "discovery-v2",
+              "filtered": 0,
+              "truncated": false
+            },
+            "llm_calls": 10,
+            "acquisition": {
+              "version": "acquisition-v1",
+              "deferred": {},
+              "host_attempts": {
+                "scmp.com": 1,
+                "quora.com": 1,
+                "airalo.com": 2,
+                "reddit.com": 1,
+                "youtube.com": 1,
+                "facebook.com": 1,
+                "instagram.com": 1,
+                "lensofjen.org": 1,
+                "travelfish.org": 1,
+                "northabroad.com": 1,
+                "tripadvisor.com": 1,
+                "bangkokscams.com": 1,
+                "th.usembassy.gov": 1,
+                "thecaravelgu.com": 1,
+                "grrrltraveler.com": 1,
+                "touristbangkok.com": 1,
+                "globetrottergirls.com": 1,
+                "swisshelpingpoint.com": 1,
+                "tielandtothailand.com": 1,
+                "library.siam-legal.com": 1
+              }
+            },
+            "active_stage": "ingestion",
+            "stage_timings": [
+              {
+                "stage": "discovery",
+                "seconds": 0.0
+              },
+              {
+                "stage": "extraction",
+                "seconds": 4.447
+              },
+              {
+                "stage": "resolution",
+                "seconds": 0.024
+              },
+              {
+                "stage": "hypothesis",
+                "seconds": 0.03
+              },
+              {
+                "stage": "ingestion",
+                "seconds": 0.194
+              },
+              {
+                "stage": "ingestion",
+                "seconds": 0.211
+              },
+              {
+                "stage": "ingestion",
+                "seconds": 0.286
+              },
+              {
+                "stage": "ingestion",
+                "seconds": 4.075
+              },
+              {
+                "stage": "ingestion",
+                "seconds": 1.815
+              },
+              {
+                "stage": "processing",
+                "seconds": 0.489
+              },
+              {
+                "stage": "ingestion",
+                "seconds": 2.378
+              },
+              {
+                "stage": "processing",
+                "seconds": 0.489
+              },
+              {
+                "stage": "relevance",
+                "seconds": 3.025
+              },
+              {
+                "stage": "extraction",
+                "seconds": 4.96
+              },
+              {
+                "stage": "resolution",
+                "seconds": 0.023
+              },
+              {
+                "stage": "hypothesis",
+                "seconds": 0.03
+              },
+              {
+                "stage": "ingestion",
+                "seconds": 1.299
+              },
+              {
+                "stage": "processing",
+                "seconds": 0.483
+              },
+              {
+                "stage": "relevance",
+                "seconds": 0.606
+              },
+              {
+                "stage": "extraction",
+                "seconds": 0.026
+              },
+              {
+                "stage": "ingestion",
+                "seconds": 1.811
+              },
+              {
+                "stage": "processing",
+                "seconds": 0.377
+              },
+              {
+                "stage": "relevance",
+                "seconds": 0.122
+              },
+              {
+                "stage": "extraction",
+                "seconds": 0.038
+              },
+              {
+                "stage": "ingestion",
+                "seconds": 2.069
+              },
+              {
+                "stage": "processing",
+                "seconds": 1.044
+              },
+              {
+                "stage": "relevance",
+                "seconds": 0.086
+              },
+              {
+                "stage": "extraction",
+                "seconds": 0.02
+              },
+              {
+                "stage": "ingestion",
+                "seconds": 0.898
+              },
+              {
+                "stage": "ingestion",
+                "seconds": 0.313
+              },
+              {
+                "stage": "ingestion",
+                "seconds": 0.404
+              },
+              {
+                "stage": "ingestion",
+                "seconds": 0.026
+              },
+              {
+                "stage": "ingestion",
+                "seconds": 0.016
+              },
+              {
+                "stage": "ingestion",
+                "seconds": 0.018
+              },
+              {
+                "stage": "ingestion",
+                "seconds": 0.02
+              },
+              {
+                "stage": "ingestion",
+                "seconds": 0.018
+              },
+              {
+                "stage": "ingestion",
+                "seconds": 0.018
+              },
+              {
+                "stage": "ingestion",
+                "seconds": 0.016
+              },
+              {
+                "stage": "ingestion",
+                "seconds": 0.018
+              }
+            ]
+          }
+        },
+        {
+          "id": "f4c72ae9-9796-4ccd-b425-fd96b682215f",
+          "phase": "refresh",
+          "status": "succeeded",
+          "attempts": 1,
+          "created_at": "2026-11-08T06:37:48.674779+00:00",
+          "updated_at": "2026-11-08T06:38:33.819517+00:00",
+          "error_code": "research_incomplete",
+          "result_status": "partial",
+          "complete": false,
+          "errors": [
+            {
+              "url": "https://th.usembassy.gov/common-scams-to-avoid/",
+              "code": "http_status",
+              "stage": "ingestion",
+              "http_status": 407
+            },
+            {
+              "url": "https://www.reddit.com/r/ThailandTourism/comments/zlm0lt/tourist_traps/",
+              "code": "http_status",
+              "stage": "ingestion",
+              "http_status": 403
+            },
+            {
+              "code": "unresolved_location",
+              "stage": "hypothesis"
+            },
+            {
+              "url": "https://www.thecaravelgu.com/blog/avoiding-tourist-traps-in-bangkok",
+              "code": "http_status",
+              "stage": "ingestion",
+              "http_status": 404
+            },
+            {
+              "url": "https://www.tielandtothailand.com/avoiding-tuk-tuk-taxi-scams-thailand/",
+              "code": "redirect_limit_or_missing_location",
+              "stage": "ingestion"
+            },
+            {
+              "url": "https://www.airalo.com/blog/thailand-scams?srsltid=AYCX9vJDtAwCpONhoiC6XYP_B0lWKmsfB43RJ2zLvGiTvO1xFiyc1F0G",
+              "code": "incomplete",
+              "stage": "extraction"
+            },
+            {
+              "url": "https://www.facebook.com/groups/1206669499358683/posts/28420631040869161/",
+              "code": "deadline",
+              "stage": "ingestion"
+            },
+            {
+              "code": "resource_limit_or_deadline",
+              "stage": "research"
+            },
+            {
+              "code": "continuation_pending",
+              "stage": "research"
+            }
+          ],
+          "usage": {
+            "llm": [
+              {
+                "error": null,
+                "model": "sarvam-105b",
+                "usage": {
+                  "total_tokens": 278,
+                  "prompt_tokens": 224,
+                  "completion_tokens": 54
+                },
+                "requests": 1
+              },
+              {
+                "error": null,
+                "model": "sarvam-105b",
+                "usage": {
+                  "total_tokens": 1280,
+                  "prompt_tokens": 1207,
+                  "completion_tokens": 73
+                },
+                "requests": 1
+              },
+              {
+                "error": null,
+                "model": "sarvam-105b",
+                "usage": {
+                  "total_tokens": 1313,
+                  "prompt_tokens": 1216,
+                  "completion_tokens": 97
+                },
+                "requests": 1
+              },
+              {
+                "error": null,
+                "model": "sarvam-105b",
+                "usage": {
+                  "total_tokens": 1322,
+                  "prompt_tokens": 1238,
+                  "completion_tokens": 84
+                },
+                "requests": 1
+              },
+              {
+                "error": null,
+                "model": "sarvam-105b",
+                "usage": {
+                  "total_tokens": 365,
+                  "prompt_tokens": 273,
+                  "completion_tokens": 92
+                },
+                "requests": 1
+              },
+              {
+                "error": null,
+                "model": "sarvam-105b",
+                "usage": {
+                  "total_tokens": 1535,
+                  "prompt_tokens": 1529,
+                  "completion_tokens": 6
+                },
+                "requests": 1
+              },
+              {
+                "error": null,
+                "model": "sarvam-105b",
+                "usage": {
+                  "total_tokens": 1885,
+                  "prompt_tokens": 1538,
+                  "completion_tokens": 347
+                },
+                "requests": 1
+              },
+              {
+                "error": null,
+                "model": "sarvam-105b",
+                "usage": {
+                  "total_tokens": 1797,
+                  "prompt_tokens": 1560,
+                  "completion_tokens": 237
+                },
+                "requests": 1
+              },
+              {
+                "error": null,
+                "model": "sarvam-105b",
+                "usage": {
+                  "total_tokens": 1207,
+                  "prompt_tokens": 1128,
+                  "completion_tokens": 79
+                },
+                "requests": 1
+              },
+              {
+                "error": null,
+                "model": "sarvam-105b",
+                "usage": {
+                  "total_tokens": 1159,
+                  "prompt_tokens": 1071,
+                  "completion_tokens": 88
+                },
+                "requests": 1
+              },
+              {
+                "error": null,
+                "model": "sarvam-105b",
+                "usage": {
+                  "total_tokens": 1163,
+                  "prompt_tokens": 1079,
+                  "completion_tokens": 84
+                },
+                "requests": 1
+              },
+              {
+                "error": null,
+                "model": "sarvam-105b",
+                "usage": {
+                  "total_tokens": 1730,
+                  "prompt_tokens": 1450,
+                  "completion_tokens": 280
+                },
+                "requests": 1
+              },
+              {
+                "error": null,
+                "model": "sarvam-105b",
+                "usage": {
+                  "total_tokens": 1603,
+                  "prompt_tokens": 1393,
+                  "completion_tokens": 210
+                },
+                "requests": 1
+              },
+              {
+                "error": "cancelled_or_deadline",
+                "requests": 1
+              }
+            ],
+            "search": [
+              {
+                "error": null,
+                "requests": 1,
+                "reported_credits": 1,
+                "returned_results": 10
+              },
+              {
+                "error": null,
+                "requests": 1,
+                "reported_credits": 1,
+                "returned_results": 9
+              },
+              {
+                "error": null,
+                "requests": 1,
+                "reported_credits": 1,
+                "returned_results": 10
+              },
+              {
+                "error": null,
+                "requests": 1,
+                "reported_credits": 1,
+                "returned_results": 10
+              },
+              {
+                "error": null,
+                "requests": 1,
+                "reported_credits": 1,
+                "returned_results": 9
+              },
+              {
+                "error": null,
+                "requests": 1,
+                "reported_credits": 1,
+                "returned_results": 9
+              }
+            ],
+            "llm_calls": 14,
+            "reservation_note": "Pre-call reservations; interrupted usage may be unknown.",
+            "run_reservations": {
+              "fetches": 8,
+              "queries": 6,
+              "documents": 3,
+              "llm_calls": 14
+            }
+          },
+          "diagnostics": {
+            "llm": [
+              {
+                "error": null,
+                "model": "sarvam-105b",
+                "usage": {
+                  "total_tokens": 278,
+                  "prompt_tokens": 224,
+                  "completion_tokens": 54
+                },
+                "requests": 1
+              },
+              {
+                "error": null,
+                "model": "sarvam-105b",
+                "usage": {
+                  "total_tokens": 1280,
+                  "prompt_tokens": 1207,
+                  "completion_tokens": 73
+                },
+                "requests": 1
+              },
+              {
+                "error": null,
+                "model": "sarvam-105b",
+                "usage": {
+                  "total_tokens": 1313,
+                  "prompt_tokens": 1216,
+                  "completion_tokens": 97
+                },
+                "requests": 1
+              },
+              {
+                "error": null,
+                "model": "sarvam-105b",
+                "usage": {
+                  "total_tokens": 1322,
+                  "prompt_tokens": 1238,
+                  "completion_tokens": 84
+                },
+                "requests": 1
+              },
+              {
+                "error": null,
+                "model": "sarvam-105b",
+                "usage": {
+                  "total_tokens": 365,
+                  "prompt_tokens": 273,
+                  "completion_tokens": 92
+                },
+                "requests": 1
+              },
+              {
+                "error": null,
+                "model": "sarvam-105b",
+                "usage": {
+                  "total_tokens": 1535,
+                  "prompt_tokens": 1529,
+                  "completion_tokens": 6
+                },
+                "requests": 1
+              },
+              {
+                "error": null,
+                "model": "sarvam-105b",
+                "usage": {
+                  "total_tokens": 1885,
+                  "prompt_tokens": 1538,
+                  "completion_tokens": 347
+                },
+                "requests": 1
+              },
+              {
+                "error": null,
+                "model": "sarvam-105b",
+                "usage": {
+                  "total_tokens": 1797,
+                  "prompt_tokens": 1560,
+                  "completion_tokens": 237
+                },
+                "requests": 1
+              },
+              {
+                "error": null,
+                "model": "sarvam-105b",
+                "usage": {
+                  "total_tokens": 1207,
+                  "prompt_tokens": 1128,
+                  "completion_tokens": 79
+                },
+                "requests": 1
+              },
+              {
+                "error": null,
+                "model": "sarvam-105b",
+                "usage": {
+                  "total_tokens": 1159,
+                  "prompt_tokens": 1071,
+                  "completion_tokens": 88
+                },
+                "requests": 1
+              },
+              {
+                "error": null,
+                "model": "sarvam-105b",
+                "usage": {
+                  "total_tokens": 1163,
+                  "prompt_tokens": 1079,
+                  "completion_tokens": 84
+                },
+                "requests": 1
+              },
+              {
+                "error": null,
+                "model": "sarvam-105b",
+                "usage": {
+                  "total_tokens": 1730,
+                  "prompt_tokens": 1450,
+                  "completion_tokens": 280
+                },
+                "requests": 1
+              },
+              {
+                "error": null,
+                "model": "sarvam-105b",
+                "usage": {
+                  "total_tokens": 1603,
+                  "prompt_tokens": 1393,
+                  "completion_tokens": 210
+                },
+                "requests": 1
+              },
+              {
+                "error": "cancelled_or_deadline",
+                "requests": 1
+              }
+            ],
+            "search": [
+              {
+                "error": null,
+                "requests": 1,
+                "reported_credits": 1,
+                "returned_results": 10
+              },
+              {
+                "error": null,
+                "requests": 1,
+                "reported_credits": 1,
+                "returned_results": 9
+              },
+              {
+                "error": null,
+                "requests": 1,
+                "reported_credits": 1,
+                "returned_results": 10
+              },
+              {
+                "error": null,
+                "requests": 1,
+                "reported_credits": 1,
+                "returned_results": 10
+              },
+              {
+                "error": null,
+                "requests": 1,
+                "reported_credits": 1,
+                "returned_results": 9
+              },
+              {
+                "error": null,
+                "requests": 1,
+                "reported_credits": 1,
+                "returned_results": 9
+              }
+            ],
+            "discovery": {
+              "version": "discovery-v2",
+              "filtered": 0,
+              "truncated": false
+            },
+            "llm_calls": 14,
+            "acquisition": {
+              "version": "acquisition-v1",
+              "deferred": {},
+              "host_attempts": {
+                "airalo.com": 1,
+                "reddit.com": 1,
+                "youtube.com": 1,
+                "facebook.com": 1,
+                "th.usembassy.gov": 1,
+                "thecaravelgu.com": 1,
+                "yourthaiguide.com": 1,
+                "tielandtothailand.com": 1
+              }
+            },
+            "active_stage": "ingestion",
+            "stage_timings": [
+              {
+                "stage": "discovery",
+                "seconds": 0.0
+              },
+              {
+                "stage": "discovery",
+                "seconds": 8.765
+              },
+              {
+                "stage": "ingestion",
+                "seconds": 0.309
+              },
+              {
+                "stage": "ingestion",
+                "seconds": 0.254
+              },
+              {
+                "stage": "ingestion",
+                "seconds": 2.308
+              },
+              {
+                "stage": "processing",
+                "seconds": 1.701
+              },
+              {
+                "stage": "relevance",
+                "seconds": 0.539
+              },
+              {
+                "stage": "extraction",
+                "seconds": 0.016
+              },
+              {
+                "stage": "ingestion",
+                "seconds": 0.8
+              },
+              {
+                "stage": "processing",
+                "seconds": 0.535
+              },
+              {
+                "stage": "relevance",
+                "seconds": 2.963
+              },
+              {
+                "stage": "extraction",
+                "seconds": 5.397
+              },
+              {
+                "stage": "resolution",
+                "seconds": 0.023
+              },
+              {
+                "stage": "hypothesis",
+                "seconds": 0.038
+              },
+              {
+                "stage": "resolution",
+                "seconds": 0.089
+              },
+              {
+                "stage": "hypothesis",
+                "seconds": 0.449
+              },
+              {
+                "stage": "embedding",
+                "seconds": 1.607
+              },
+              {
+                "stage": "ingestion",
+                "seconds": 0.326
+              },
+              {
+                "stage": "ingestion",
+                "seconds": 4.436
+              },
+              {
+                "stage": "ingestion",
+                "seconds": 3.01
+              },
+              {
+                "stage": "processing",
+                "seconds": 0.876
+              },
+              {
+                "stage": "relevance",
+                "seconds": 2.046
+              },
+              {
+                "stage": "extraction",
+                "seconds": 7.8
+              },
+              {
+                "stage": "ingestion",
+                "seconds": 0.038
+              }
+            ]
+          }
+        }
+      ],
+      "public_evidence": [
+        {
+          "pattern_id": "7a892637-5db5-4680-b73b-67d5af711eaf",
+          "evidence_id": "ca8f2c3b-eab8-4fa9-a53b-e28e8f9bbdb3",
+          "claim_id": "7ed644aa-6c1a-406d-b336-acd06c5f2c96",
+          "document_id": "d9589646-0d41-4d3e-8b49-8b149b0c7943",
+          "source_id": "67cbd173-d2e3-4e67-be14-41da82917b0d",
+          "source_url": "https://yourthaiguide.com/top-10-bangkok-scams-you-should-avoid/",
+          "actual_location": {
+            "id": "063b1cc8-01fd-5df7-b904-baacad5a84ed",
+            "name": "Grand Palace",
+            "type": "point_of_interest",
+            "country_code": "TH",
+            "provisional": false
+          },
+          "scope": "descendant",
+          "provenance_class": "SECOND_HAND",
+          "quote_sha256": "bad2183902543cc7d8b684c735e6f099ad20ac2461bff228db57e9e8e5d96c64",
+          "quote_start": 7591,
+          "quote_end": 7922,
+          "checks": {
+            "raw_hash": true,
+            "clean_hash": true,
+            "quote": true,
+            "lineage": true,
+            "same_source": true,
+            "not_held": true
+          },
+          "verified": true,
+          "from_current_root": true
+        }
+      ],
+      "localhost_rest_reads": [
+        {
+          "seconds": 0.2092,
+          "outcome": "findings",
+          "total": 1
+        },
+        {
+          "seconds": 0.0931,
+          "outcome": "findings",
+          "total": 1
+        },
+        {
+          "seconds": 0.0993,
+          "outcome": "findings",
+          "total": 1
+        }
+      ],
+      "job_selection": "Newest N jobs; N from cursor, not a historical root join."
+    },
+    {
+      "location_id": "7eaf771e-8bf9-5d7a-b778-c00aa3ccecd0",
+      "location": "Suva",
+      "captured_at": "2026-11-08T06:46:11.050327+00:00",
+      "public": {
+        "contract_version": "intelligence-v1",
+        "requested_location": {
+          "id": "7eaf771e-8bf9-5d7a-b778-c00aa3ccecd0",
+          "name": "Suva",
+          "type": "city",
+          "country_code": "FJ",
+          "provisional": false
+        },
+        "research": {
+          "status": "stale",
+          "initial": true,
+          "enriched": false,
+          "in_progress": false,
+          "stale": true,
+          "complete": false,
+          "last_success_at": null,
+          "fresh_until": null
+        },
+        "items": [
+          {
+            "id": "87c4310f-6f2b-493e-b9a2-d586d52c0e15",
+            "title": "Taxi drivers overcharge travelers by not using meters or agreeing on fares beforehand.",
+            "description": "Taxi drivers overcharge travelers by not using meters or agreeing on fares beforehand.",
+            "category": "reports about a travel scam",
+            "status": "candidate",
+            "location": {
+              "id": "56ca2f78-caea-5e5e-827f-ec7e6a8d55c7",
+              "name": "Fiji",
+              "type": "country",
+              "country_code": "FJ",
+              "provisional": false
+            },
+            "location_path": [
+              {
+                "id": "56ca2f78-caea-5e5e-827f-ec7e6a8d55c7",
+                "name": "Fiji",
+                "type": "country",
+                "country_code": "FJ",
+                "provisional": false
+              }
+            ],
+            "scope": "ancestor",
+            "research": {
+              "status": "never_researched",
+              "initial": false,
+              "enriched": false,
+              "in_progress": false,
+              "stale": false,
+              "complete": false,
+              "last_success_at": null,
+              "fresh_until": null
+            },
+            "metrics": {
+              "status": "current",
+              "as_of": "2026-11-08T06:46:10.678527Z",
+              "confidence_score": 0.055814,
+              "confidence_label": "limited",
+              "support_weight": 0.15,
+              "contradiction_weight": 0.0,
+              "recency_score": null,
+              "prevalence_score": null,
+              "all_time": {
+                "raw_report_count": 1,
+                "independence_weighted_report_count": 0.5
+              },
+              "occurrence_windows": {
+                "30": {
+                  "raw_report_count": 0,
+                  "independence_weighted_report_count": 0.0
+                },
+                "90": {
+                  "raw_report_count": 0,
+                  "independence_weighted_report_count": 0.0
+                },
+                "365": {
+                  "raw_report_count": 0,
+                  "independence_weighted_report_count": 0.0
+                }
+              },
+              "reporting_windows": {
+                "30": {
+                  "raw_report_count": 0,
+                  "independence_weighted_report_count": 0.0
+                },
+                "90": {
+                  "raw_report_count": 0,
+                  "independence_weighted_report_count": 0.0
+                },
+                "365": {
+                  "raw_report_count": 0,
+                  "independence_weighted_report_count": 0.0
+                }
+              },
+              "dated_reports": 0,
+              "undated_or_invalid_reports": 1,
+              "trend": "unknown",
+              "complete": false,
+              "limitations": [
+                "occurrence_date_missing"
+              ],
+              "policy_version": "public-intelligence-v1",
+              "interpretation": "corroboration and observed reporting; not truth probability or population incidence"
+            }
+          }
+        ],
+        "total": 1,
+        "limit": 5,
+        "offset": 0,
+        "has_more": false,
+        "outcome": "findings"
+      },
+      "progress": {
+        "run_id": "bc69b204-b4f1-4e73-b346-9ea9a59983f3",
+        "caps": {
+          "fetches": 30,
+          "queries": 9,
+          "documents": 16,
+          "llm_calls": 36
+        },
+        "reserved": {
+          "fetches": 28,
+          "queries": 3,
+          "documents": 11,
+          "llm_calls": 36
+        },
+        "seconds_cap": 210.0,
+        "seconds_reserved": 115.0,
+        "jobs": 3,
+        "queries": [
+          {
+            "query": "Suva, Fiji tourist scams",
+            "attempts": 1,
+            "complete": true,
+            "usage": {
+              "error": null,
+              "requests": 1,
+              "reported_credits": 1,
+              "returned_results": 10
+            }
+          },
+          {
+            "query": "Suva, Fiji common scams travel blog",
+            "attempts": 1,
+            "complete": true,
+            "usage": {
+              "error": null,
+              "requests": 1,
+              "reported_credits": 1,
+              "returned_results": 10
+            }
+          },
+          {
+            "query": "Suva, Fiji tourist traps travel blog",
+            "attempts": 1,
+            "complete": true,
+            "usage": {
+              "error": null,
+              "requests": 1,
+              "reported_credits": 1,
+              "returned_results": 10
+            }
+          }
+        ],
+        "candidates": 25,
+        "candidate_errors": [
+          {
+            "url": "https://triprzapp.com/destination/suva-fiji",
+            "code": "empty",
+            "stage": "processing"
+          },
+          {
+            "url": "https://www.facebook.com/groups/2003503603195859/posts/3699835726895963/",
+            "code": "empty",
+            "stage": "processing"
+          },
+          {
+            "url": "https://www.reddit.com/r/Fijian/comments/1m028x3/tourism_in_suva/",
+            "code": "http_status",
+            "stage": "ingestion",
+            "http_status": 403
+          },
+          {
+            "url": "https://www.islands.com/1534727/common-scams-know-before-visiting-fiji/",
+            "code": "incomplete",
+            "stage": "extraction"
+          },
+          {
+            "code": "unresolved_location",
+            "stage": "hypothesis"
+          },
+          {
+            "code": "unresolved_location",
+            "stage": "hypothesis"
+          },
+          {
+            "url": "https://us.trip.com/travel-guide/destination/suva-1338/",
+            "code": "http_status",
+            "stage": "ingestion",
+            "http_status": 404
+          },
+          {
+            "code": "host_deferred",
+            "stage": "acquisition"
+          },
+          {
+            "url": "https://www.facebook.com/groups/ilovefiji/posts/1383649815620018/",
+            "code": "empty",
+            "stage": "processing"
+          },
+          {
+            "code": "host_deferred",
+            "stage": "acquisition"
+          },
+          {
+            "code": "host_deferred",
+            "stage": "acquisition"
+          },
+          {
+            "url": "https://scti.com.au/travel-advice/common-travel-scams",
+            "code": "incomplete",
+            "stage": "relevance"
+          },
+          {
+            "url": "https://scti.com.au/travel-advice/common-travel-scams",
+            "code": "incomplete",
+            "stage": "extraction"
+          },
+          {
+            "code": "host_deferred",
+            "stage": "acquisition"
+          },
+          {
+            "url": "https://www.quora.com/Are-there-any-scams-I-should-be-aware-of-traveling-to-Fiji-Islands",
+            "code": "http_status",
+            "stage": "ingestion",
+            "http_status": 403
+          },
+          {
+            "url": "https://fijiguide.com/fiji-travel-blog/",
+            "code": "invalid_url",
+            "stage": "ingestion"
+          },
+          {
+            "url": "https://fijitravel.org/posts/avoid-getting-ripped-off-fiji/",
+            "code": "incomplete",
+            "stage": "extraction"
+          },
+          {
+            "url": "https://www.fantasticfiji.com/common-scams.html",
+            "code": "incomplete",
+            "stage": "extraction"
+          },
+          {
+            "url": "https://www.nomadicmatt.com/travel-guides/fiji-travel-tips/",
+            "code": "incomplete",
+            "stage": "relevance"
+          },
+          {
+            "url": "https://www.nomadicmatt.com/travel-guides/fiji-travel-tips/",
+            "code": "incomplete",
+            "stage": "extraction"
+          },
+          {
+            "url": "https://www.tripadvisor.com/ShowUserReviews-g294337-d307815-r490180288-Suva_Municipal_Market-Suva_Viti_Levu.html",
+            "code": "http_status",
+            "stage": "ingestion",
+            "http_status": 403
+          },
+          {
+            "url": "https://www.news.com.au/travel/travel-updates/warnings/fiji-scams-a-warning-for-tourists-in-urban-areas/news-story/bbc657b7a0a27bf3aa70a5cf3a08bf29",
+            "code": "http_status",
+            "stage": "ingestion",
+            "http_status": 403
+          },
+          {
+            "code": "host_deferred",
+            "stage": "acquisition"
+          },
+          {
+            "code": "review_required",
+            "stage": "hypothesis"
+          }
+        ],
+        "document_ids": [
+          "cca260c7-5388-4596-a767-a62eba9b0d33",
+          "69a7d57e-5b46-4ff7-86cb-ba0fb0926a9f",
+          "8d026f0c-ebb5-4b87-8efd-03a2540a3f14",
+          "4582d722-102d-4462-b363-d3823354375f",
+          "4b42c4f8-125c-42cf-8747-3f75574e0c0d",
+          "02c190fd-aeaa-44b9-a826-2ab4cff5db5a",
+          "8d1c7e2c-4a31-4725-be44-2d04fa2c4416",
+          "ef5d7e02-1829-4049-a43a-e63d37e7b4a1",
+          "eef35699-bdfd-4012-9a2e-89c5727ef3bc",
+          "824dceec-0455-4587-b322-ef4d4aa30c12",
+          "f17b7c38-89d5-426a-85a1-276344c92564",
+          "b8c6fd44-05e9-4397-8f73-23829f881d21",
+          "dccf2adc-0bc5-498f-89aa-19b30018d338",
+          "d7678a80-0dbc-4117-8d82-4aac7705fba6"
+        ]
+      },
+      "jobs": [
+        {
+          "id": "7a9d6913-95ca-4d58-8b8b-10b537f80541",
+          "phase": "continuation",
+          "status": "succeeded",
+          "attempts": 1,
+          "created_at": "2026-11-08T06:40:55.982568+00:00",
+          "updated_at": "2026-11-08T06:41:15.562352+00:00",
+          "error_code": "research_incomplete",
+          "result_status": "partial",
+          "complete": false,
+          "errors": [
+            {
+              "url": "https://www.fantasticfiji.com/common-scams.html",
+              "code": "incomplete",
+              "stage": "extraction"
+            },
+            {
+              "url": "https://fijiguide.com/fiji-travel-blog/",
+              "code": "invalid_url",
+              "stage": "ingestion"
+            },
+            {
+              "url": "https://www.reddit.com/r/Fijian/comments/1m028x3/tourism_in_suva/",
+              "code": "http_status",
+              "stage": "ingestion",
+              "http_status": 403
+            },
+            {
+              "url": "https://www.tripadvisor.com/ShowUserReviews-g294337-d307815-r490180288-Suva_Municipal_Market-Suva_Viti_Levu.html",
+              "code": "http_status",
+              "stage": "ingestion",
+              "http_status": 403
+            },
+            {
+              "url": "https://us.trip.com/travel-guide/destination/suva-1338/",
+              "code": "http_status",
+              "stage": "ingestion",
+              "http_status": 404
+            },
+            {
+              "url": "https://fijitravel.org/posts/avoid-getting-ripped-off-fiji/",
+              "code": "incomplete",
+              "stage": "extraction"
+            },
+            {
+              "url": "https://scti.com.au/travel-advice/common-travel-scams",
+              "code": "incomplete",
+              "stage": "relevance"
+            },
+            {
+              "url": "https://scti.com.au/travel-advice/common-travel-scams",
+              "code": "incomplete",
+              "stage": "extraction"
+            },
+            {
+              "url": "https://www.nomadicmatt.com/travel-guides/fiji-travel-tips/",
+              "code": "incomplete",
+              "stage": "relevance"
+            },
+            {
+              "url": "https://www.nomadicmatt.com/travel-guides/fiji-travel-tips/",
+              "code": "incomplete",
+              "stage": "extraction"
+            },
+            {
+              "code": "host_deferred",
+              "count": 5,
+              "stage": "acquisition"
+            },
+            {
+              "url": "https://triprzapp.com/destination/suva-fiji",
+              "code": "empty",
+              "stage": "processing"
+            },
+            {
+              "url": "https://www.facebook.com/groups/2003503603195859/posts/3699835726895963/",
+              "code": "empty",
+              "stage": "processing"
+            },
+            {
+              "url": "https://www.islands.com/1534727/common-scams-know-before-visiting-fiji/",
+              "code": "incomplete",
+              "stage": "extraction"
+            },
+            {
+              "code": "unresolved_location",
+              "stage": "hypothesis"
+            },
+            {
+              "code": "host_deferred",
+              "stage": "acquisition"
+            },
+            {
+              "url": "https://www.facebook.com/groups/ilovefiji/posts/1383649815620018/",
+              "code": "empty",
+              "stage": "processing"
+            },
+            {
+              "url": "https://www.quora.com/Are-there-any-scams-I-should-be-aware-of-traveling-to-Fiji-Islands",
+              "code": "http_status",
+              "stage": "ingestion",
+              "http_status": 403
+            },
+            {
+              "url": "https://www.news.com.au/travel/travel-updates/warnings/fiji-scams-a-warning-for-tourists-in-urban-areas/news-story/bbc657b7a0a27bf3aa70a5cf3a08bf29",
+              "code": "http_status",
+              "stage": "ingestion",
+              "http_status": 403
+            },
+            {
+              "code": "review_required",
+              "stage": "hypothesis"
+            },
+            {
+              "code": "continuation_pending",
+              "stage": "research"
+            }
+          ],
+          "usage": {
+            "llm": [
+              {
+                "error": null,
+                "model": "sarvam-105b",
+                "usage": {
+                  "total_tokens": 1722,
+                  "prompt_tokens": 1474,
+                  "completion_tokens": 248
+                },
+                "requests": 1
+              },
+              {
+                "error": null,
+                "model": "sarvam-105b",
+                "usage": {
+                  "total_tokens": 1201,
+                  "prompt_tokens": 1097,
+                  "completion_tokens": 104
+                },
+                "requests": 1
+              },
+              {
+                "error": null,
+                "model": "sarvam-105b",
+                "usage": {
+                  "total_tokens": 1172,
+                  "prompt_tokens": 1060,
+                  "completion_tokens": 112
+                },
+                "requests": 1
+              },
+              {
+                "error": null,
+                "model": "sarvam-105b",
+                "usage": {
+                  "total_tokens": 1110,
+                  "prompt_tokens": 1011,
+                  "completion_tokens": 99
+                },
+                "requests": 1
+              },
+              {
+                "error": null,
+                "model": "sarvam-105b",
+                "usage": {
+                  "total_tokens": 1009,
+                  "prompt_tokens": 917,
+                  "completion_tokens": 92
+                },
+                "requests": 1
+              },
+              {
+                "error": null,
+                "model": "sarvam-105b",
+                "usage": {
+                  "total_tokens": 1847,
+                  "prompt_tokens": 1419,
+                  "completion_tokens": 428
+                },
+                "requests": 1
+              }
+            ],
+            "search": [],
+            "llm_calls": 6,
+            "reservation_note": "Pre-call reservations; interrupted usage may be unknown.",
+            "run_reservations": {
+              "fetches": 28,
+              "queries": 3,
+              "documents": 11,
+              "llm_calls": 36
+            }
+          },
+          "diagnostics": {
+            "llm": [
+              {
+                "error": null,
+                "model": "sarvam-105b",
+                "usage": {
+                  "total_tokens": 1722,
+                  "prompt_tokens": 1474,
+                  "completion_tokens": 248
+                },
+                "requests": 1
+              },
+              {
+                "error": null,
+                "model": "sarvam-105b",
+                "usage": {
+                  "total_tokens": 1201,
+                  "prompt_tokens": 1097,
+                  "completion_tokens": 104
+                },
+                "requests": 1
+              },
+              {
+                "error": null,
+                "model": "sarvam-105b",
+                "usage": {
+                  "total_tokens": 1172,
+                  "prompt_tokens": 1060,
+                  "completion_tokens": 112
+                },
+                "requests": 1
+              },
+              {
+                "error": null,
+                "model": "sarvam-105b",
+                "usage": {
+                  "total_tokens": 1110,
+                  "prompt_tokens": 1011,
+                  "completion_tokens": 99
+                },
+                "requests": 1
+              },
+              {
+                "error": null,
+                "model": "sarvam-105b",
+                "usage": {
+                  "total_tokens": 1009,
+                  "prompt_tokens": 917,
+                  "completion_tokens": 92
+                },
+                "requests": 1
+              },
+              {
+                "error": null,
+                "model": "sarvam-105b",
+                "usage": {
+                  "total_tokens": 1847,
+                  "prompt_tokens": 1419,
+                  "completion_tokens": 428
+                },
+                "requests": 1
+              }
+            ],
+            "search": [],
+            "discovery": {
+              "version": "discovery-v2",
+              "filtered": 0,
+              "truncated": false
+            },
+            "llm_calls": 6,
+            "acquisition": {
+              "version": "acquisition-v1",
+              "deferred": {
+                "rate_limited": 1,
+                "repeated_access_denied": 2,
+                "repeated_empty_content": 2
+              },
+              "host_attempts": {
+                "reddit.com": 1,
+                "scti.com.au": 1,
+                "us.trip.com": 1,
+                "fijiguide.com": 1,
+                "fijitravel.org": 1,
+                "nomadicmatt.com": 1,
+                "tripadvisor.com": 1,
+                "fantasticfiji.com": 1
+              }
+            },
+            "active_stage": "extraction",
+            "stage_timings": [
+              {
+                "stage": "discovery",
+                "seconds": 0.0
+              },
+              {
+                "stage": "extraction",
+                "seconds": 1.766
+              },
+              {
+                "stage": "ingestion",
+                "seconds": 1.582
+              },
+              {
+                "stage": "ingestion",
+                "seconds": 0.237
+              },
+              {
+                "stage": "ingestion",
+                "seconds": 0.423
+              },
+              {
+                "stage": "ingestion",
+                "seconds": 0.325
+              },
+              {
+                "stage": "ingestion",
+                "seconds": 0.879
+              },
+              {
+                "stage": "processing",
+                "seconds": 0.315
+              },
+              {
+                "stage": "relevance",
+                "seconds": 4.117
+              },
+              {
+                "stage": "extraction",
+                "seconds": 2.113
+              },
+              {
+                "stage": "ingestion",
+                "seconds": 2.024
+              },
+              {
+                "stage": "processing",
+                "seconds": 0.556
+              },
+              {
+                "stage": "relevance",
+                "seconds": 0.085
+              },
+              {
+                "stage": "extraction",
+                "seconds": 0.021
+              },
+              {
+                "stage": "ingestion",
+                "seconds": 2.014
+              },
+              {
+                "stage": "processing",
+                "seconds": 0.494
+              },
+              {
+                "stage": "relevance",
+                "seconds": 0.145
+              },
+              {
+                "stage": "extraction",
+                "seconds": 0.021
+              }
+            ]
+          }
+        },
+        {
+          "id": "06985412-1dbe-4099-b6a0-79f56b523039",
+          "phase": "enrichment",
+          "status": "succeeded",
+          "attempts": 1,
+          "created_at": "2026-11-08T06:40:10.409836+00:00",
+          "updated_at": "2026-11-08T06:40:55.982568+00:00",
+          "error_code": "research_incomplete",
+          "result_status": "partial",
+          "complete": false,
+          "errors": [
+            {
+              "url": "https://www.fantasticfiji.com/common-scams.html",
+              "code": "incomplete",
+              "stage": "extraction"
+            },
+            {
+              "url": "https://www.facebook.com/groups/2003503603195859/posts/3699835726895963/",
+              "code": "empty",
+              "stage": "processing"
+            },
+            {
+              "url": "https://www.quora.com/Are-there-any-scams-I-should-be-aware-of-traveling-to-Fiji-Islands",
+              "code": "http_status",
+              "stage": "ingestion",
+              "http_status": 403
+            },
+            {
+              "url": "https://www.news.com.au/travel/travel-updates/warnings/fiji-scams-a-warning-for-tourists-in-urban-areas/news-story/bbc657b7a0a27bf3aa70a5cf3a08bf29",
+              "code": "http_status",
+              "stage": "ingestion",
+              "http_status": 403
+            },
+            {
+              "url": "https://fijiguide.com/fiji-travel-blog/",
+              "code": "invalid_url",
+              "stage": "ingestion"
+            },
+            {
+              "url": "https://www.reddit.com/r/Fijian/comments/1m028x3/tourism_in_suva/",
+              "code": "http_status",
+              "stage": "ingestion",
+              "http_status": 403
+            },
+            {
+              "url": "https://www.tripadvisor.com/ShowUserReviews-g294337-d307815-r490180288-Suva_Municipal_Market-Suva_Viti_Levu.html",
+              "code": "http_status",
+              "stage": "ingestion",
+              "http_status": 403
+            },
+            {
+              "url": "https://www.roafly.com/blog/is-fiji-safe",
+              "code": "rate_limited",
+              "stage": "ingestion",
+              "http_status": 429
+            },
+            {
+              "code": "review_required",
+              "stage": "hypothesis"
+            },
+            {
+              "code": "unresolved_location",
+              "stage": "hypothesis"
+            },
+            {
+              "url": "https://triprzapp.com/destination/suva-fiji",
+              "code": "empty",
+              "stage": "processing"
+            },
+            {
+              "url": "https://us.trip.com/travel-guide/destination/suva-1338/",
+              "code": "http_status",
+              "stage": "ingestion",
+              "http_status": 404
+            },
+            {
+              "url": "https://fijitravel.org/posts/avoid-getting-ripped-off-fiji/",
+              "code": "deadline",
+              "stage": "ingestion"
+            },
+            {
+              "code": "resource_limit_or_deadline",
+              "stage": "research"
+            },
+            {
+              "url": "https://www.islands.com/1534727/common-scams-know-before-visiting-fiji/",
+              "code": "incomplete",
+              "stage": "extraction"
+            },
+            {
+              "url": "https://www.facebook.com/groups/ilovefiji/posts/1383649815620018/",
+              "code": "empty",
+              "stage": "processing"
+            },
+            {
+              "code": "continuation_pending",
+              "stage": "research"
+            }
+          ],
+          "usage": {
+            "llm": [
+              {
+                "error": null,
+                "model": "sarvam-105b",
+                "usage": {
+                  "total_tokens": 1167,
+                  "prompt_tokens": 1092,
+                  "completion_tokens": 75
+                },
+                "requests": 1
+              },
+              {
+                "error": null,
+                "model": "sarvam-105b",
+                "usage": {
+                  "total_tokens": 1245,
+                  "prompt_tokens": 1167,
+                  "completion_tokens": 78
+                },
+                "requests": 1
+              },
+              {
+                "error": null,
+                "model": "sarvam-105b",
+                "usage": {
+                  "total_tokens": 662,
+                  "prompt_tokens": 578,
+                  "completion_tokens": 84
+                },
+                "requests": 1
+              },
+              {
+                "error": null,
+                "model": "sarvam-105b",
+                "usage": {
+                  "total_tokens": 1254,
+                  "prompt_tokens": 1152,
+                  "completion_tokens": 102
+                },
+                "requests": 1
+              },
+              {
+                "error": null,
+                "model": "sarvam-105b",
+                "usage": {
+                  "total_tokens": 652,
+                  "prompt_tokens": 579,
+                  "completion_tokens": 73
+                },
+                "requests": 1
+              },
+              {
+                "error": null,
+                "model": "sarvam-105b",
+                "usage": {
+                  "total_tokens": 1682,
+                  "prompt_tokens": 1474,
+                  "completion_tokens": 208
+                },
+                "requests": 1
+              },
+              {
+                "error": null,
+                "model": "sarvam-105b",
+                "usage": {
+                  "total_tokens": 907,
+                  "prompt_tokens": 901,
+                  "completion_tokens": 6
+                },
+                "requests": 1
+              },
+              {
+                "error": null,
+                "model": "sarvam-105b",
+                "usage": {
+                  "total_tokens": 274,
+                  "prompt_tokens": 224,
+                  "completion_tokens": 50
+                },
+                "requests": 1
+              },
+              {
+                "error": null,
+                "model": "sarvam-105b",
+                "usage": {
+                  "total_tokens": 1036,
+                  "prompt_tokens": 960,
+                  "completion_tokens": 76
+                },
+                "requests": 1
+              },
+              {
+                "error": null,
+                "model": "sarvam-105b",
+                "usage": {
+                  "total_tokens": 994,
+                  "prompt_tokens": 917,
+                  "completion_tokens": 77
+                },
+                "requests": 1
+              },
+              {
+                "error": null,
+                "model": "sarvam-105b",
+                "usage": {
+                  "total_tokens": 837,
+                  "prompt_tokens": 760,
+                  "completion_tokens": 77
+                },
+                "requests": 1
+              },
+              {
+                "error": null,
+                "model": "sarvam-105b",
+                "usage": {
+                  "total_tokens": 1684,
+                  "prompt_tokens": 1282,
+                  "completion_tokens": 402
+                },
+                "requests": 1
+              },
+              {
+                "error": null,
+                "model": "sarvam-105b",
+                "usage": {
+                  "total_tokens": 1388,
+                  "prompt_tokens": 1082,
+                  "completion_tokens": 306
+                },
+                "requests": 1
+              },
+              {
+                "error": null,
+                "model": "sarvam-105b",
+                "usage": {
+                  "total_tokens": 1570,
+                  "prompt_tokens": 1389,
+                  "completion_tokens": 181
+                },
+                "requests": 1
+              },
+              {
+                "error": null,
+                "model": "sarvam-105b",
+                "usage": {
+                  "total_tokens": 797,
+                  "prompt_tokens": 716,
+                  "completion_tokens": 81
+                },
+                "requests": 1
+              },
+              {
+                "error": null,
+                "model": "sarvam-105b",
+                "usage": {
+                  "total_tokens": 1308,
+                  "prompt_tokens": 1038,
+                  "completion_tokens": 270
+                },
+                "requests": 1
+              },
+              {
+                "error": null,
+                "model": "sarvam-105b",
+                "usage": {
+                  "total_tokens": 1099,
+                  "prompt_tokens": 1030,
+                  "completion_tokens": 69
+                },
+                "requests": 1
+              },
+              {
+                "error": null,
+                "model": "sarvam-105b",
+                "usage": {
+                  "total_tokens": 362,
+                  "prompt_tokens": 293,
+                  "completion_tokens": 69
+                },
+                "requests": 1
+              },
+              {
+                "error": null,
+                "model": "sarvam-105b",
+                "usage": {
+                  "total_tokens": 1357,
+                  "prompt_tokens": 1352,
+                  "completion_tokens": 5
+                },
+                "requests": 1
+              }
+            ],
+            "search": [],
+            "llm_calls": 19,
+            "reservation_note": "Pre-call reservations; interrupted usage may be unknown.",
+            "run_reservations": {
+              "fetches": 21,
+              "queries": 3,
+              "documents": 8,
+              "llm_calls": 30
+            }
+          },
+          "diagnostics": {
+            "llm": [
+              {
+                "error": null,
+                "model": "sarvam-105b",
+                "usage": {
+                  "total_tokens": 1167,
+                  "prompt_tokens": 1092,
+                  "completion_tokens": 75
+                },
+                "requests": 1
+              },
+              {
+                "error": null,
+                "model": "sarvam-105b",
+                "usage": {
+                  "total_tokens": 1245,
+                  "prompt_tokens": 1167,
+                  "completion_tokens": 78
+                },
+                "requests": 1
+              },
+              {
+                "error": null,
+                "model": "sarvam-105b",
+                "usage": {
+                  "total_tokens": 662,
+                  "prompt_tokens": 578,
+                  "completion_tokens": 84
+                },
+                "requests": 1
+              },
+              {
+                "error": null,
+                "model": "sarvam-105b",
+                "usage": {
+                  "total_tokens": 1254,
+                  "prompt_tokens": 1152,
+                  "completion_tokens": 102
+                },
+                "requests": 1
+              },
+              {
+                "error": null,
+                "model": "sarvam-105b",
+                "usage": {
+                  "total_tokens": 652,
+                  "prompt_tokens": 579,
+                  "completion_tokens": 73
+                },
+                "requests": 1
+              },
+              {
+                "error": null,
+                "model": "sarvam-105b",
+                "usage": {
+                  "total_tokens": 1682,
+                  "prompt_tokens": 1474,
+                  "completion_tokens": 208
+                },
+                "requests": 1
+              },
+              {
+                "error": null,
+                "model": "sarvam-105b",
+                "usage": {
+                  "total_tokens": 907,
+                  "prompt_tokens": 901,
+                  "completion_tokens": 6
+                },
+                "requests": 1
+              },
+              {
+                "error": null,
+                "model": "sarvam-105b",
+                "usage": {
+                  "total_tokens": 274,
+                  "prompt_tokens": 224,
+                  "completion_tokens": 50
+                },
+                "requests": 1
+              },
+              {
+                "error": null,
+                "model": "sarvam-105b",
+                "usage": {
+                  "total_tokens": 1036,
+                  "prompt_tokens": 960,
+                  "completion_tokens": 76
+                },
+                "requests": 1
+              },
+              {
+                "error": null,
+                "model": "sarvam-105b",
+                "usage": {
+                  "total_tokens": 994,
+                  "prompt_tokens": 917,
+                  "completion_tokens": 77
+                },
+                "requests": 1
+              },
+              {
+                "error": null,
+                "model": "sarvam-105b",
+                "usage": {
+                  "total_tokens": 837,
+                  "prompt_tokens": 760,
+                  "completion_tokens": 77
+                },
+                "requests": 1
+              },
+              {
+                "error": null,
+                "model": "sarvam-105b",
+                "usage": {
+                  "total_tokens": 1684,
+                  "prompt_tokens": 1282,
+                  "completion_tokens": 402
+                },
+                "requests": 1
+              },
+              {
+                "error": null,
+                "model": "sarvam-105b",
+                "usage": {
+                  "total_tokens": 1388,
+                  "prompt_tokens": 1082,
+                  "completion_tokens": 306
+                },
+                "requests": 1
+              },
+              {
+                "error": null,
+                "model": "sarvam-105b",
+                "usage": {
+                  "total_tokens": 1570,
+                  "prompt_tokens": 1389,
+                  "completion_tokens": 181
+                },
+                "requests": 1
+              },
+              {
+                "error": null,
+                "model": "sarvam-105b",
+                "usage": {
+                  "total_tokens": 797,
+                  "prompt_tokens": 716,
+                  "completion_tokens": 81
+                },
+                "requests": 1
+              },
+              {
+                "error": null,
+                "model": "sarvam-105b",
+                "usage": {
+                  "total_tokens": 1308,
+                  "prompt_tokens": 1038,
+                  "completion_tokens": 270
+                },
+                "requests": 1
+              },
+              {
+                "error": null,
+                "model": "sarvam-105b",
+                "usage": {
+                  "total_tokens": 1099,
+                  "prompt_tokens": 1030,
+                  "completion_tokens": 69
+                },
+                "requests": 1
+              },
+              {
+                "error": null,
+                "model": "sarvam-105b",
+                "usage": {
+                  "total_tokens": 362,
+                  "prompt_tokens": 293,
+                  "completion_tokens": 69
+                },
+                "requests": 1
+              },
+              {
+                "error": null,
+                "model": "sarvam-105b",
+                "usage": {
+                  "total_tokens": 1357,
+                  "prompt_tokens": 1352,
+                  "completion_tokens": 5
+                },
+                "requests": 1
+              }
+            ],
+            "search": [],
+            "discovery": {
+              "version": "discovery-v2",
+              "filtered": 0,
+              "truncated": false
+            },
+            "llm_calls": 19,
+            "acquisition": {
+              "version": "acquisition-v1",
+              "deferred": {},
+              "host_attempts": {
+                "quora.com": 1,
+                "reddit.com": 1,
+                "roafly.com": 1,
+                "news.com.au": 1,
+                "us.trip.com": 1,
+                "youtube.com": 1,
+                "facebook.com": 1,
+                "fijiguide.com": 1,
+                "triprzapp.com": 1,
+                "fijitravel.org": 1,
+                "tripadvisor.com": 1,
+                "travelonline.com": 1,
+                "uncharted101.com": 1,
+                "fantasticfiji.com": 1,
+                "travelwithhello.com": 1,
+                "divergenttravelers.com": 1
+              }
+            },
+            "active_stage": "ingestion",
+            "stage_timings": [
+              {
+                "stage": "discovery",
+                "seconds": 0.0
+              },
+              {
+                "stage": "relevance",
+                "seconds": 2.547
+              },
+              {
+                "stage": "extraction",
+                "seconds": 0.025
+              },
+              {
+                "stage": "relevance",
+                "seconds": 1.856
+              },
+              {
+                "stage": "extraction",
+                "seconds": 2.204
+              },
+              {
+                "stage": "ingestion",
+                "seconds": 2.975
+              },
+              {
+                "stage": "processing",
+                "seconds": 0.351
+              },
+              {
+                "stage": "ingestion",
+                "seconds": 0.251
+              },
+              {
+                "stage": "ingestion",
+                "seconds": 0.149
+              },
+              {
+                "stage": "ingestion",
+                "seconds": 1.625
+              },
+              {
+                "stage": "ingestion",
+                "seconds": 0.233
+              },
+              {
+                "stage": "ingestion",
+                "seconds": 0.482
+              },
+              {
+                "stage": "ingestion",
+                "seconds": 1.56
+              },
+              {
+                "stage": "processing",
+                "seconds": 0.531
+              },
+              {
+                "stage": "relevance",
+                "seconds": 0.668
+              },
+              {
+                "stage": "extraction",
+                "seconds": 0.017
+              },
+              {
+                "stage": "ingestion",
+                "seconds": 0.364
+              },
+              {
+                "stage": "ingestion",
+                "seconds": 1.602
+              },
+              {
+                "stage": "processing",
+                "seconds": 0.302
+              },
+              {
+                "stage": "relevance",
+                "seconds": 2.615
+              },
+              {
+                "stage": "extraction",
+                "seconds": 5.363
+              },
+              {
+                "stage": "resolution",
+                "seconds": 0.036
+              },
+              {
+                "stage": "hypothesis",
+                "seconds": 0.318
+              },
+              {
+                "stage": "embedding",
+                "seconds": 0.064
+              },
+              {
+                "stage": "resolution",
+                "seconds": 0.03
+              },
+              {
+                "stage": "hypothesis",
+                "seconds": 1.72
+              },
+              {
+                "stage": "ingestion",
+                "seconds": 2.048
+              },
+              {
+                "stage": "processing",
+                "seconds": 0.439
+              },
+              {
+                "stage": "relevance",
+                "seconds": 0.802
+              },
+              {
+                "stage": "extraction",
+                "seconds": 1.85
+              },
+              {
+                "stage": "resolution",
+                "seconds": 0.047
+              },
+              {
+                "stage": "hypothesis",
+                "seconds": 0.029
+              },
+              {
+                "stage": "ingestion",
+                "seconds": 5.384
+              },
+              {
+                "stage": "processing",
+                "seconds": 0.31
+              },
+              {
+                "stage": "relevance",
+                "seconds": 1.621
+              },
+              {
+                "stage": "extraction",
+                "seconds": 0.511
+              },
+              {
+                "stage": "ingestion",
+                "seconds": 1.424
+              },
+              {
+                "stage": "processing",
+                "seconds": 0.26
+              },
+              {
+                "stage": "ingestion",
+                "seconds": 0.373
+              },
+              {
+                "stage": "ingestion",
+                "seconds": 1.076
+              }
+            ]
+          }
+        },
+        {
+          "id": "85030628-bac9-4c46-a74c-570855fb08fc",
+          "phase": "initial",
+          "status": "succeeded",
+          "attempts": 1,
+          "created_at": "2026-11-08T06:39:45.329029+00:00",
+          "updated_at": "2026-11-08T06:40:10.409836+00:00",
+          "error_code": "research_incomplete",
+          "result_status": "partial",
+          "complete": false,
+          "errors": [
+            {
+              "url": "https://www.facebook.com/groups/ilovefiji/posts/1383649815620018/",
+              "code": "empty",
+              "stage": "processing"
+            },
+            {
+              "url": "https://www.islands.com/1534727/common-scams-know-before-visiting-fiji/",
+              "code": "incomplete",
+              "stage": "extraction"
+            },
+            {
+              "code": "unresolved_location",
+              "stage": "hypothesis"
+            },
+            {
+              "url": "https://www.divergenttravelers.com/travel-guides/fiji-travel-tips/",
+              "code": "incomplete",
+              "stage": "relevance"
+            },
+            {
+              "url": "https://www.divergenttravelers.com/travel-guides/fiji-travel-tips/",
+              "code": "incomplete",
+              "stage": "extraction"
+            },
+            {
+              "url": "https://www.fantasticfiji.com/common-scams.html",
+              "code": "incomplete",
+              "stage": "relevance"
+            },
+            {
+              "url": "https://www.fantasticfiji.com/common-scams.html",
+              "code": "incomplete",
+              "stage": "extraction"
+            },
+            {
+              "url": "https://www.quora.com/Are-there-any-scams-I-should-be-aware-of-traveling-to-Fiji-Islands",
+              "code": "http_status",
+              "stage": "ingestion",
+              "http_status": 403
+            },
+            {
+              "url": "https://www.news.com.au/travel/travel-updates/warnings/fiji-scams-a-warning-for-tourists-in-urban-areas/news-story/bbc657b7a0a27bf3aa70a5cf3a08bf29",
+              "code": "deadline",
+              "stage": "ingestion"
+            },
+            {
+              "code": "resource_limit_or_deadline",
+              "stage": "research"
+            },
+            {
+              "code": "continuation_pending",
+              "stage": "research"
+            }
+          ],
+          "usage": {
+            "llm": [
+              {
+                "error": null,
+                "model": "sarvam-105b",
+                "usage": {
+                  "total_tokens": 1308,
+                  "prompt_tokens": 1226,
+                  "completion_tokens": 82
+                },
+                "requests": 1
+              },
+              {
+                "error": null,
+                "model": "sarvam-105b",
+                "usage": {
+                  "total_tokens": 1344,
+                  "prompt_tokens": 1262,
+                  "completion_tokens": 82
+                },
+                "requests": 1
+              },
+              {
+                "error": null,
+                "model": "sarvam-105b",
+                "usage": {
+                  "total_tokens": 1303,
+                  "prompt_tokens": 1228,
+                  "completion_tokens": 75
+                },
+                "requests": 1
+              },
+              {
+                "error": null,
+                "model": "sarvam-105b",
+                "usage": {
+                  "total_tokens": 1034,
+                  "prompt_tokens": 963,
+                  "completion_tokens": 71
+                },
+                "requests": 1
+              },
+              {
+                "error": null,
+                "model": "sarvam-105b",
+                "usage": {
+                  "total_tokens": 1068,
+                  "prompt_tokens": 982,
+                  "completion_tokens": 86
+                },
+                "requests": 1
+              },
+              {
+                "error": null,
+                "model": "sarvam-105b",
+                "usage": {
+                  "total_tokens": 416,
+                  "prompt_tokens": 327,
+                  "completion_tokens": 89
+                },
+                "requests": 1
+              },
+              {
+                "error": null,
+                "model": "sarvam-105b",
+                "usage": {
+                  "total_tokens": 1610,
+                  "prompt_tokens": 1304,
+                  "completion_tokens": 306
+                },
+                "requests": 1
+              },
+              {
+                "error": null,
+                "model": "sarvam-105b",
+                "usage": {
+                  "total_tokens": 853,
+                  "prompt_tokens": 649,
+                  "completion_tokens": 204
+                },
+                "requests": 1
+              },
+              {
+                "error": null,
+                "model": "sarvam-105b",
+                "usage": {
+                  "total_tokens": 1229,
+                  "prompt_tokens": 1153,
+                  "completion_tokens": 76
+                },
+                "requests": 1
+              },
+              {
+                "error": null,
+                "model": "sarvam-105b",
+                "usage": {
+                  "total_tokens": 1204,
+                  "prompt_tokens": 1129,
+                  "completion_tokens": 75
+                },
+                "requests": 1
+              },
+              {
+                "error": "cancelled_or_deadline",
+                "requests": 1
+              }
+            ],
+            "search": [
+              {
+                "error": null,
+                "requests": 1,
+                "reported_credits": 1,
+                "returned_results": 10
+              },
+              {
+                "error": null,
+                "requests": 1,
+                "reported_credits": 1,
+                "returned_results": 10
+              },
+              {
+                "error": null,
+                "requests": 1,
+                "reported_credits": 1,
+                "returned_results": 10
+              }
+            ],
+            "llm_calls": 11,
+            "reservation_note": "Pre-call reservations; interrupted usage may be unknown.",
+            "run_reservations": {
+              "fetches": 7,
+              "queries": 3,
+              "documents": 4,
+              "llm_calls": 11
+            }
+          },
+          "diagnostics": {
+            "llm": [
+              {
+                "error": null,
+                "model": "sarvam-105b",
+                "usage": {
+                  "total_tokens": 1308,
+                  "prompt_tokens": 1226,
+                  "completion_tokens": 82
+                },
+                "requests": 1
+              },
+              {
+                "error": null,
+                "model": "sarvam-105b",
+                "usage": {
+                  "total_tokens": 1344,
+                  "prompt_tokens": 1262,
+                  "completion_tokens": 82
+                },
+                "requests": 1
+              },
+              {
+                "error": null,
+                "model": "sarvam-105b",
+                "usage": {
+                  "total_tokens": 1303,
+                  "prompt_tokens": 1228,
+                  "completion_tokens": 75
+                },
+                "requests": 1
+              },
+              {
+                "error": null,
+                "model": "sarvam-105b",
+                "usage": {
+                  "total_tokens": 1034,
+                  "prompt_tokens": 963,
+                  "completion_tokens": 71
+                },
+                "requests": 1
+              },
+              {
+                "error": null,
+                "model": "sarvam-105b",
+                "usage": {
+                  "total_tokens": 1068,
+                  "prompt_tokens": 982,
+                  "completion_tokens": 86
+                },
+                "requests": 1
+              },
+              {
+                "error": null,
+                "model": "sarvam-105b",
+                "usage": {
+                  "total_tokens": 416,
+                  "prompt_tokens": 327,
+                  "completion_tokens": 89
+                },
+                "requests": 1
+              },
+              {
+                "error": null,
+                "model": "sarvam-105b",
+                "usage": {
+                  "total_tokens": 1610,
+                  "prompt_tokens": 1304,
+                  "completion_tokens": 306
+                },
+                "requests": 1
+              },
+              {
+                "error": null,
+                "model": "sarvam-105b",
+                "usage": {
+                  "total_tokens": 853,
+                  "prompt_tokens": 649,
+                  "completion_tokens": 204
+                },
+                "requests": 1
+              },
+              {
+                "error": null,
+                "model": "sarvam-105b",
+                "usage": {
+                  "total_tokens": 1229,
+                  "prompt_tokens": 1153,
+                  "completion_tokens": 76
+                },
+                "requests": 1
+              },
+              {
+                "error": null,
+                "model": "sarvam-105b",
+                "usage": {
+                  "total_tokens": 1204,
+                  "prompt_tokens": 1129,
+                  "completion_tokens": 75
+                },
+                "requests": 1
+              },
+              {
+                "error": "cancelled_or_deadline",
+                "requests": 1
+              }
+            ],
+            "search": [
+              {
+                "error": null,
+                "requests": 1,
+                "reported_credits": 1,
+                "returned_results": 10
+              },
+              {
+                "error": null,
+                "requests": 1,
+                "reported_credits": 1,
+                "returned_results": 10
+              },
+              {
+                "error": null,
+                "requests": 1,
+                "reported_credits": 1,
+                "returned_results": 10
+              }
+            ],
+            "discovery": {
+              "version": "discovery-v2",
+              "filtered": 0,
+              "truncated": false
+            },
+            "llm_calls": 11,
+            "acquisition": {
+              "version": "acquisition-v1",
+              "deferred": {},
+              "host_attempts": {
+                "quora.com": 1,
+                "islands.com": 1,
+                "news.com.au": 1,
+                "facebook.com": 1,
+                "fantasticfiji.com": 1,
+                "outchasingstars.com": 1,
+                "divergenttravelers.com": 1
+              }
+            },
+            "active_stage": "ingestion",
+            "stage_timings": [
+              {
+                "stage": "discovery",
+                "seconds": 0.0
+              },
+              {
+                "stage": "discovery",
+                "seconds": 3.693
+              },
+              {
+                "stage": "ingestion",
+                "seconds": 1.856
+              },
+              {
+                "stage": "processing",
+                "seconds": 0.688
+              },
+              {
+                "stage": "ingestion",
+                "seconds": 1.466
+              },
+              {
+                "stage": "processing",
+                "seconds": 0.438
+              },
+              {
+                "stage": "relevance",
+                "seconds": 3.017
+              },
+              {
+                "stage": "extraction",
+                "seconds": 0.018
+              },
+              {
+                "stage": "ingestion",
+                "seconds": 0.917
+              },
+              {
+                "stage": "processing",
+                "seconds": 0.243
+              },
+              {
+                "stage": "relevance",
+                "seconds": 1.647
+              },
+              {
+                "stage": "extraction",
+                "seconds": 3.174
+              },
+              {
+                "stage": "resolution",
+                "seconds": 0.042
+              },
+              {
+                "stage": "hypothesis",
+                "seconds": 0.026
+              },
+              {
+                "stage": "ingestion",
+                "seconds": 1.072
+              },
+              {
+                "stage": "processing",
+                "seconds": 0.89
+              },
+              {
+                "stage": "relevance",
+                "seconds": 1.67
+              },
+              {
+                "stage": "extraction",
+                "seconds": 0.018
+              },
+              {
+                "stage": "ingestion",
+                "seconds": 2.115
+              },
+              {
+                "stage": "processing",
+                "seconds": 0.447
+              },
+              {
+                "stage": "relevance",
+                "seconds": 0.487
+              },
+              {
+                "stage": "extraction",
+                "seconds": 0.029
+              },
+              {
+                "stage": "ingestion",
+                "seconds": 0.301
+              },
+              {
+                "stage": "ingestion",
+                "seconds": 0.051
+              }
+            ]
+          }
+        }
+      ],
+      "public_evidence": [
+        {
+          "pattern_id": "87c4310f-6f2b-493e-b9a2-d586d52c0e15",
+          "evidence_id": "496944eb-d082-4144-ad6b-c04a7e235b52",
+          "claim_id": "f72ac2ef-df05-4a52-b3b4-6a4498a9c45a",
+          "document_id": "dccf2adc-0bc5-498f-89aa-19b30018d338",
+          "source_id": "69192f20-5427-4d99-af9e-b66c31c699f4",
+          "source_url": "https://www.travelwithhello.com/blog/fiji-safety-travel-guide",
+          "actual_location": {
+            "id": "56ca2f78-caea-5e5e-827f-ec7e6a8d55c7",
+            "name": "Fiji",
+            "type": "country",
+            "country_code": "FJ",
+            "provisional": false
+          },
+          "scope": "ancestor",
+          "provenance_class": "UNKNOWN",
+          "quote_sha256": "aedcef32dc2a6cfb0321e9a7f2abcbddaf96a06f4456c6418b73a980dd712ca6",
+          "quote_start": 2644,
+          "quote_end": 3643,
+          "checks": {
+            "raw_hash": true,
+            "clean_hash": true,
+            "quote": true,
+            "lineage": true,
+            "same_source": true,
+            "not_held": true
+          },
+          "verified": true,
+          "from_current_root": true
+        }
+      ],
+      "localhost_rest_reads": [
+        {
+          "seconds": 0.1013,
+          "outcome": "findings",
+          "total": 1
+        },
+        {
+          "seconds": 0.0939,
+          "outcome": "findings",
+          "total": 1
+        },
+        {
+          "seconds": 0.1015,
+          "outcome": "findings",
+          "total": 1
+        }
+      ],
+      "job_selection": "Newest N jobs; N from cursor, not a historical root join."
+    }
+  ],
+  "read_only": true,
+  "synthetic_production_records_created": false
+}

@@ -1,0 +1,49 @@
+{
+  "version": "chatgpt-review-v1",
+  "date": "2026-11-08",
+  "release": "fc936c436d3a49804f042f3e38cdce3ad4390e14",
+  "endpoint": "https://travel-scam-prod.tailbbf557.ts.net/mcp",
+  "evidence_type": "User-pasted ChatGPT responses; not a raw host tool-event export.",
+  "user_confirmed": true,
+  "read_and_followup_pass": true,
+  "evidence_and_scope_pass": true,
+  "first_unseen_request": {
+    "location": "Suva, Fiji",
+    "location_id": "7eaf771e-8bf9-5d7a-b778-c00aa3ccecd0",
+    "resolve": "Exact city in Fiji",
+    "research_requested": true,
+    "followup_requested_research": false,
+    "outcome": "research_incomplete",
+    "invented_findings": false,
+    "report_submitted": false
+  },
+  "later_read": {
+    "research_requested": false,
+    "report_submitted": false,
+    "Bangkok": {
+      "patterns": 1,
+      "actual_location": "Grand Palace, Bangkok, Thailand",
+      "scope": "descendant",
+      "citywide_claim_made": false,
+      "source": "https://yourthaiguide.com/top-10-bangkok-scams-you-should-avoid/",
+      "provenance": "SECOND_HAND",
+      "status": "Stale, incomplete",
+      "verified_incident_claimed": false
+    },
+    "Suva": {
+      "patterns": 1,
+      "actual_location": "Fiji (country)",
+      "scope": "ancestor",
+      "suva_specific_claim_made": false,
+      "source": "https://www.travelwithhello.com/blog/fiji-safety-travel-guide",
+      "provenance": "UNKNOWN",
+      "status": "Stale, incomplete",
+      "verified_incident_claimed": false
+    }
+  },
+  "limitations": [
+    "The user supplied rendered responses, not exact tool-call JSON/timings.",
+    "The user reported evidence retrieval and citations; backend lineage was independently checked.",
+    "A successful host interaction does not override failed frozen-corpus quality targets."
+  ]
+}

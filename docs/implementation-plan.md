@@ -169,6 +169,10 @@ measured article-intent query mix and source-access limitations are documented i
 PR 31D is merged. PR 31E's durable query/document/passage checkpoints, cumulative
 root budgets and measured prefix-stall fix are documented in
 `docs/pr31e-research-continuation.md`. Live deployment/ChatGPT acceptance remains PR 31F.
+PR 31E is merged. PR 31F deployed that merged release and passed live provenance,
+continuation and real ChatGPT read/evidence/scope checks, but the unchanged controlled
+quality targets still fail. See `docs/pr31f-research-acceptance.md` and the explicit
+`accepted=false` artifact. PR 32 remains gated on repairing and rerunning those targets.
 Keep Serper/Sarvam/current infrastructure. Initially retain 25/45-second execution
 limits. This targeted baseline does not replace PR 36's broader evaluation harness.
 

@@ -1,0 +1,148 @@
+{
+  "version": "research-acceptance-v1",
+  "accepted": false,
+  "checks": {
+    "quality": false,
+    "lineage": true,
+    "incomplete_controls": true,
+    "recording_reproduced": true,
+    "deployed_live_trace": true,
+    "real_chatgpt": true
+  },
+  "controlled": {
+    "scorecard": {
+      "cold": {
+        "positive_claim_coverage": {
+          "passed": 7,
+          "total": 9,
+          "target": 0.8,
+          "meets_target": false
+        },
+        "correct_geography_coverage": {
+          "passed": 6,
+          "total": 7,
+          "target": 0.9,
+          "meets_target": false
+        },
+        "eligible_pattern_coverage": {
+          "passed": 4,
+          "total": 6,
+          "target": 0.8,
+          "meets_target": false
+        },
+        "negative_claim_safety": {
+          "passed": 6,
+          "total": 6,
+          "target": 1.0,
+          "meets_target": true
+        },
+        "withheld_pattern_safety": {
+          "passed": 9,
+          "total": 9,
+          "target": 1.0,
+          "meets_target": true
+        }
+      },
+      "warm": {
+        "positive_claim_coverage": {
+          "passed": 8,
+          "total": 9,
+          "target": 0.8,
+          "meets_target": true
+        },
+        "correct_geography_coverage": {
+          "passed": 6,
+          "total": 7,
+          "target": 0.9,
+          "meets_target": false
+        },
+        "eligible_pattern_coverage": {
+          "passed": 4,
+          "total": 6,
+          "target": 0.8,
+          "meets_target": false
+        },
+        "negative_claim_safety": {
+          "passed": 6,
+          "total": 6,
+          "target": 1.0,
+          "meets_target": true
+        },
+        "withheld_pattern_safety": {
+          "passed": 9,
+          "total": 9,
+          "target": 1.0,
+          "meets_target": true
+        }
+      }
+    },
+    "incomplete_controls_pass": true,
+    "lineage_pass": true,
+    "quality_pass": false
+  },
+  "live": {
+    "passed": true,
+    "verified_evidence": 2,
+    "terminal": true,
+    "budgets": true,
+    "outcomes": true
+  },
+  "live_measurements": {
+    "Bangkok": {
+      "root_span_seconds": 82.232,
+      "span_includes_queue_and_finish": true,
+      "reservations": {
+        "fetches": 20,
+        "queries": 6,
+        "documents": 7,
+        "llm_calls": 24
+      },
+      "stage_seconds": {
+        "discovery": 8.765,
+        "relevance": 9.57,
+        "extraction": 22.749,
+        "ingestion": 27.756,
+        "resolution": 0.159,
+        "hypothesis": 0.547,
+        "processing": 5.994,
+        "embedding": 1.607
+      },
+      "reported_tokens": 31114,
+      "usage_complete": false,
+      "public_patterns": 1,
+      "localhost_rest_median_seconds": 0.0993
+    },
+    "Suva": {
+      "root_span_seconds": 90.233,
+      "span_includes_queue_and_finish": true,
+      "reservations": {
+        "fetches": 28,
+        "queries": 3,
+        "documents": 11,
+        "llm_calls": 36
+      },
+      "stage_seconds": {
+        "discovery": 3.693,
+        "extraction": 17.13,
+        "ingestion": 34.808,
+        "processing": 6.264,
+        "relevance": 21.277,
+        "resolution": 0.155,
+        "hypothesis": 2.093,
+        "embedding": 0.064
+      },
+      "reported_tokens": 39705,
+      "usage_complete": false,
+      "public_patterns": 1,
+      "localhost_rest_median_seconds": 0.1013
+    }
+  },
+  "blockers": [
+    "quality"
+  ],
+  "limitations": [
+    "Visible synthetic corpus; not an independent holdout or global reliability estimate.",
+    "A connector/protocol call is not a substitute for the user's real ChatGPT test.",
+    "Unknown provider billing/latency remains unknown; replay timing is not live speed."
+  ]
+}

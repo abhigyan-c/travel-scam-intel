@@ -105,6 +105,11 @@ view, with narrative completion tested separately in ChatGPT. The detailed
 earlier assumption that the conversation must end before enrichment finishes.
 Research budgets remain unchanged; a five-to-ten-minute watch is not additional
 paid research. Host limitations and terminal partials must remain explicit.
+Also separate research progress from freshness and stop reasons under the
+[research state semantics plan](research-state-semantics.md). PR 32 includes the
+state/contract migration, legacy adapters and admission/scheduler regression checks;
+PR 33 displays the corrected model. Newly collected partial results must not be
+labeled stale solely because research stopped incomplete.
 
 ## PR-by-PR sequence
 

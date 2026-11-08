@@ -86,6 +86,11 @@ does not mean the root is done. A partial root may contain useful findings.
 Keep progress states separate from claim/publication status. Internal stage
 checkpoints are not a trustworthy percentage, ETA, verified finding or public report
 revision. Advance public revisions only when the safely exposed progress/report changes.
+Apply the [research state semantics plan](research-state-semantics.md): separate root
+progress, retained-report coverage/freshness and stop reasons. A newly collected
+partial result must not become stale merely because the run exhausted its budget.
+PR 32 includes the coordinated migration and compatibility projection; PR 33 uses
+the corrected state DTO rather than interpreting legacy stale labels.
 
 ## Waiting, polling and budgets
 

@@ -40,6 +40,13 @@ research budgets bounded; a five-to-ten-minute watch does not increase paid work
 Do not promise unsupported host continuation or closed-view notifications, fabricate
 findings, or waive the failed PR 31F quality gate. This is planning, not implementation.
 
+Update — 2026-11-08: separate root research progress, retained-report coverage and
+freshness, and structured stop reasons. An incomplete run is not automatically stale;
+stale means a real recheck window expired. Follow
+[`docs/research-state-semantics.md`](../research-state-semantics.md) in PR 32's
+coordinated state/contract migration and PR 33's presentation. Preserve legacy
+contract compatibility, uncertain historical timestamps, cooldowns and budgets.
+
 - Plan all 38 PRs, with detailed implementation planning beginning at PR 01. Implement one numbered PR at a time and preserve the review gates.
 - Create each PR branch from the latest `develop` and target `develop`. Use `codex/pr-NN-short-description`, for example `codex/pr-01-repository-foundation`.
 - Use Serper.dev for search discovery. Request its API key when real integration validation requires it.

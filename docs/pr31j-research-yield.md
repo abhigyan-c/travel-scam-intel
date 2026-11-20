@@ -100,8 +100,25 @@ approximately 0.16–0.28 seconds while the run was active, independent of conne
 and relay overhead.
 
 Sanitized run/publication artifacts are in `benchmarks/data/31j/`. Backend publication,
-provenance and bounded-termination checks passed. **Real ChatGPT presentation acceptance
-is pending**: the user has been asked to read both patterns without requesting research,
-fetch evidence, preserve city versus Grand Palace scope, and explain candidate confidence,
-missing dates and incomplete coverage. PR 32 remains gated on that response; do not
-claim complete conversational acceptance from connector calls alone.
+provenance and bounded-termination checks passed.
+
+The user supplied the real ChatGPT result on 2026-11-20. It returned both findings,
+preserved exact Bangkok city versus descendant Grand Palace scope, retrieved/cited
+Your Thai Guide evidence, and distinguished UNKNOWN from SECOND_HAND provenance.
+It explicitly described both as limited-confidence candidates, not verified incidents;
+explained missing dates, unknown trends and incomplete research; and stated that no
+new research or report submission was requested. It also explained that two records
+from one article are not independent corroboration. The submitted evidence is the
+rendered answer, not a separate raw tool-call trace.
+
+**The PR 31J live publication/provenance/presentation prerequisite passed. PR 32 is
+unblocked.** This does not establish exhaustive or consistently high destination yield,
+completed research, or the future automatic-wait experience.
+
+PR 32 presentation follow-ups: say “evidence records,” not “independent evidence
+records,” unless independence has actually been established; avoid host-added images
+being mistaken for source evidence; keep report/location coverage distinct from a
+pattern's own never-researched state. The host answer's explicit no-independent-
+corroboration warning mitigated its table wording but does not make that heading ideal.
+The legacy stale label and the final zero-model-call continuation remain the separate
+state-contract and efficiency limitations described above.

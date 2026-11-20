@@ -1,7 +1,8 @@
 # One request to a sourced travel-scam report
 
 Decision date: 2026-11-08. User-authorized planning extension to PR 32/33.
-Status: planned; no application behavior, resource limits or deployment changed.
+Status: PR 32 backend contracts and bounded watches are implemented on its review
+branch; real ChatGPT acceptance awaits deployment. The PR 33 UI remains planned.
 
 ## Product requirement
 
@@ -98,7 +99,7 @@ Proposed starting values, subject to the real-host and small-VPS checks:
 
 | Control | Planned starting policy |
 | --- | --- |
-| One wait-tool call | 10 seconds by default, at most 15; shorten if measured host behavior requires it. This is our proposed cap, not an asserted ChatGPT timeout. |
+| One wait-tool call | PR 32 implements a three-second change wait, at most five seconds plus read/transport overhead, beneath the existing 12-second MCP timeout. |
 | Automatic watch window | 5 minutes by default, hard ceiling 10 minutes, including queue/network time. |
 | Model-driven follow-up | At most 60 waits and the absolute watch deadline, whichever comes first; honor next-check timing and stop promptly at terminal state. |
 | Active UI polling | One in-flight request per view; start around 5 seconds, back off with jitter to 30 seconds on inactivity/transient errors; stop at terminal state or watch expiry. |

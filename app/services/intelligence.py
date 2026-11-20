@@ -304,6 +304,7 @@ class _Query:
         inherit_parents=True,
         include_descendants=True,
         recent_days=None,
+        pattern_ids=None,
     ):
         _page(limit, offset)
         if type(inherit_parents) is not bool or type(include_descendants) is not bool:
@@ -312,6 +313,8 @@ class _Query:
         query = select(Hypothesis).where(
             current_hypothesis(), await self.scope(identity, inherit_parents, include_descendants)
         )
+        if pattern_ids is not None:
+            query = query.where(Hypothesis.id.in_(pattern_ids))
         if q is not None:
             if not isinstance(q, str) or not q.strip() or len(q) > 200:
                 raise IntelligenceInputError("invalid_search_text")

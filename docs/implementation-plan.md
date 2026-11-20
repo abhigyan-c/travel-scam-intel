@@ -158,6 +158,11 @@ Every row implies a distinct branch `codex/pr-NN-<slug>` and PR targeting `devel
 
 ## Intermediate research repair PRs after PR 31
 
+PR 32 implementation is prepared on `codex/pr-32-report-runs` from merged acceptance
+baseline `1ac9983`. See `docs/pr32-report-runs.md` for migration 0022, compatible legacy
+reads, source-qualified freshness and bounded request/read/wait contracts. Its real
+ChatGPT single-prompt gate remains pending merged deployment; PR 33 has not started.
+
 User-authorized on 2026-11-06. PR 31 is merged; create each intermediate branch from
 latest `develop`, target `develop`, and merge its prerequisite before starting the
 next. The original 01–38 roadmap remains numbered as before; PR 32 waits for 31F.
@@ -181,9 +186,9 @@ with verified source lineage and a disclaimer. The root stopped partial within i
 unchanged allowances. See `docs/pr31j-research-yield.md` and `benchmarks/data/31j/`.
 Backend acceptance passed. The user's real ChatGPT answer on 2026-11-20 also passed
 the core presentation check: both actual scopes, evidence/source, candidate uncertainty,
-missing dates and incomplete research were preserved. PR 32 is unblocked but has not
-started. Carry the evidence-independence wording, host-added-image and state-contract
-follow-ups from the acceptance report into PR 32; this does not certify exhaustive yield.
+missing dates and incomplete research were preserved. That unblocked PR 32, whose
+current implementation is described above. Evidence-independence wording, host-added
+images and state-contract follow-ups are included; this does not certify exhaustive yield.
 
 Branch names use `codex/pr-31a-research-benchmark` and the analogous 31b–31f prefix.
 PR 31A is merged. PR 31B's grounded qualified-place policy and measured limits are

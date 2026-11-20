@@ -25,9 +25,14 @@ async def apply_and_score_claim(session, claim_id, *, embedder, client):
                 pass  # The resolver persists missing-model/coverage errors without guessing.
     resolved = await resolve_hypothesis(session, claim_id, embedder=embedder, client=client)
     if resolved.error or resolved.needs_review:
+        error = resolved.error or "review_required"
+        if resolved.error == "semantic_provider_failed" and resolved.details.get(
+            "completion", {}
+        ).get("error") in {"request_limit", "run_llm_limit", "pipeline_headroom"}:
+            error = "resource_limit"
         return {
             "pending_resolution_ids": [str(resolved.id)],
-            "error": resolved.error or "review_required",
+            "error": error,
         }
     event = await apply_resolution(session, resolved.id, embedder=embedder)
     await calculate_recency_and_frequency(session, event.target_id)

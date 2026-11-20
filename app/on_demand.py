@@ -15,9 +15,18 @@ from app.core.config import Settings
 from app.db.claim_pipeline import apply_and_score_claim, embed_hypothesis
 from app.db.demand import record_demand
 from app.db.jobs import create_job, dispatch_pending
+from app.db.research_runs import finish_run, fresh_run, new_run, observe
 from app.db.resolution import _descendants, get_location_path
 from app.discovery import generate_queries
-from app.models import Claim, Evidence, Hypothesis, LocationResearchState, ResearchJob, UserReport
+from app.models import (
+    Claim,
+    Evidence,
+    Hypothesis,
+    LocationResearchState,
+    ResearchJob,
+    ResearchRun,
+    UserReport,
+)
 from app.models.hypothesis import HypothesisStatus
 from app.models.research_job import JobKind, JobStatus
 from app.research import ResearchLeaseLost, ResearchLimits, research_location
@@ -63,7 +72,10 @@ def search_label(path):
 
 async def _new_job(session, state, phase, *, scheduler_limits=None):
     if phase in {"initial", "refresh"} or scheduler_limits is not None:
+        await new_run(session, state)
         state.progress = {}
+    elif state.current_run_id is None:
+        await new_run(session, state)
     generation = uuid4()
     job = await create_job(
         session,
@@ -75,6 +87,7 @@ async def _new_job(session, state, phase, *, scheduler_limits=None):
         },
         idempotency_key=f"location:{state.location_id}:{generation}",
     )
+    job.report_run_id = state.current_run_id
     state.status, state.active_job_id = "researching", job.id
     state.run_token = generation  # Reservation until the worker obtains its own fenced token.
     state.lease_expires_at = datetime.now(UTC) + timedelta(seconds=LEASE_SECONDS)
@@ -97,7 +110,15 @@ async def _reserve(ctx, location_id):
         if state.status == "researching":
             return state.active_job_id, False
         if state.status == "ready" and state.fresh_until is not None and state.fresh_until > now:
-            return None, False
+            run = (
+                await session.get(ResearchRun, state.current_run_id)
+                if state.current_run_id
+                else None
+            )
+            if await fresh_run(
+                session, run, now, ctx.get("settings", Settings()).research_fresh_seconds
+            ):
+                return None, False
         if state.next_retry_at is not None and state.next_retry_at > now:
             return None, False
         phase = "initial" if state.initial_completed_at is None else "refresh"
@@ -256,6 +277,7 @@ async def _owned(session, identity, token):
     if (
         job is None
         or state is None
+        or (job.report_run_id is not None and state.current_run_id != job.report_run_id)
         or job.run_token != token
         or state.run_token != token
         or job.status != JobStatus.RUNNING
@@ -283,6 +305,10 @@ async def _take(ctx, identity, token):
             job.status, job.run_token, job.lease_expires_at = JobStatus.FAILED, None, None
             job.error_code = "location_run_superseded"
             return None
+        if job.report_run_id is None:
+            run = await new_run(session, state)
+            run.created_at = None
+            job.report_run_id = run.id
         now = datetime.now(UTC)
         if job.status == JobStatus.RUNNING and job.lease_expires_at > now:
             return None
@@ -293,13 +319,32 @@ async def _take(ctx, identity, token):
             state.next_retry_at = now + timedelta(
                 seconds=ctx.get("settings", Settings()).research_retry_seconds
             )
+            await finish_run(
+                session,
+                job,
+                {"status": "failed", "error_code": "attempts_exhausted"},
+                terminal=True,
+            )
+            if job.report_run_id:
+                (await session.get(ResearchRun, job.report_run_id)).stop_reasons = [
+                    "retry_exhausted"
+                ]
             return None
         job.attempts += 1
         job.status, job.run_token = JobStatus.RUNNING, token
         job.lease_expires_at = now + timedelta(seconds=LEASE_SECONDS)
         state.run_token, state.lease_expires_at = token, job.lease_expires_at
         state.progress = {**state.progress, "phase": job.payload["phase"], "complete": False}
-        return {**job.payload, "continuation": state.progress.get("continuation")}
+        if job.report_run_id:
+            run = await session.get(ResearchRun, job.report_run_id)
+            run.status = "researching"
+            if run.created_at is not None:
+                run.started_at = run.started_at or now
+        return {
+            **job.payload,
+            "report_run_id": job.report_run_id,
+            "continuation": state.progress.get("continuation"),
+        }
 
 
 async def _finish(ctx, identity, token, summary):
@@ -307,6 +352,15 @@ async def _finish(ctx, identity, token, summary):
     async with ctx["sessions"]() as session, session.begin():
         job, state = await _owned(session, identity, token)
         now = datetime.now(UTC)
+        saved = state.progress.get("continuation")
+        cursor = Cursor.model_validate(saved) if saved else None
+        root_errors = (
+            [e for c in cursor.candidates.values() for e in c.get("errors", [])] if cursor else []
+        )
+        if summary.get("complete") and root_errors:
+            summary = {**summary, "complete": False, "status": "partial"}
+        if root_errors:
+            summary = {**summary, "errors": [*summary.get("errors", []), *root_errors]}
         complete = bool(summary.get("complete"))
         job.result = summary
         job.status = JobStatus.FAILED if summary["status"] == "failed" else JobStatus.SUCCEEDED
@@ -317,8 +371,6 @@ async def _finish(ctx, identity, token, summary):
         if complete:
             state.last_success_at = now
             state.fresh_until = now + timedelta(seconds=settings.research_fresh_seconds)
-        saved = state.progress.get("continuation")
-        cursor = Cursor.model_validate(saved) if saved else None
         more = bool(
             cursor
             and cursor.jobs < 3
@@ -351,6 +403,17 @@ async def _finish(ctx, identity, token, summary):
             state.next_retry_at = (
                 None if complete else now + timedelta(seconds=settings.research_retry_seconds)
             )
+        if state.status != "researching" and not complete and cursor:
+            # Persist known root policy exhaustion, not a guess from legacy stale.
+            if cursor.jobs >= 3 or any(
+                cursor.used.get(k, 0) >= cap for k, cap in cursor.caps.items()
+            ):
+                summary = {**summary, "stop_reason": "resource_limit"}
+        await finish_run(session, job, summary, terminal=state.status != "researching")
+        if state.status != "researching" and complete and job.report_run_id:
+            run = await session.get(ResearchRun, job.report_run_id)
+            if not await fresh_run(session, run, now, settings.research_fresh_seconds):
+                state.next_retry_at = now + timedelta(seconds=settings.research_retry_seconds)
 
 
 async def _retry(ctx, identity, token, error):
@@ -366,6 +429,14 @@ async def _retry(ctx, identity, token, error):
         if job.status == JobStatus.FAILED:
             state.status, state.run_token, state.lease_expires_at = "failed", None, None
             state.next_retry_at = now + timedelta(seconds=settings.research_retry_seconds)
+        if job.report_run_id:
+            run = await session.get(ResearchRun, job.report_run_id)
+            run.status = "queued" if job.status == JobStatus.RETRY else "failed"
+            if job.status == JobStatus.FAILED:
+                await finish_run(
+                    session, job, {"status": "failed", "complete": False}, terminal=True
+                )
+                run.stop_reasons = ["retry_exhausted"]
 
 
 async def run_location_job(ctx, job_id: str):
@@ -409,9 +480,12 @@ async def run_location_job(ctx, job_id: str):
         await progress.save(session)
 
     async def on_claim(session, claim_id, budget):
-        return await apply_and_score_claim(
+        result = await apply_and_score_claim(
             session, claim_id, embedder=ctx["embedder"], client=budget
         )
+        job = await session.get(ResearchJob, identity)
+        await observe(session, job, progress.cursor, claim_id, result)
+        return result
 
     async def on_hypothesis(session, hypothesis_id):
         return await embed_hypothesis(session, hypothesis_id, embedder=ctx["embedder"])
@@ -425,6 +499,11 @@ async def run_location_job(ctx, job_id: str):
             extra = limits_for(settings, "enrichment")
             phases = [initial, extra] if payload["phase"] == "initial" else [limits]
             cursor = Cursor(
+                **(
+                    {"run_id": str(payload["report_run_id"])}
+                    if payload.get("report_run_id")
+                    else {}
+                ),
                 caps={
                     name: sum(getattr(p, name) for p in phases)
                     for name in ("queries", "fetches", "documents", "llm_calls")

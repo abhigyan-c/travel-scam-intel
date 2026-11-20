@@ -1045,6 +1045,17 @@ authorized filtered Funnel hostname. The first-ever query/follow-up gate passed
 with honest partial results; completed research/findings were not demonstrated.
 See [the MCP runbook](docs/pr31-mcp.md) for tools, retry behavior and gate prompts.
 
+## Research reports (PR 32)
+
+PR 32 adds durable `research-report-v1` reports through `request_scam_report`,
+`wait_for_scam_report` and `get_scam_report`. Run `alembic upgrade head` before starting
+the updated API/worker. Existing REST/MCP response shapes remain compatible.
+The new contract separates run progress, retained coverage and source freshness;
+partial research is not automatically stale. Watches are bounded and never buy
+additional research. See [report contracts and the rollout gate](docs/pr32-report-runs.md).
+The automatically updating report UI remains PR 33; real ChatGPT automatic narration
+requires the post-deployment single-prompt check.
+
 ## Research baseline (PR 31A)
 
 Run `.venv/Scripts/python.exe -m benchmarks.research` against the local PostgreSQL

@@ -19,6 +19,9 @@ async def check(url):
             "match_possible_scam",
             "get_recent_patterns",
             "submit_scam_report",
+            "request_scam_report",
+            "get_scam_report",
+            "wait_for_scam_report",
         }
         if names != expected:
             raise ValueError("unexpected_public_tool_list")
@@ -63,10 +66,26 @@ async def check(url):
         )
         if not rejected.is_error:
             raise ValueError("unconfirmed_report_not_rejected")
+        for name, arguments in [
+            ("get_scam_report", {"run_id": "00000000-0000-4000-8000-000000000001"}),
+            (
+                "wait_for_scam_report",
+                {
+                    "run_id": "00000000-0000-4000-8000-000000000001",
+                    "watch_id": "00000000-0000-4000-8000-000000000002",
+                    "after_revision": "0" * 64,
+                    "wait_seconds": 0,
+                },
+            ),
+        ]:
+            result = await client.call_tool(name, arguments)
+            if not result.is_error or result.structured_content["error"]["code"] != "not_found":
+                raise ValueError("missing_report_error_failed")
         return {
             "tool_count": len(names),
             "reads": results,
             "missing_patterns": "not_found",
+            "missing_reports": "not_found",
             "unconfirmed_report": "rejected",
             "research_requested": False,
         }

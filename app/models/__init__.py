@@ -14,7 +14,9 @@ from app.models.independence_run import IndependenceRun
 from app.models.location import Location, LocationAlias
 from app.models.location_research import LocationResearchState
 from app.models.report_media import ReportAttachment, ReportModerationEvent
+from app.models.report_watch import ReportWatch
 from app.models.research_job import ResearchJob
+from app.models.research_run import ResearchRun
 from app.models.scheduler import (
     HypothesisResearchState,
     LocationDemandHour,
@@ -27,6 +29,8 @@ from app.models.source import Source
 from app.models.user_report import UserReport
 
 __all__ = [
+    "ResearchRun",
+    "ReportWatch",
     "LocationDemandHour",
     "SchedulerDailyBudget",
     "SchedulerReservation",

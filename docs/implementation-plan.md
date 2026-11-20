@@ -175,6 +175,16 @@ next. The original 01–38 roadmap remains numbered as before; PR 32 waits for 3
 | 31I | grounded-extraction | Diagnose failed 31H live growth; bounded schema-constrained grounding correction, cached invalid passages and retained holds. Live publication acceptance remains required before PR 32. |
 | 31J | research-yield | Reserve phase/root call capacity and time for claim resolution after upstream processing; distinguish capacity denial from provider attempts. Keep the live-yield gate before PR 32. |
 
+Update — 2026-11-20: merged 31J (`dc97d12`) is deployed with healthy matching API/worker
+images. Its bounded Bangkok refresh published one new root-linked ordinary candidate
+with verified source lineage and a disclaimer. The root stopped partial within its
+unchanged allowances. See `docs/pr31j-research-yield.md` and `benchmarks/data/31j/`.
+Backend acceptance passed. The user's real ChatGPT answer on 2026-11-20 also passed
+the core presentation check: both actual scopes, evidence/source, candidate uncertainty,
+missing dates and incomplete research were preserved. PR 32 is unblocked but has not
+started. Carry the evidence-independence wording, host-added-image and state-contract
+follow-ups from the acceptance report into PR 32; this does not certify exhaustive yield.
+
 Branch names use `codex/pr-31a-research-benchmark` and the analogous 31b–31f prefix.
 PR 31A is merged. PR 31B's grounded qualified-place policy and measured limits are
 documented in `docs/pr31b-grounded-location-resolution.md`; its source-derived

@@ -62,14 +62,21 @@ class ResearchLeaseLost(Exception):
 
 
 class _LimitedClient:
-    def __init__(self, client, limit, concurrency=2, reserve=None):
+    def __init__(self, client, limit, concurrency=2, reserve=None, remaining=None):
         self.client, self.limit, self.calls = client, limit, 0
         self.usage = []
         self.semaphore = asyncio.Semaphore(concurrency)
         self.reserve = reserve
+        self.root_remaining = remaining
 
-    async def complete(self, **kwargs):
+    def available(self):
+        local = self.limit - self.calls
+        return min(local, self.root_remaining()) if self.root_remaining else local
+
+    async def complete(self, *, headroom=0, **kwargs):
         async with self.semaphore:
+            if headroom and self.available() <= headroom:
+                return Completion(error="pipeline_headroom")
             return await self._complete(**kwargs)
 
     async def _complete(self, **kwargs):
@@ -85,6 +92,14 @@ class _LimitedClient:
             raise
         self.usage.append(result.model_dump(exclude={"data"}))
         return result
+
+
+class _StageClient:
+    def __init__(self, budget, headroom):
+        self.budget, self.headroom = budget, headroom
+
+    async def complete(self, **kwargs):
+        return await self.budget.complete(headroom=self.headroom, **kwargs)
 
 
 async def research_location(
@@ -117,8 +132,18 @@ async def research_location(
     deadline = asyncio.get_running_loop().time() + limits.timeout - min(0.5, limits.timeout / 10)
     errors, documents, claim_ids = [], [], []
     budget = _LimitedClient(
-        llm, limits.llm_calls, limits.llm_concurrency, progress.charge if progress else None
+        llm,
+        limits.llm_calls,
+        limits.llm_concurrency,
+        progress.charge if progress else None,
+        (lambda: progress.remaining("llm_calls")) if progress else None,
     )
+    # Upstream work cannot spend the last calls needed to extract/resolve a finding.
+    # Tiny diagnostic phases cannot fit a three-call path; keep their prior best-effort
+    # behavior rather than reserving every available call and making no progress.
+    protect_resolution = on_claim is not None and limits.llm_calls >= 3
+    relevance_client = _StageClient(budget, 2) if protect_resolution else budget
+    extraction_client = _StageClient(budget, 1) if protect_resolution else budget
     diagnostics = diagnostics if diagnostics is not None else {}
     diagnostics.update(stage_timings=[], active_stage="discovery", llm=budget.usage)
     acquisition = progress.policy() if progress else AcquisitionPolicy()
@@ -382,7 +407,7 @@ async def research_location(
                 candidate.url,
                 lambda document=document, prior=prior: classify_text(
                     document.clean_text,
-                    budget,
+                    relevance_client,
                     max_passages=min(
                         limits.passages, max(1, (limits.llm_calls - budget.calls) // 2)
                     ),
@@ -418,9 +443,14 @@ async def research_location(
                 session,
                 document_id,
                 decision,
-                budget,
+                extraction_client,
                 max_passages=limits.passages,
-                timeout=max(0.01, deadline - asyncio.get_running_loop().time() - 0.05),
+                # A saved claim also needs time to resolve/apply before the phase ends.
+                timeout=max(
+                    0.01,
+                    (deadline - asyncio.get_running_loop().time() - 0.05)
+                    * (0.5 if on_claim else 1),
+                ),
                 checkpoint=checkpoint,
             ),
             durable=checkpoint is not None,

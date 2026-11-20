@@ -166,6 +166,50 @@ async def test_grounding_field_diagnostics_persist_without_rejected_source_value
     assert not result.complete and not result.claim_ids
     assert result.attempts[0]["validation_errors"] == ["methods"]
     assert "invented method" not in str(result.attempts)
+    assert client.complete.await_count == 2
+    repeated = await extract_document(session, document.id, relevance(document), client)
+    assert not repeated.complete and not repeated.claim_ids
+    assert repeated.attempts[0]["cached"] and repeated.attempts[0]["requests"] == 0
+    assert client.complete.await_count == 2
+
+
+@pytest.mark.parametrize("held", [False, True])
+async def test_grounding_correction_keeps_prior_hold_and_exact_lineage(session, document, held):
+    client = client_with_claim()
+    original = ExtractedClaim.model_validate(
+        {**CASE["claim"], "methods": ["paraphrase"], "entities": [], "sensitive": held}
+    )
+    corrected = ExtractedClaim.model_validate(
+        {**CASE["claim"], "entities": [], "sensitive": False, "methods": []}
+    )
+    client.complete.side_effect = [
+        Completion(data=ClaimBatch(claims=[original]), requests=1),
+        Completion(data=ClaimBatch(claims=[corrected]), requests=1),
+    ]
+    result = await extract_document(session, document.id, relevance(document), client)
+    assert result.complete and len(result.claim_ids) == 1
+    stored = await session.get(Claim, result.claim_ids[0])
+    assert stored.structured_data["publication_status"] == ("held" if held else "unreviewed")
+    assert stored.structured_data["evidence_quote"] == original.evidence_quote
+    assert "methods" in client.complete.await_args_list[-1].kwargs["system"]
+    assert "paraphrase" not in client.complete.await_args_list[-1].kwargs["system"]
+
+
+async def test_grounding_correction_resumes_after_provider_failure(session, document):
+    client = client_with_claim()
+    corrected = client.complete.return_value
+    invalid = ExtractedClaim.model_validate({**CASE["claim"], "location": "invented"})
+    client.complete.side_effect = [
+        Completion(data=ClaimBatch(claims=[invalid]), requests=1),
+        Completion(error="request_limit", requests=0),
+        corrected,
+    ]
+    first = await extract_document(session, document.id, relevance(document), client)
+    assert not first.complete and not first.claim_ids
+    second = await extract_document(session, document.id, relevance(document), client)
+    assert second.complete and len(second.claim_ids) == 1
+    assert client.complete.await_count == 3
+    assert "these fields: location" in client.complete.await_args_list[-1].kwargs["system"]
 
 
 async def test_empty_success_cached_but_provider_errors_retry(session, document):

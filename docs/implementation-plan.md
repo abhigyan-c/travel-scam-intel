@@ -172,6 +172,7 @@ next. The original 01–38 roadmap remains numbered as before; PR 32 waits for 3
 | 31F | research-acceptance | Controlled and live traceable results plus real ChatGPT retest; honest incomplete/empty controls. |
 | 31G | research-quality-repair | User-requested repair before PR 32: bounded empty/invalid-entity audit, grounded location prefixes, retained holds; frozen quality gate and replay. |
 | 31H | public-candidate-growth | User-requested ordinary low-confidence candidate visibility, disclaimers, populated-data growth, claim-level continuation and no zero-budget successor jobs. |
+| 31I | grounded-extraction | Diagnose failed 31H live growth; bounded schema-constrained grounding correction, cached invalid passages and retained holds. Live publication acceptance remains required before PR 32. |
 
 Branch names use `codex/pr-31a-research-benchmark` and the analogous 31b–31f prefix.
 PR 31A is merged. PR 31B's grounded qualified-place policy and measured limits are

@@ -1057,12 +1057,18 @@ Qualified source locations such as “Grand Palace in Bangkok” use the shared
 [grounded location policy](docs/pr31b-grounded-location-resolution.md). Named
 landmarks may be provisional; ambiguous geography and sensitive claims remain held.
 
-Current extraction code uses `claims-v6`, strict source-quote coverage and a bounded
-audit for empty/invalid-anonymous-entity responses. The default benchmark recording
+Current extraction code uses `claims-v7`, strict source-quote coverage and a bounded
+audit for empty/invalid-anonymous-entity responses plus constrained grounding correction.
+The default benchmark recording
 is the selected PR 31G capture. [The quality-repair report](docs/pr31g-research-quality-repair.md)
 documents passing controlled thresholds, unsuccessful trials, retained holds and
 pending deployed reacceptance. [PR 31C's earlier report](docs/pr31c-grounded-extraction-quality.md)
 remains historical evidence; old recordings are not new-prompt responses.
+
+Integrated research protects downstream comparison capacity within its existing
+phase/root limits; capacity denial does not spend provider retries. See
+[PR 31J's allocation repair](docs/pr31j-research-yield.md) for the measured starvation,
+tiny-budget behavior, tests and outstanding live-yield gate.
 
 Ordinary sourced `NEW` candidates can be public without manual approval even with
 low matching confidence. Cards include an uncertainty disclaimer and preserve actual

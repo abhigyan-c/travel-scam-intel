@@ -26,6 +26,7 @@ def versions():
     from app.relevance import PROMPT_VERSION as relevance
 
     return dict(
+        allocation="pipeline-v2",
         discovery=DISCOVERY_VERSION,
         acquisition=POLICY_VERSION,
         processing=PROCESSING_VERSION,

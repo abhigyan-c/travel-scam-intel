@@ -142,6 +142,16 @@ async def classify_text(
                 )
         except TimeoutError:
             result = Completion[Relevance](error="deadline", requests=1)
+        if result.requests == 0 and result.error in {
+            "pipeline_headroom",
+            "run_llm_limit",
+            "request_limit",
+        }:
+            # No provider attempt occurred. Do not exhaust a passage's retry allowance
+            # merely because a previous stage owns the remaining pipeline capacity.
+            if previous is not None:
+                assessments.append(previous)
+            continue
         assessments.append(
             PassageAssessment(
                 passage=passage,

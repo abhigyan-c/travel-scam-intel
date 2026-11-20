@@ -534,6 +534,38 @@ async def test_populated_location_accepts_ordinary_low_confidence_new_candidate(
     assert all(c.status == "candidate" for c in public.items)
 
 
+async def test_long_article_leaves_a_call_to_publish_in_populated_scope(environment):
+    from app.services.intelligence import IntelligenceService
+
+    ctx, identity, claim = environment
+    await get_location_intelligence(ctx, identity)
+    claim.claim = "Another reported fare demand in Fiji."
+    body = (BODY + " ") * 80
+    ctx["fetcher"].fetch.side_effect = lambda url: FetchedPage(url, body.encode(), "text/plain")
+    ctx["storage"].get_object.side_effect = lambda **kwargs: {
+        "Body": io.BytesIO(body.encode()),
+        "ContentType": "text/plain",
+    }
+    ctx["provider"].search.return_value.results = [
+        SearchResult(url=f"https://example.org/{uuid4()}", position=1, query="q")
+    ]
+    # Enrichment gets four calls. Two relevance + one extraction leave one comparator call;
+    # without downstream headroom a second extraction consumes it and publication starves.
+    ctx["settings"] = ctx["settings"].model_copy(update={"research_max_llm_calls": 2})
+    before = ctx["llm"].complete.await_count
+    await finish_enrichment(ctx, identity)
+    calls = ctx["llm"].complete.await_args_list[before:]
+    assert len(calls) == 4
+    assert calls[-1].kwargs["schema"] is Decision
+    public = await IntelligenceService(ctx["sessions"]).search_location_scams(identity)
+    assert public.total == 2
+    assert all(c.status == "candidate" for c in public.items)
+    assert not public.research.complete
+    async with ctx["sessions"]() as session:
+        rows = list(await session.scalars(select(HypothesisResolution)))
+        assert all(row.error is None for row in rows)
+
+
 async def test_unresolved_first_claim_does_not_abandon_later_article_passages(environment):
     import json
 

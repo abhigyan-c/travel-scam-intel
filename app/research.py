@@ -1,6 +1,7 @@
 import argparse
 import asyncio
 import hashlib
+from datetime import UTC, datetime
 from uuid import UUID
 
 from pydantic import BaseModel, ConfigDict, Field
@@ -308,7 +309,11 @@ async def research_location(
                     session, candidate, fetcher=candidate_fetcher, storage=storage, bucket=bucket
                 )
                 if progress:
-                    item.update(document_id=str(value.id), content_hash=value.content_hash)
+                    item.update(
+                        document_id=str(value.id),
+                        content_hash=value.content_hash,
+                        fetched_at=datetime.now(UTC).isoformat(),
+                    )
                 return value
 
             document = await stage(

@@ -30,6 +30,10 @@ class LocationResearchState(Base):
     status: Mapped[str] = mapped_column(
         String(30), default="never_researched", server_default="never_researched"
     )
+    current_run_id: Mapped[UUID | None] = mapped_column(
+        ForeignKey("research_runs.id", ondelete="RESTRICT", name="fk_location_current_run"),
+        index=True,
+    )
     active_job_id: Mapped[UUID | None] = mapped_column(
         ForeignKey("research_jobs.id", ondelete="RESTRICT"), index=True
     )

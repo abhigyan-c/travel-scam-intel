@@ -55,6 +55,14 @@ stale means a real recheck window expired. Follow
 coordinated state/contract migration and PR 33's presentation. Preserve legacy
 contract compatibility, uncertain historical timestamps, cooldowns and budgets.
 
+Update — 2026-11-20: PR 31J's deployed publication/provenance and real ChatGPT read
+acceptance passed. PR 32 now implements durable report runs and bounded watches in
+`research-report-v1` while retaining legacy `intelligence-v1` shapes. Its change wait
+is three seconds by default, five maximum beneath the MCP server's 12-second tool
+timeout. See [`docs/pr32-report-runs.md`](../pr32-report-runs.md) for migration 0022,
+source-qualified check times, operational watch counters and the pending post-merge
+single-prompt ChatGPT gate. This does not claim that gate or PR 33's UI has passed.
+
 - Plan all 38 PRs, with detailed implementation planning beginning at PR 01. Implement one numbered PR at a time and preserve the review gates.
 - Create each PR branch from the latest `develop` and target `develop`. Use `codex/pr-NN-short-description`, for example `codex/pr-01-repository-foundation`.
 - Use Serper.dev for search discovery. Request its API key when real integration validation requires it.

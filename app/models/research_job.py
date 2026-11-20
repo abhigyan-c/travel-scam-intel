@@ -2,7 +2,7 @@ from datetime import datetime
 from enum import StrEnum
 from uuid import UUID, uuid4
 
-from sqlalchemy import CheckConstraint, DateTime, Enum, String, func, text
+from sqlalchemy import CheckConstraint, DateTime, Enum, ForeignKey, String, func, text
 from sqlalchemy.dialects.postgresql import JSONB
 from sqlalchemy.orm import Mapped, mapped_column
 
@@ -43,6 +43,9 @@ class ResearchJob(Base):
     )
 
     id: Mapped[UUID] = mapped_column(primary_key=True, default=uuid4)
+    report_run_id: Mapped[UUID | None] = mapped_column(
+        ForeignKey("research_runs.id", ondelete="RESTRICT", name="fk_job_report_run"), index=True
+    )
     idempotency_key: Mapped[str] = mapped_column(String(200), unique=True)
     kind: Mapped[JobKind] = mapped_column(
         Enum(

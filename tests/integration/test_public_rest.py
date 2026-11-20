@@ -10,7 +10,7 @@ from sqlalchemy import func, select
 from sqlalchemy.exc import OperationalError
 
 from app.main import create_app
-from app.models import HypothesisRelation, Location, LocationResearchState, ResearchJob
+from app.models import HypothesisRelation, Location, LocationResearchState, ResearchJob, ResearchRun
 from app.services.intelligence import IntelligenceService
 from tests.integration.test_intelligence_services import SUMMARY, seed
 from tests.integration.test_on_demand_research import environment as environment
@@ -163,9 +163,20 @@ async def test_fresh_empty_and_stale_results_and_queue_outage(api):
     client, ctx, location = api
     now = datetime.now(UTC)
     async with ctx["sessions"]() as session, session.begin():
+        run = ResearchRun(
+            location_id=location,
+            status="completed",
+            coverage="complete",
+            created_at=now,
+            finished_at=now,
+            last_completed_at=now,
+        )
+        session.add(run)
+        await session.flush()
         session.add(
             LocationResearchState(
                 location_id=location,
+                current_run_id=run.id,
                 status="ready",
                 initial_completed_at=now,
                 last_success_at=now,

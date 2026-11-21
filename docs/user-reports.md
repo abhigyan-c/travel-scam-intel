@@ -5,6 +5,14 @@ private raw storage, normalized records and a durable processing job have commit
 It does not wait for Sarvam, require an account, verify the allegation, or publish a
 hypothesis merely because a report was accepted.
 
+PR 34 adds a ChatGPT draft/review/confirmation view over this same intake and key
+contract. Its optional evidence is user-selected text/source links, incorporated
+in the exact confirmed narrative as unverified references; no separate corroborating
+source or image upload is created. MCP now accepts the existing unresolved
+`location_text` alternative as well as `location_id`. See [the reporting UI](pr34-reporting-ui.md)
+for date-only semantics, uncertain-outcome retries, memory-only drafts and the
+still-open actual-host gate.
+
 ## Request and receipt
 
 Send JSON and an `Idempotency-Key` header. Use a newly generated UUID per submission

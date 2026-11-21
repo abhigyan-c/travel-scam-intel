@@ -8,7 +8,7 @@ from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
 from urllib.parse import urlsplit
 
-from app.explorer import explorer_html
+from app.explorer import explorer_html, reporter_html
 
 
 class Preview(BaseHTTPRequestHandler):
@@ -18,6 +18,12 @@ class Preview(BaseHTTPRequestHandler):
             content = (Path(__file__).parent.parent / "tests/ui/preview.html").read_text("utf-8")
         elif route == "/explorer":
             content = explorer_html()
+        elif route == "/reporter":
+            content = reporter_html()
+        elif route == "/reporter-preview":
+            content = (Path(__file__).parent.parent / "tests/ui/reporter-preview.html").read_text(
+                "utf-8"
+            )
         else:
             self.send_error(404)
             return

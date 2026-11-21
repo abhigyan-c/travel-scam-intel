@@ -1,0 +1,35 @@
+{
+  "date": "2026-11-21",
+  "base_develop": "398d368",
+  "production_deployed": false,
+  "actual_chatgpt_ui_accepted": false,
+  "optional_evidence": "user-selected text and source links; no image upload",
+  "provider_calls_for_form_validation": 0,
+  "node_tests_passed": 20,
+  "python_tests_passed": 988,
+  "python_tests_skipped": 10,
+  "docker_build": "passed",
+  "browser": {
+    "host": "loopback synthetic MCP host in the in-app browser, not ChatGPT",
+    "resource": "ui://travel-scam/report-form-v1.html",
+    "opening_and_reviewing_submission_count": 0,
+    "edited_text_preserved_in_review": true,
+    "submit_disabled_before_checkbox": true,
+    "unknown_network_outcome_preserved_text_and_locked_edits": true,
+    "confirmed_retry_attempts": 2,
+    "synthetic_reports_after_retry": 1,
+    "receipt_replayed": true,
+    "widths_inspected_px": [375, 960],
+    "narrow_body_client_width_px": 375,
+    "narrow_body_scroll_width_px": 375,
+    "literal_source_markup_rendered_img_elements": 0,
+    "screenshots": ["report-review-desktop.jpg", "report-review-mobile.jpg", "report-receipt.jpg"]
+  },
+  "remaining": [
+    "Review, merge and deploy before claiming production behavior.",
+    "Verify actual ChatGPT form rendering and editing/cancellation without submission.",
+    "Confirm isolated test submission, safe receipt, idempotent retry, private document and moderation behavior.",
+    "Close PR 33's still-open actual-host explorer and narration gate.",
+    "Do not mark the customer-facing product gate passed from this local preview."
+  ]
+}

@@ -23,14 +23,24 @@ async def check(url):
             "get_scam_report",
             "wait_for_scam_report",
             "watch_scam_report",
+            "open_scam_report_form",
         }
         if names != expected:
             raise ValueError("unexpected_public_tool_list")
-        from app.explorer import EXPLORER_URI
+        from app.explorer import EXPLORER_URI, REPORTER_URI
 
         resource = await client.read_resource(EXPLORER_URI)
         if not resource.contents or resource.contents[0].mime_type != "text/html;profile=mcp-app":
             raise ValueError("explorer_resource_failed")
+        form_resource = await client.read_resource(REPORTER_URI)
+        form = await client.call_tool("open_scam_report_form", {})
+        if (
+            not form_resource.contents
+            or form_resource.contents[0].mime_type != "text/html;profile=mcp-app"
+            or form.is_error
+            or form.structured_content.get("contract_version") != "report-form-v1"
+        ):
+            raise ValueError("report_form_resource_failed")
         location = await client.call_tool("resolve_scam_location", {"location": "Bangkok"})
         if location.is_error or not location.structured_content.get("location_id"):
             raise ValueError("seed_location_resolution_failed")

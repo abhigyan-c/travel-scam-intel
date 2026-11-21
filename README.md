@@ -1072,6 +1072,28 @@ place. Actual ChatGPT UI acceptance remains pending review/merge/deploy; see
 [implementation, local preview and release checks](docs/pr33-scam-explorer.md).
 Run `node --test tests/ui/*.test.mjs` alongside the Python tests (Node 22, no npm install).
 
+## ChatGPT incident reporting (PR 34)
+
+`open_scam_report_form` opens an anonymous form without submitting or starting
+research. Travelers can check a location, provide an occurrence day if known, choose
+experienced/witnessed/second-hand provenance, and add English text with optional
+supporting text/source links. They review the exact combined report and explicitly
+confirm before submission. Links are unverified references, not fetched sources;
+image uploads are outside this user-selected scope.
+
+The view retains drafts on errors. Uncertain submission outcomes lock the reviewed
+snapshot and retry with the same idempotency key; receipt recovery does not duplicate
+the report. Drafts and keys stay in memory, so keep the view open until acceptance is
+confirmed. Closing it discards local state; it does not undo an accepted report.
+An acceptance receipt does not establish verification or publication.
+
+Refresh the ChatGPT connection after deployment: twelve server tools, eleven model
+tools in a conforming host, with two self-contained UI resources. No migration,
+credential or additional service is needed. See [PR 34's implementation, privacy
+choices and pending actual-host gate](docs/pr34-reporting-ui.md). For a synthetic
+local test, run `python -m benchmarks.explorer_preview` and open
+`http://127.0.0.1:8033/reporter-preview`; it submits no real incident.
+
 ## Research baseline (PR 31A)
 
 Run `.venv/Scripts/python.exe -m benchmarks.research` against the local PostgreSQL

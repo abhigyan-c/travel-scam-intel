@@ -1,0 +1,39 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1"><title>Report a travel incident</title>
+<style>/* EXPLORER_CSS */
+form label { margin: 14px 0; } input,textarea { width:100%; font:inherit; padding:10px; border:1px solid #8192a4; border-radius:8px; color:inherit; background:var(--color-background-primary, light-dark(#fff,#222833)); }
+textarea { resize:vertical; min-height:110px; } .check { display:flex;align-items:flex-start;gap:10px; } .check input { width:auto; margin-top:3px; } pre { white-space:pre-wrap; overflow-wrap:anywhere; padding:16px; border:1px solid #8192a4; border-radius:8px; font:inherit; line-height:1.5; }
+</style></head><body><main id="reporter">
+<header><p class="eyebrow">Travel Scam Intelligence</p><h1>Report a travel incident</h1>
+<p id="status" role="status" aria-live="polite">Connecting to the form…</p></header>
+<aside class="notice">Anonymous reports are allegations, not verified incidents. Submit only what you know.
+Do not include contact details, passwords, payment information or unnecessary identifying details.</aside>
+<p class="muted">Your draft stays in this open view. Nothing is submitted until you review and confirm.
+Closing the view discards its draft. Text and source links are supported; image uploads are not included.</p>
+<p id="error" role="alert" hidden></p>
+<form id="draft" hidden novalidate>
+<label>Place name<input id="place" maxlength="200" autocomplete="off" placeholder="For example, Bangkok"></label>
+<div class="filters"><label>Country code, if known<input id="country" maxlength="2" placeholder="For example, TH" autocomplete="off"></label>
+<label>Location type<select id="place-type"><option value="">Not specified</option><option value="city">City</option><option value="neighborhood">Neighborhood</option><option value="area">Area</option><option value="point_of_interest">Landmark / point of interest</option><option value="country">Country</option></select></label></div>
+<button id="resolve" type="button">Check location</button><p id="location-status" role="status"></p>
+<label class="check"><input id="unresolved" type="checkbox">I cannot resolve this location; submit the place name as unconfirmed context.</label>
+<label class="check"><input id="unknown-location" type="checkbox">I do not know the location.</label>
+<label>Occurrence date, if known<input id="date" type="date" aria-describedby="date-help"></label>
+<p id="date-help" class="muted">Leave blank if unknown. A day-only date is included as text; no exact time or timezone is invented.</p>
+<label>How do you know about it?<select id="provenance"><option value="">Choose one</option><option value="FIRST_HAND">I experienced it</option><option value="WITNESSED">I witnessed it</option><option value="SECOND_HAND">I heard or read about it</option></select></label>
+<label>What happened? (English)<textarea id="description" maxlength="6000" placeholder="Describe what happened, what was offered and what changed. Separate facts from assumptions."></textarea></label>
+<label>Supporting text, optional<textarea id="support" maxlength="1500" placeholder="For example, relevant wording from a receipt. Avoid personal information."></textarea></label>
+<label>Source links, optional (one per line; maximum three)<textarea id="links" maxlength="1500" placeholder="https://example.com/source"></textarea></label>
+<p class="muted">Supporting text and links are supplied by you and are not independently verified. Links are not fetched during submission.</p>
+<button id="review" type="submit">Review report</button></form>
+<section id="review-section" aria-labelledby="review-title" hidden><h2 id="review-title" tabindex="-1">Review your exact submission</h2>
+<dl id="review-details"></dl><pre id="review-text"></pre>
+<p class="muted">Acceptance stores a report for processing and moderation. It does not verify the allegation or immediately publish it.</p>
+<label class="check"><input id="confirm" type="checkbox">I have reviewed this exact text, location and provenance and want to submit this anonymous report.</label>
+<div class="toolbar"><button id="edit">Edit report</button><button id="submit" disabled>Submit confirmed report</button></div>
+</section>
+<section id="receipt" hidden aria-labelledby="receipt-title"><h2 id="receipt-title" tabindex="-1">Report received</h2>
+<p id="receipt-details"></p><p>This receipt confirms acceptance, not verification or publication of an incident.</p>
+<p class="muted">Clearing this view does not delete an accepted report.</p>
+<button id="new-report">Start a separate report</button><button id="clear">Clear this draft from the view</button></section>
+</main><script type="module">/* EXPLORER_JS */</script></body></html>

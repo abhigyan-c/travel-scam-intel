@@ -1,0 +1,31 @@
+<!doctype html><html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Incident reporting — synthetic preview</title>
+<style>body{font:14px system-ui;margin:16px;background:#eef2f5}iframe{border:1px solid #bac7d3;border-radius:12px;background:white;width:100%;height:900px}header{display:flex;gap:12px;flex-wrap:wrap;align-items:center;margin:12px 0}select,button{padding:8px}#frame{max-width:960px;margin:auto}</style>
+<h1>PR 34 synthetic reporting preview</h1><p>No real report, database writes, provider calls or credentials. Every receipt here is synthetic.</p>
+<header><label>Width <select id="width"><option value="960">Desktop</option><option value="375">Mobile · 375 px</option></select></label>
+<label><input id="fail" type="checkbox" checked>Lose first receipt after synthetic acceptance</label>
+<span id="counts" role="status">0 submissions · 0 synthetic reports</span></header>
+<div id="frame"><iframe src="/reporter" title="Incident report preview"></iframe></div>
+<script type="module">
+const iframe=document.querySelector('iframe'), id='00000000-0000-4000-8000-000000000001', reports=new Map();let attempts=0, failed=false;
+const send=message=>iframe.contentWindow.postMessage({jsonrpc:'2.0',...message},window.location.origin);
+window.addEventListener('message', event=>{
+ if(event.source!==iframe.contentWindow||event.data?.jsonrpc!=='2.0')return;
+ const {id:request,method,params}=event.data;
+ if(method==='ui/initialize'){send({id:request,result:{protocolVersion:'2026-01-26',hostCapabilities:{serverTools:{}},hostContext:{theme:'light'}}});return;}
+ if(method==='ui/notifications/initialized'){send({method:'ui/notifications/tool-result',params:{structuredContent:{contract_version:'report-form-v1',form_id:id,location:null}}});return;}
+ if(method==='ui/notifications/size-changed'){iframe.style.height=Math.max(300,params.height)+'px';return;}
+ if(method!=='tools/call')return;
+ const args=params.arguments;
+ if(params.name==='resolve_scam_location'){send({id:request,result:{structuredContent:{status:'resolved',location_id:id,hierarchy:[{id,name:'Fiji (synthetic location fixture)'}]}}});return;}
+ if(params.name!=='submit_scam_report'||args.confirmed_by_user!==true){send({id:request,error:{code:-32601,message:'Not a confirmed synthetic submission'}});return;}
+ attempts++;
+ const existing=reports.get(args.idempotency_key), payload=JSON.stringify(args);
+ if(existing&&existing!==payload){send({id:request,result:{isError:true,structuredContent:{error:{code:'conflict'}}}});return;}
+ reports.set(args.idempotency_key,payload);
+ document.querySelector('#counts').textContent=`${attempts} submissions · ${reports.size} synthetic reports`;
+ if(document.querySelector('#fail').checked&&!failed){failed=true;send({id:request,result:{isError:true,structuredContent:{error:{code:'unavailable'}}}});return;}
+ send({id:request,result:{structuredContent:{report_id:id,status:'queued',moderation_status:'pending',moderation_revision:0,replayed:!!existing,queue_pending:false,message:'Synthetic receipt only'}}});
+});
+document.querySelector('#width').onchange=event=>document.querySelector('#frame').style.maxWidth=event.target.value+'px';
+</script></html>

@@ -1053,8 +1053,9 @@ the updated API/worker. Existing REST/MCP response shapes remain compatible.
 The new contract separates run progress, retained coverage and source freshness;
 partial research is not automatically stale. Watches are bounded and never buy
 additional research. See [report contracts and the rollout gate](docs/pr32-report-runs.md).
-The automatically updating report UI remains PR 33; real ChatGPT automatic narration
-requires the post-deployment single-prompt check.
+The automatically updating report UI remains PR 33. The deployed single-prompt
+ChatGPT check passed on 2026-11-21 with six automatic waits and terminal partial
+results; the rollout document records measurement limits and presentation caveats.
 
 ## Research baseline (PR 31A)
 

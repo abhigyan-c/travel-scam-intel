@@ -3,7 +3,8 @@
 Decision date: 2026-11-08. Planned as part of PR 32's research/report contracts;
 PR 33 renders the states. PR 32 implements the new run table and versioned report
 contract; legacy status constraints/envelopes remain compatible. See
-[implementation and rollout](pr32-report-runs.md); production/real-host acceptance is pending.
+[implementation and rollout](pr32-report-runs.md); the observed production/ChatGPT
+single-prompt gate passed on 2026-11-21 with terminal partial results.
 
 ## Problem
 

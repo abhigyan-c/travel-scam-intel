@@ -1,0 +1,221 @@
+{
+  "contract_version": "research-report-v1",
+  "run_id": "7507399a-4a00-44df-a303-1a5119c68578",
+  "location": {
+    "id": "991d6b7e-f69b-5158-bf6d-e8c9f3ec871a",
+    "name": "Bangkok",
+    "type": "city",
+    "country_code": "TH",
+    "provisional": false
+  },
+  "revision": "727583a8d7fc256a693f4b47bd40e36853d44ac57fe40e5004f22c8e33ca1368",
+  "latest_run": {
+    "status": "partial",
+    "terminal": true,
+    "created_at": "2026-11-21T15:14:02.009436Z",
+    "started_at": "2026-11-21T15:14:02.184965Z",
+    "last_checked_at": "2026-11-21T15:15:17.514665Z",
+    "stop_reasons": [
+      "resource_limit",
+      "source_failures"
+    ]
+  },
+  "retained_report": {
+    "coverage": "partial",
+    "freshness": "unknown",
+    "fresh_until": null,
+    "last_result_update_at": null,
+    "last_completed_at": null
+  },
+  "superseded": false,
+  "items": [
+    {
+      "id": "6693cba7-31f7-4b73-a5ed-2d087eeee881",
+      "title": "Taxi drivers parked in front of hotels and tourist spots in Bangkok try to negotiate a fare instead of using the meter, ",
+      "description": "Taxi drivers parked in front of hotels and tourist spots in Bangkok try to negotiate a fare instead of using the meter, causing tourists to overpay.",
+      "category": "Travel scam warning",
+      "status": "candidate",
+      "location": {
+        "id": "991d6b7e-f69b-5158-bf6d-e8c9f3ec871a",
+        "name": "Bangkok",
+        "type": "city",
+        "country_code": "TH",
+        "provisional": false
+      },
+      "location_path": [
+        {
+          "id": "2d2d43c4-648f-54f3-895e-28e4c0b623e8",
+          "name": "Thailand",
+          "type": "country",
+          "country_code": "TH",
+          "provisional": false
+        },
+        {
+          "id": "991d6b7e-f69b-5158-bf6d-e8c9f3ec871a",
+          "name": "Bangkok",
+          "type": "city",
+          "country_code": "TH",
+          "provisional": false
+        }
+      ],
+      "scope": "exact",
+      "metrics": {
+        "status": "current",
+        "as_of": "2026-11-21T15:18:47.762220Z",
+        "confidence_score": 0.050585,
+        "confidence_label": "limited",
+        "support_weight": 0.135,
+        "contradiction_weight": 0.0,
+        "recency_score": null,
+        "prevalence_score": null,
+        "all_time": {
+          "raw_report_count": 1,
+          "independence_weighted_report_count": 0.5
+        },
+        "occurrence_windows": {
+          "30": {
+            "raw_report_count": 0,
+            "independence_weighted_report_count": 0.0
+          },
+          "90": {
+            "raw_report_count": 0,
+            "independence_weighted_report_count": 0.0
+          },
+          "365": {
+            "raw_report_count": 0,
+            "independence_weighted_report_count": 0.0
+          }
+        },
+        "reporting_windows": {
+          "30": {
+            "raw_report_count": 0,
+            "independence_weighted_report_count": 0.0
+          },
+          "90": {
+            "raw_report_count": 0,
+            "independence_weighted_report_count": 0.0
+          },
+          "365": {
+            "raw_report_count": 0,
+            "independence_weighted_report_count": 0.0
+          }
+        },
+        "dated_reports": 0,
+        "undated_or_invalid_reports": 1,
+        "trend": "unknown",
+        "complete": false,
+        "limitations": [
+          "occurrence_date_missing",
+          "Unverified candidate or limited evidence: use as a precaution, not as a verified incident, proof of prevalence or confirmed new scam. Pattern matching may be incomplete; similar reports may appear separately."
+        ],
+        "policy_version": "public-intelligence-v1",
+        "interpretation": "corroboration and observed reporting; not truth probability or population incidence"
+      },
+      "source_checked_at": null,
+      "freshness": "unknown"
+    },
+    {
+      "id": "7a892637-5db5-4680-b73b-67d5af711eaf",
+      "title": "Around the Grand Palace in Bangkok, scammers forcefully get tourists to join in feeding birds and later ask for more mon",
+      "description": "Around the Grand Palace in Bangkok, scammers forcefully get tourists to join in feeding birds and later ask for more money than it costs to feed a family an awesome street food.",
+      "category": "warns about tourist fraud, deceptive overcharging, or closely related tourist trap",
+      "status": "candidate",
+      "location": {
+        "id": "063b1cc8-01fd-5df7-b904-baacad5a84ed",
+        "name": "Grand Palace",
+        "type": "point_of_interest",
+        "country_code": "TH",
+        "provisional": false
+      },
+      "location_path": [
+        {
+          "id": "2d2d43c4-648f-54f3-895e-28e4c0b623e8",
+          "name": "Thailand",
+          "type": "country",
+          "country_code": "TH",
+          "provisional": false
+        },
+        {
+          "id": "991d6b7e-f69b-5158-bf6d-e8c9f3ec871a",
+          "name": "Bangkok",
+          "type": "city",
+          "country_code": "TH",
+          "provisional": false
+        },
+        {
+          "id": "063b1cc8-01fd-5df7-b904-baacad5a84ed",
+          "name": "Grand Palace",
+          "type": "point_of_interest",
+          "country_code": "TH",
+          "provisional": false
+        }
+      ],
+      "scope": "descendant",
+      "metrics": {
+        "status": "current",
+        "as_of": "2026-11-21T15:18:47.762220Z",
+        "confidence_score": 0.047059,
+        "confidence_label": "limited",
+        "support_weight": 0.125,
+        "contradiction_weight": 0.0,
+        "recency_score": null,
+        "prevalence_score": null,
+        "all_time": {
+          "raw_report_count": 1,
+          "independence_weighted_report_count": 0.5
+        },
+        "occurrence_windows": {
+          "30": {
+            "raw_report_count": 0,
+            "independence_weighted_report_count": 0.0
+          },
+          "90": {
+            "raw_report_count": 0,
+            "independence_weighted_report_count": 0.0
+          },
+          "365": {
+            "raw_report_count": 0,
+            "independence_weighted_report_count": 0.0
+          }
+        },
+        "reporting_windows": {
+          "30": {
+            "raw_report_count": 0,
+            "independence_weighted_report_count": 0.0
+          },
+          "90": {
+            "raw_report_count": 0,
+            "independence_weighted_report_count": 0.0
+          },
+          "365": {
+            "raw_report_count": 0,
+            "independence_weighted_report_count": 0.0
+          }
+        },
+        "dated_reports": 0,
+        "undated_or_invalid_reports": 1,
+        "trend": "unknown",
+        "complete": false,
+        "limitations": [
+          "occurrence_date_missing",
+          "Unverified candidate or limited evidence: use as a precaution, not as a verified incident, proof of prevalence or confirmed new scam. Pattern matching may be incomplete; similar reports may appear separately."
+        ],
+        "policy_version": "public-intelligence-v1",
+        "interpretation": "corroboration and observed reporting; not truth probability or population incidence"
+      },
+      "source_checked_at": null,
+      "freshness": "unknown"
+    }
+  ],
+  "total": 2,
+  "limit": 5,
+  "offset": 0,
+  "has_more": false,
+  "membership_limit": 1000,
+  "membership_may_be_truncated": false,
+  "outcome": "findings",
+  "next_check_after_seconds": 1,
+  "watch": null,
+  "queue_pending": false,
+  "wait_status": null
+}

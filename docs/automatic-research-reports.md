@@ -1,8 +1,9 @@
 # One request to a sourced travel-scam report
 
 Decision date: 2026-11-08. User-authorized planning extension to PR 32/33.
-Status: PR 32 backend contracts and bounded watches are implemented on its review
-branch; real ChatGPT acceptance awaits deployment. The PR 33 UI remains planned.
+Status: PR 32 is deployed; the 2026-11-21 single-prompt ChatGPT test passed with
+terminal partial results and six backend waits. See [acceptance and caveats](pr32-report-runs.md#production-acceptance--2026-11-21).
+The PR 33 UI remains planned.
 
 ## Product requirement
 

@@ -60,8 +60,10 @@ acceptance passed. PR 32 now implements durable report runs and bounded watches 
 `research-report-v1` while retaining legacy `intelligence-v1` shapes. Its change wait
 is three seconds by default, five maximum beneath the MCP server's 12-second tool
 timeout. See [`docs/pr32-report-runs.md`](../pr32-report-runs.md) for migration 0022,
-source-qualified check times, operational watch counters and the pending post-merge
-single-prompt ChatGPT gate. This does not claim that gate or PR 33's UI has passed.
+source-qualified check times and operational watch counters. Update — 2026-11-21:
+merged PR 32 is deployed; the user-run single-prompt ChatGPT gate passed with six
+backend waits and terminal partial results in about 76 seconds. The runbook records
+unmeasured host latency and external-guidance/image caveats. PR 33's UI remains planned.
 
 - Plan all 38 PRs, with detailed implementation planning beginning at PR 01. Implement one numbered PR at a time and preserve the review gates.
 - Create each PR branch from the latest `develop` and target `develop`. Use `codex/pr-NN-short-description`, for example `codex/pr-01-repository-foundation`.

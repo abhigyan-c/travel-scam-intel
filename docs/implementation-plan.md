@@ -17,7 +17,10 @@ PR 32 deployment update, 2026-11-21: merged `f7e5692` passed readiness, migratio
 and ten-tool MCP checks. The user-run ChatGPT single-prompt gate passed with six
 backend waits on one root, terminating with partial findings in about 76 seconds.
 See [acceptance evidence and limits](pr32-report-runs.md#production-acceptance--2026-11-21).
-PR 33 has not started.
+PR 33 is implemented on `codex/pr-33-scam-explorer` from latest `develop` (`eccac86`):
+one MCP Apps progress/report view, public cards/filters/evidence and an app-only
+same-root watch. Local validation does not pass the actual ChatGPT UI/narrative
+gate; review/merge/deploy and host acceptance remain open. See [PR 33](pr33-scam-explorer.md).
 
 - Retain exactly 38 numbered implementation PRs and their scope/review gates. PR 31 resumed on 2026-11-05 after HTTPS and ChatGPT access became available. Its hostname connection, first-ever query and follow-up gate passed with honest partial state; no completed research/findings were demonstrated before the worker deadlines. The user requested deadline investigation within PR 31: extraction time reservation, reusable partial relevance and retained diagnostics were implemented; a measured live refresh still returned zero claims because of fetch failures and grounding rejections. These remain product-readiness concerns; see `docs/pr31-mcp.md`. Any dependency-ready reordering must follow the deployment decision above and user confirmation.
 - Create each branch from the latest `develop`; target `develop`. Branch convention: `codex/pr-NN-short-description`.

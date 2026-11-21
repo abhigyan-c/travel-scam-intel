@@ -5,6 +5,8 @@ PR 33 renders the states. PR 32 implements the new run table and versioned repor
 contract; legacy status constraints/envelopes remain compatible. See
 [implementation and rollout](pr32-report-runs.md); the observed production/ChatGPT
 single-prompt gate passed on 2026-11-21 with terminal partial results.
+PR 33's review branch renders the canonical states in an updating explorer; its
+actual-host gate is separate and remains open. See [PR 33](pr33-scam-explorer.md).
 
 ## Problem
 

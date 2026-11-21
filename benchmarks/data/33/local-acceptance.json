@@ -1,0 +1,40 @@
+{
+  "date": "2026-11-21",
+  "base_develop": "eccac86",
+  "production_deployed": false,
+  "actual_chatgpt_ui_accepted": false,
+  "automatic_post_turn_narration_supported": false,
+  "provider_calls_for_ui_validation": 0,
+  "node_tests_passed": 11,
+  "python_tests_passed": 985,
+  "python_tests_skipped": 10,
+  "docker_build_and_packaged_resource": "passed",
+  "browser": {
+    "host": "loopback synthetic host in the in-app browser, not ChatGPT",
+    "resource": "ui://travel-scam/explorer-v1.html",
+    "delay_seconds": 300,
+    "terminal_status_observed": "Research finished with partial results",
+    "total_tool_calls_at_completion": 52,
+    "wait_calls_inferred_from_one_get_and_one_watch": 50,
+    "displayed_wait_counter_at_completion": 49,
+    "counter_note": "The preview counter displayed before incrementing the current wait. This display lag was corrected after the run; the controller call bound was unaffected.",
+    "research_requests": 0,
+    "widths_inspected_px": [375, 768, 960],
+    "narrow_body_client_width_px": 360,
+    "narrow_body_scroll_width_px": 360,
+    "source_markup_rendered_as_literal_text": true,
+    "rendered_img_elements": 0,
+    "filter_no_match_observed": true,
+    "reconnect_outage_hid_unverified_cached_cards": true,
+    "retry_after_withdrawal_returned_zero_cards": true,
+    "screenshot": "explorer-preview.jpg"
+  },
+  "remaining": [
+    "Merge and deploy this PR before claiming production behavior.",
+    "Refresh the real ChatGPT connection and check resource rendering on its actual surface.",
+    "Run the deterministic five-minute fixture in an isolated actual-host test environment.",
+    "Check unseen and cached destinations, multiple views and live publication safeguards.",
+    "Record host timings and backend resource/allowance metrics.",
+    "Obtain explicit acceptance of any remaining report-view-only versus assistant-narration limitation."
+  ]
+}

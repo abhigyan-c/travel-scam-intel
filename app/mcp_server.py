@@ -18,6 +18,7 @@ from sqlalchemy.exc import SQLAlchemyError
 
 from app.core.logging import request_id
 from app.db.resolution import resolve_location
+from app.explorer import EXPLORER_META, EXPLORER_URI, explorer_html
 from app.models.location import LocationType
 from app.models.user_report import ReportProvenance
 from app.on_demand import request_location_research
@@ -92,7 +93,7 @@ class PublicMCPServer(MCPServer):
 def build_mcp(application):
     server = PublicMCPServer(
         "Travel Scam Intelligence",
-        version="intelligence-v1+research-report-v1",
+        version="intelligence-v1+research-report-v1+explorer-v1",
         instructions=(
             "English travel-scam intelligence with source provenance. Resolve locations before "
             "using their IDs; ask for country/parent context when ambiguous. Never invent scams. "
@@ -102,6 +103,10 @@ def build_mcp(application):
             "Honor next-check timing, watch expiry and at most 60 waits; never start another root "
             "from a poll or wait for moderation. On expiry/capacity errors show available results "
             "and the remaining gap. Fetch evidence and deliver one consolidated sourced report. "
+            "The initial request attaches one explorer view. Do not repeat the request merely "
+            "to refresh it; use get/wait with the same run. The view follows independently, "
+            "but cannot promise to wake the assistant after its turn ends. Keep the bounded "
+            "model wait/report flow for automatic narration during the active turn. "
             "Use research-report-v1 progress, coverage and freshness separately; legacy stale "
             "does not establish evidence expiry. Existing immediate reads remain available. "
             "Present low-confidence candidates with their disclaimer, source provenance "
@@ -121,7 +126,19 @@ def build_mcp(application):
             application.state.research_reports = value
         return value
 
-    @server.tool(annotations=RESEARCH)
+    @server.resource(
+        EXPLORER_URI,
+        name="Travel scam explorer",
+        mime_type="text/html;profile=mcp-app",
+        meta=EXPLORER_META,
+    )
+    def scam_explorer() -> str:
+        return explorer_html()
+
+    @server.tool(
+        annotations=RESEARCH,
+        meta={"ui": {"resourceUri": EXPLORER_URI, "visibility": ["model", "app"]}},
+    )
     async def request_scam_report(
         location_id: UUID,
         follow_run_id: UUID | None = None,
@@ -143,6 +160,32 @@ def build_mcp(application):
                 location_id,
                 follow_run_id=follow_run_id,
                 watch_seconds=watch_seconds,
+            )
+        )
+
+    @server.tool(
+        annotations=ToolAnnotations(
+            read_only_hint=False,
+            destructive_hint=False,
+            idempotent_hint=False,
+            open_world_hint=False,
+        ),
+        meta={"ui": {"visibility": ["app"]}},
+    )
+    async def watch_scam_report(run_id: UUID) -> ResearchReport:
+        """Give this view its own bounded watch of an existing run. Never start research.
+
+        Operational watch metadata only: at most 600 seconds and 60 waits. No resource
+        attachment, so app calls update the existing view instead of creating another.
+        """
+        service = reports()
+        existing = await service.get(run_id)
+        return ResearchReport.model_validate(
+            await service.request(
+                {},
+                UUID(existing["location"]["id"]),
+                follow_run_id=run_id,
+                watch_seconds=600,
             )
         )
 

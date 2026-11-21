@@ -22,9 +22,15 @@ async def check(url):
             "request_scam_report",
             "get_scam_report",
             "wait_for_scam_report",
+            "watch_scam_report",
         }
         if names != expected:
             raise ValueError("unexpected_public_tool_list")
+        from app.explorer import EXPLORER_URI
+
+        resource = await client.read_resource(EXPLORER_URI)
+        if not resource.contents or resource.contents[0].mime_type != "text/html;profile=mcp-app":
+            raise ValueError("explorer_resource_failed")
         location = await client.call_tool("resolve_scam_location", {"location": "Bangkok"})
         if location.is_error or not location.structured_content.get("location_id"):
             raise ValueError("seed_location_resolution_failed")
@@ -68,6 +74,7 @@ async def check(url):
             raise ValueError("unconfirmed_report_not_rejected")
         for name, arguments in [
             ("get_scam_report", {"run_id": "00000000-0000-4000-8000-000000000001"}),
+            ("watch_scam_report", {"run_id": "00000000-0000-4000-8000-000000000001"}),
             (
                 "wait_for_scam_report",
                 {

@@ -1,0 +1,53 @@
+<!doctype html><html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Scam explorer — synthetic preview</title>
+<style>body{font:14px system-ui;margin:16px;background:#eef2f5}iframe{border:1px solid #bac7d3;border-radius:12px;background:white;width:100%;height:850px}header{display:flex;flex-wrap:wrap;align-items:center;gap:12px;margin:12px 0}select,button{padding:8px}#frame{max-width:960px;margin:auto}</style>
+<h1>PR 33 synthetic host preview</h1><p>No research, reports, credentials or provider calls. This exercises the real resource in a mock host, not ChatGPT.</p>
+<header><label>Width <select id="width"><option value="960">Desktop</option><option value="375">Mobile · 375 px</option><option value="768">Tablet · 768 px</option></select></label>
+<label>Finish after <select id="delay"><option value="10000">10 seconds</option><option value="300000">5 minutes</option></select></label>
+<label>Result <select id="outcome"><option value="partial">Partial findings</option><option value="completed">Completed findings</option><option value="nothing_found">Completed empty</option><option value="failed">Provider failure, empty</option></select></label>
+<label><input type="checkbox" id="offline">Simulate read outage</label>
+<label><input type="checkbox" id="withdraw">Withdraw evidence</label>
+<button id="restart">Reset synthetic run</button><button id="reconnect">Reconnect view</button>
+<span id="metrics" role="status"></span></header><div id="frame"><iframe title="Travel scam explorer preview" src="/explorer"></iframe></div>
+<script type="module">
+const run="00000000-0000-4000-8000-000000000001", pattern="00000000-0000-4000-8000-000000000002";
+const frame=document.querySelector('iframe'), startKey='pr33-synthetic-start';
+let start=Number(sessionStorage.getItem(startKey))||Date.now(), calls=0, waits=0, watches=new Map();
+const metrics=()=>document.querySelector('#metrics').textContent=`${calls} tool calls · ${waits} waits · 0 research requests`;
+sessionStorage.setItem(startKey,start);
+const location={id:run,name:'Example City (synthetic fixture)',type:'city',country_code:'TH',provisional:false};
+function value(offset=0, watch=null){
+ const terminal=Date.now()-start>=Number(document.querySelector('#delay').value), type=document.querySelector('#outcome').value;
+ const empty=['failed','nothing_found'].includes(type), withdrawn=document.querySelector('#withdraw').checked;
+ const state=terminal?(type==='nothing_found'?'completed':type):'researching';
+ return {contract_version:'research-report-v1',run_id:run,location,revision:(terminal?'1':'0').repeat(64),
+ latest_run:{status:state,terminal,created_at:new Date(start).toISOString(),started_at:new Date(start).toISOString(),last_checked_at:terminal?new Date().toISOString():null,stop_reasons:terminal&&state==='partial'?['resource_limit','source_failures']:terminal&&state==='failed'?['provider_unavailable']:[]},
+ retained_report:{coverage:terminal&&state==='completed'?'complete':'partial',freshness:'unknown',fresh_until:null,last_result_update_at:null,last_completed_at:terminal&&state==='completed'?new Date().toISOString():null},
+ superseded:false,items:empty||withdrawn||offset?[]:[{id:pattern,title:'Synthetic taxi fare allegation <script>not executable</'+'script>',description:'Fixture source alleges that a driver changed the agreed fare. This is test data, not travel intelligence.',category:'Transport',status:'candidate',location,location_path:[location],scope:'exact',metrics:{confidence_label:'limited',confidence_score:0.05,all_time:{raw_report_count:1},dated_reports:0,undated_or_invalid_reports:1,limitations:['Single synthetic source; no independent corroboration.']},source_checked_at:null,freshness:'unknown'}],
+ total:empty||withdrawn?0:1,limit:20,offset,has_more:false,membership_limit:1000,membership_may_be_truncated:false,outcome:empty?(terminal&&state==='completed'?'nothing_found':'research_incomplete'):'findings',next_check_after_seconds:1,watch,wait_status:terminal?'terminal':'unchanged'};
+}
+const send=(message)=>frame.contentWindow.postMessage({jsonrpc:'2.0',...message},window.location.origin);
+window.addEventListener('message',async event=>{
+ if(event.source!==frame.contentWindow||event.data?.jsonrpc!=='2.0')return;
+ const {id,method,params}=event.data;
+ if(method==='ui/initialize'){send({id,result:{protocolVersion:'2026-01-26',hostCapabilities:{serverTools:{}},hostContext:{theme:'light',styles:{variables:{}}}}});return;}
+ if(method==='ui/notifications/initialized'){send({method:'ui/notifications/tool-result',params:{structuredContent:value()}});return;}
+ if(method==='ui/notifications/size-changed'){frame.style.height=Math.min(2200,Math.max(500,params.height))+'px';return;}
+ if(method!=='tools/call')return;
+ calls++;metrics();
+ if(document.querySelector('#offline').checked){send({id,error:{code:-32000,message:'Synthetic outage'}});return;}
+ const args=params.arguments;let result;
+ if(params.name==='get_scam_report')result=value(args.offset);
+ else if(params.name==='watch_scam_report'){
+  const watch={id:crypto.randomUUID(),expires_at:new Date(Date.now()+600000).toISOString(),waits_remaining:60};watches.set(watch.id,watch);result=value(0,watch);
+ }else if(params.name==='wait_for_scam_report'){
+  const watch=watches.get(args.watch_id);if(!watch){send({id,error:{code:-32000,message:'Missing synthetic watch'}});return;}
+  waits++;metrics();watch.waits_remaining--;await new Promise(resolve=>setTimeout(resolve,5000));result=value(args.offset,watch);
+ }else if(params.name==='get_scam_evidence')result={hypothesis_id:pattern,location,items:document.querySelector('#withdraw').checked?[]:[{id:pattern,label:'public_web_source',stance:'supports',provenance_class:'SECOND_HAND',excerpt:'Synthetic excerpt: agree on the fare before departure. <img src=x onerror=alert(1)>',source_url:'https://example.com/synthetic-source',published_at:null,occurred_at:null,source_quality:.3,independence_credit:.5}],total:document.querySelector('#withdraw').checked?0:1,offset:0,has_more:false};
+ else {send({id,error:{code:-32601,message:'Tool unavailable in synthetic host'}});return;}
+ send({id,result:{content:[],structuredContent:result}});
+});
+document.querySelector('#width').onchange=event=>document.querySelector('#frame').style.maxWidth=event.target.value+'px';
+document.querySelector('#restart').onclick=()=>{sessionStorage.clear();start=Date.now();sessionStorage.setItem(startKey,start);watches.clear();calls=waits=0;frame.src='/explorer?reset='+Date.now();};
+document.querySelector('#reconnect').onclick=()=>frame.src='/explorer?reconnect='+Date.now();
+</script></html>

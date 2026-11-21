@@ -1,6 +1,7 @@
+import { Bridge } from "../../app/ui/bridge.mjs";
 import test from "node:test";
 import assert from "node:assert/strict";
-import { Bridge, ReportController, ending, filtered, safeUrl } from "../../app/ui/explorer.mjs";
+import { ReportController, ending, filtered, safeUrl } from "../../app/ui/explorer.mjs";
 
 const run = "00000000-0000-4000-8000-000000000001";
 function report(extra = {}) {

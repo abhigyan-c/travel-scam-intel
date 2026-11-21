@@ -68,6 +68,14 @@ implemented on `codex/pr-33-scam-explorer` from latest `develop`; its independen
 ChatGPT UI/delayed-completion gate remains open pending review/merge/deployment.
 See [`docs/pr33-scam-explorer.md`](../pr33-scam-explorer.md).
 
+Update — 2026-11-21, PR 34: PR 33 merged into `develop` as `398d368`; its actual-host
+gate remains open. The user requested PR 34 next and chose text/source links for
+optional supporting evidence. `codex/pr-34-reporting-ui` implements the anonymous
+edit/review/confirmation view, unknown/day-only dates and same-key uncertain-outcome
+retry over existing intake. No image uploads, new service or migration is added.
+See [`docs/pr34-reporting-ui.md`](../pr34-reporting-ui.md); the customer-facing
+review gate is not passed by local mocks.
+
 - Plan all 38 PRs, with detailed implementation planning beginning at PR 01. Implement one numbered PR at a time and preserve the review gates.
 - Create each PR branch from the latest `develop` and target `develop`. Use `codex/pr-NN-short-description`, for example `codex/pr-01-repository-foundation`.
 - Use Serper.dev for search discovery. Request its API key when real integration validation requires it.

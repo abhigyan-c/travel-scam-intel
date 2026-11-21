@@ -22,6 +22,12 @@ one MCP Apps progress/report view, public cards/filters/evidence and an app-only
 same-root watch. Local validation does not pass the actual ChatGPT UI/narrative
 gate; review/merge/deploy and host acceptance remain open. See [PR 33](pr33-scam-explorer.md).
 
+PR 34 update, 2026-11-21: PR 33 is merged as `398d368`. The user requested reporting
+UI development next and selected optional text/source links rather than image uploads.
+Branch `codex/pr-34-reporting-ui` adds exact review/confirmation and same-key retries
+over the existing intake, without a migration. Local checks do not close PR 33's
+host gate or PR 34's customer-facing review gate. See [PR 34](pr34-reporting-ui.md).
+
 - Retain exactly 38 numbered implementation PRs and their scope/review gates. PR 31 resumed on 2026-11-05 after HTTPS and ChatGPT access became available. Its hostname connection, first-ever query and follow-up gate passed with honest partial state; no completed research/findings were demonstrated before the worker deadlines. The user requested deadline investigation within PR 31: extraction time reservation, reusable partial relevance and retained diagnostics were implemented; a measured live refresh still returned zero claims because of fetch failures and grounding rejections. These remain product-readiness concerns; see `docs/pr31-mcp.md`. Any dependency-ready reordering must follow the deployment decision above and user confirmation.
 - Create each branch from the latest `develop`; target `develop`. Branch convention: `codex/pr-NN-short-description`.
 - Merge prerequisite PRs into `develop` before starting dependent work. Avoid stacked branches; independent work may proceed only when requested.

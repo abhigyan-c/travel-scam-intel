@@ -72,6 +72,29 @@ async def test_waits_do_not_queue_or_change_research_and_revision_is_stable(envi
         await service.wait(run, uuid4(), before["revision"], wait_seconds=0)
 
 
+async def test_app_watch_is_separate_and_cannot_restart_research(environment):
+    ctx, _, service, result = await started(environment)
+    application = create_app(ctx["settings"])
+    application.state.db_sessions = ctx["sessions"]
+    application.state.research_reports = service
+    queue_calls = ctx["redis"].enqueue_job.await_count
+    async with Client(application.state.mcp_server, mode="legacy") as client:
+        response = await client.call_tool("watch_scam_report", {"run_id": result["run_id"]})
+        missing = await client.call_tool("watch_scam_report", {"run_id": str(uuid4())})
+    assert not response.is_error
+    followed = ResearchReport.model_validate(response.structured_content)
+    assert str(followed.run_id) == result["run_id"]
+    assert str(followed.watch.id) != result["watch"]["id"]
+    assert followed.watch.waits_remaining == 60
+    assert missing.is_error and missing.structured_content["error"]["code"] == "not_found"
+    assert ctx["redis"].enqueue_job.await_count == queue_calls
+    ctx["llm"].complete.assert_not_called()
+    async with ctx["sessions"]() as session:
+        assert await session.scalar(select(func.count()).select_from(ResearchJob)) == 1
+        assert await session.scalar(select(func.count()).select_from(ResearchRun)) == 1
+        assert await session.scalar(select(func.count()).select_from(ReportWatch)) == 2
+
+
 async def test_watch_expiry_limit_capacity_and_resume_never_restart_root(environment):
     ctx, location, service, result = await started(environment)
     run, watch = UUID(result["run_id"]), UUID(result["watch"]["id"])

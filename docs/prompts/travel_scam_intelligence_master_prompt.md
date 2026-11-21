@@ -63,7 +63,10 @@ timeout. See [`docs/pr32-report-runs.md`](../pr32-report-runs.md) for migration 
 source-qualified check times and operational watch counters. Update — 2026-11-21:
 merged PR 32 is deployed; the user-run single-prompt ChatGPT gate passed with six
 backend waits and terminal partial results in about 76 seconds. The runbook records
-unmeasured host latency and external-guidance/image caveats. PR 33's UI remains planned.
+unmeasured host latency and external-guidance/image caveats. PR 33's explorer is now
+implemented on `codex/pr-33-scam-explorer` from latest `develop`; its independent
+ChatGPT UI/delayed-completion gate remains open pending review/merge/deployment.
+See [`docs/pr33-scam-explorer.md`](../pr33-scam-explorer.md).
 
 - Plan all 38 PRs, with detailed implementation planning beginning at PR 01. Implement one numbered PR at a time and preserve the review gates.
 - Create each PR branch from the latest `develop` and target `develop`. Use `codex/pr-NN-short-description`, for example `codex/pr-01-repository-foundation`.

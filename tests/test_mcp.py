@@ -33,6 +33,7 @@ async def test_tool_discovery_and_accurate_annotations(application):
         "request_scam_report",
         "get_scam_report",
         "wait_for_scam_report",
+        "watch_scam_report",
     }
     assert tools["get_scam_evidence"].annotations.read_only_hint is True
     assert tools["search_scam_patterns"].annotations.read_only_hint is False

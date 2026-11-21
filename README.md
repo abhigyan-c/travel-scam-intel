@@ -1057,6 +1057,21 @@ The automatically updating report UI remains PR 33. The deployed single-prompt
 ChatGPT check passed on 2026-11-21 with six automatic waits and terminal partial
 results; the rollout document records measurement limits and presentation caveats.
 
+## ChatGPT explorer (PR 33)
+
+`request_scam_report` now attaches one MCP Apps progress/report view with public scam
+cards, confidence/scope/area/category/freshness filters, sorting and paginated evidence.
+It follows the same run with its own bounded watch; Pause, Resume and reconnect do
+not start research. Refresh the ChatGPT connection after deployment to discover the
+resource and the app-only `watch_scam_report` tool (eleven server tools, ten visible
+to the model). No additional credentials or UI hosting are needed.
+
+The view can update after an early assistant final answer; it cannot promise to
+wake the assistant for a new narrative. Existing conversational waiting stays in
+place. Actual ChatGPT UI acceptance remains pending review/merge/deploy; see
+[implementation, local preview and release checks](docs/pr33-scam-explorer.md).
+Run `node --test tests/ui/*.test.mjs` alongside the Python tests (Node 22, no npm install).
+
 ## Research baseline (PR 31A)
 
 Run `.venv/Scripts/python.exe -m benchmarks.research` against the local PostgreSQL

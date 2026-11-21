@@ -1,9 +1,9 @@
 # PR 32 report runs and automatic waiting
 
 Branch `codex/pr-32-report-runs`; base and target `develop` after merged PR 31J
-acceptance (`1ac9983`). PR 31J's live gate passed. This PR's production/real-host
-gate remains pending merge and deployment; its local tool-loop tests are not a
-claim that ChatGPT will always keep a five-minute turn open.
+acceptance (`1ac9983`). Merged PR 32 (`f7e5692`) was deployed on 2026-11-21.
+The single-prompt ChatGPT gate passed for the observed Bangkok run below; this
+does not establish that every ChatGPT session will keep a five-minute turn open.
 
 ## Contract and storage
 
@@ -131,3 +131,40 @@ wait/terminal latency, calls, duplicate jobs, reservations and VPS connection/me
 behavior. If the host ends early, record that failure; the local loop and PR 31J's older
 read test do not pass this new conversational gate. A deterministic five-minute UI
 watch and in-place report/narrative capability check remain PR 33.
+
+## Production acceptance — 2026-11-21
+
+The encrypted offsite backup succeeded before activation. Matching API/worker
+images at `f7e5692bc90a74ba9a4eddbaa132c1f25b8e91ab` passed readiness;
+migration 0022 passed `alembic check`. The public MCP smoke discovered ten tools
+and passed non-writing validation without starting research.
+
+The user refreshed the ChatGPT connection and ran the single prompt above without
+a manual follow-up. Backend run `7507399a-4a00-44df-a303-1a5119c68578` started at
+15:14:02 UTC and terminated at 15:15:17 UTC (about 76 seconds from admission).
+One observed watch performed six waits. Its three linked jobs (refresh and two
+continuations) each succeeded on their first attempt; these are phases of the same
+root, not three independent investigations. The terminal contract validated as
+`partial`, with `resource_limit` and `source_failures`; retained coverage was
+`partial`, source freshness `unknown`, and no successful-completion time was invented.
+Allowances remained fetches 20/20, queries 6/6, documents 7/10 and LLM calls 23/24.
+
+ChatGPT delivered a consolidated answer containing the two retained candidates,
+their source, limited confidence and missing dates. It kept Bangkok taxi attribution
+separate from the Grand Palace bird-feeding attribution, described terminal partial
+research rather than calling it stale, and stated that no incident report was submitted.
+No new public pattern yield is claimed for this run. The user supplied the final
+answer, not a raw tool transcript or host duration: backend watch counts verify
+automatic waiting, but acknowledgement latency and individual host calls are unmeasured.
+
+Presentation caveats: ChatGPT also added external travel guidance and many illustrative
+images. Those sources were not audited in this acceptance and are not new app evidence,
+independent corroboration in the graph, or improved confidence scores. Image discipline
+remains imperfect. This gate covers the observed conversational flow, not full research
+coverage, arbitrary destinations, five-minute host endurance or PR 33's progress UI.
+
+The post-run sample showed API 339.2 MiB and worker 207.9 MiB, low sampled CPU,
+and zero idle-in-transaction database sessions. These are point samples, not load
+peaks or whole-host sizing evidence. Sanitized backend evidence is in
+`benchmarks/data/32/`. Browser automation was denied by automatic approval review
+(Google Chrome access was not approved); the user performed the actual ChatGPT UI test.

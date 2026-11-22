@@ -115,6 +115,11 @@ move history is never discarded to force an older enum. Re-upgrade is supported.
 
 ## Verification and remaining gates
 
+Deployment update, 2026-11-22: merged `c292b4b` is live. Core acceptance passed but
+found a stale-toolbar-totals defect. Its tested repair still needs merge/deployment
+and a final totals recheck. See [the deployment acceptance record](pr35-deployment-acceptance.md);
+the original implementation-time evidence below is historical.
+
 Local PostgreSQL tests cover authorization, bounded/redacted reads, schema/command
 validation, stale writes, replay/conflicting keys, concurrent exact commands,
 merge/split/move history, reviewed-resolution snapshot fences, held-report release

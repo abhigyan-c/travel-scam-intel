@@ -14,7 +14,7 @@ export class AdminClient {
   }
 }
 
-function mount(doc) {
+export function mountAdmin(doc, host = window) {
  const $=id=>doc.getElementById(id), client=new AdminClient();
  let kind="hypotheses", offset=0, record=null, target=null, evidenceOffset=0, selected=new Set(), pending=null, submitting=false, uncertain=false, viewEpoch=0, blobs=[];
  const pageFlags={prev:true,next:true,"e-prev":true,"e-next":true};
@@ -36,7 +36,8 @@ function mount(doc) {
   const status=$("status-filter").value.trim(), q=$("search").value.trim();
   const params=new URLSearchParams({limit:"20",offset:String(offset)});if(status)params.set("status",status);if(q)params.set("q",q);
   const path=kind==="emerging"?"/v1/admin/emerging-patterns":kind==="audit"?"/v1/admin/audit":`/v1/admin/items/${kind}`;
-  const page=await client.request(path+"?"+params);if(epoch!==viewEpoch||!client.token)return;
+  const [page,summary]=await Promise.all([client.request(path+"?"+params),client.request("/v1/admin/overview")]);if(epoch!==viewEpoch||!client.token)return;
+  $("overview").textContent=`Jobs: ${JSON.stringify(summary.jobs)} · Reports: ${JSON.stringify(summary.reports)}`;
   drawRows(page.items);$("page-info").textContent=`${page.total} records · Page ${Math.floor(offset/20)+1}`;pageFlags.prev=offset===0;pageFlags.next=!page.has_more;disableNavigation(false);$("message").textContent="Private records loaded.";
  }
  async function inspect(item) {
@@ -89,6 +90,6 @@ function mount(doc) {
  $("confirmed").onchange=()=>$("commit").disabled=!$("confirmed").checked||submitting;
  $("edit-action").onclick=()=>{if(uncertain||submitting)return;pending=null;$("confirmation").hidden=true;$("action-form").hidden=false;disableNavigation(false);};
  $("commit").onclick=async()=>{if(!pending||!$("confirmed").checked||submitting)return;submitting=true;$("commit").disabled=true;$("edit-action").disabled=true;const epoch=viewEpoch;try{const result=await client.request(pending.path,pending.body,pending.key);if(epoch!==viewEpoch||!client.token)return;pending=null;uncertain=false;disableNavigation(false);await load();$("message").textContent=`Action accepted: ${JSON.stringify(result)}`;}catch(error){if(epoch!==viewEpoch||!client.token)return;uncertain=!error.status||error.status>=500;showError(new Error(uncertain?"Outcome uncertain. Retry the exact reviewed action with the same key; do not edit or lock this view until reconciled.":error.message));$("confirmed").checked=false;$("edit-action").disabled=uncertain;}finally{submitting=false;$("commit").disabled=!$("confirmed").checked;}};
- window.addEventListener("pagehide",lock);
+ host.addEventListener("pagehide",lock);
 }
-if(typeof document!=="undefined")mount(document);
+if(typeof document!=="undefined")mountAdmin(document);

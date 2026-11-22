@@ -4,6 +4,12 @@ Branch: `codex/pr-33-scam-explorer`, based on merged PR 32 acceptance in `develo
 (`eccac86`). The production release remains PR 32 until this branch is reviewed,
 merged and deployed. Actual ChatGPT UI acceptance remains open.
 
+Update — 2026-11-22: PR 33 and PR 34 are deployed together at `65a828b`. Real ChatGPT
+automatic narration over a controlled five-minute run passed, but the active
+explorer's terminal view was not independently identified/verified. Further manual
+testing was deferred by the user; do not infer a confirmed UI defect or a passed
+explorer gate from static conversation cards. See [acceptance](pr34-deployment-acceptance.md).
+
 ## Interface
 
 `request_scam_report` attaches `ui://travel-scam/explorer-v1.html` using standard

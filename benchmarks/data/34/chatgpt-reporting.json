@@ -1,0 +1,67 @@
+{
+  "synthetic": true,
+  "production_writes": 0,
+  "provider_calls": 0,
+  "database": "disposable localhost schema",
+  "raw_storage": "private process memory",
+  "counts": {
+    "user_reports": 1,
+    "documents": 1,
+    "research_jobs": 1
+  },
+  "stored_objects": 1,
+  "synthetic_receipt_losses": 1,
+  "fixture_roots": 0,
+  "fixture_status": {
+    "status": "queued",
+    "terminal": false,
+    "created_at": null,
+    "started_at": null,
+    "last_checked_at": null,
+    "stop_reasons": []
+  },
+  "watches": [],
+  "tool_counts": {
+    "get_scam_report": 1,
+    "resolve_scam_location": 2,
+    "open_scam_report_form": 2,
+    "submit_scam_report": 2
+  },
+  "calls": [
+    {
+      "tool": "get_scam_report",
+      "elapsed_ms": 0.0,
+      "error": true
+    },
+    {
+      "tool": "resolve_scam_location",
+      "elapsed_ms": 16.0,
+      "error": false
+    },
+    {
+      "tool": "open_scam_report_form",
+      "elapsed_ms": 0.0,
+      "error": false
+    },
+    {
+      "tool": "resolve_scam_location",
+      "elapsed_ms": 0.0,
+      "error": false
+    },
+    {
+      "tool": "open_scam_report_form",
+      "elapsed_ms": 16.0,
+      "error": false
+    },
+    {
+      "tool": "submit_scam_report",
+      "elapsed_ms": 500.0,
+      "error": true
+    },
+    {
+      "tool": "submit_scam_report",
+      "elapsed_ms": 0.0,
+      "error": false
+    }
+  ]
+}

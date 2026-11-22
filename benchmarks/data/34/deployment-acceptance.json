@@ -1,0 +1,46 @@
+{
+  "date": "2026-11-22",
+  "release": "65a828b026127497479990a3a3dc85cd32b26059",
+  "previous_release": "f7e5692bc90a74ba9a4eddbaa132c1f25b8e91ab",
+  "deployment": {
+    "transport": "private Tailscale SSH",
+    "encrypted_offsite_backup": "success; ExecMainStatus=0",
+    "api_and_worker": "matching release, healthy",
+    "postgres_redis_storage_readiness": "passed",
+    "alembic_check": "No new upgrade operations detected",
+    "public_tool_count": 12,
+    "ui_resource_count": 2,
+    "rest_admin_docs_publicly_blocked": true
+  },
+  "chatgpt": {
+    "ui_operator": "user; agent Chrome access rejected by automatic approval review",
+    "production_report_form_interactive_controls": "user confirmed",
+    "production_report_submission": false,
+    "synthetic_five_minute_narrative": "passed without another user prompt",
+    "progress_fixture_run": "6fa7fa10-c989-4e34-9571-beec5f045138",
+    "root_duration_seconds": 300,
+    "request_tool_calls": 1,
+    "watches": [45, 1],
+    "active_explorer_terminal_dom": "unverified; user pasted conversation cards rather than identifiable explorer contents",
+    "explorer_refresh_defect_confirmed": false,
+    "isolated_real_intake_retry": "passed",
+    "synthetic_lost_receipt_count": 1,
+    "submission_attempts": 2,
+    "isolated_reports_documents_jobs": [1, 1, 1],
+    "published_hypotheses_and_evidence": [0, 0],
+    "raw_test_storage": "private process memory, not R2",
+    "provider_calls_for_acceptance": "zero by construction: no provider credentials or worker",
+    "further_manual_testing": "deferred at user request"
+  },
+  "cleanup": {
+    "temporary_https_path": "removed; returns 404",
+    "private_ssh_forward": "stopped",
+    "local_acceptance_server": "stopped",
+    "explicit_disposable_local_schemas_removed": 3,
+    "remaining_acceptance_schemas": 0,
+    "local_database_service": "stopped",
+    "production_reports_created_on_test_date": 0,
+    "production_research_runs_created_on_test_date": 0
+  },
+  "overall_customer_facing_gate_passed": false
+}

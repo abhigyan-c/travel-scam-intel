@@ -4,6 +4,14 @@ Branch `codex/pr-34-reporting-ui`; base and target `develop`, after merged PR 33
 (`398d368`). The user requested PR 34 development with PR 33's actual-host acceptance
 still open. Neither gate is marked passed by this implementation or its local preview.
 
+Deployment update — 2026-11-22: merged release `65a828b` is live. The user confirmed
+interactive production form rendering and completed an isolated real-intake
+lost-receipt/retry test with one report/document/job. The five-minute automatic
+narrative also passed. Actual explorer refresh remains unverified; further manual
+testing was deferred at the user's request. See [deployment acceptance](pr34-deployment-acceptance.md)
+for the exact results, isolation limits and completed cleanup. The overall
+customer-facing gate is not marked passed.
+
 ## Confirmed scope
 
 On 2026-11-21 the user selected **text and source links for optional evidence**.

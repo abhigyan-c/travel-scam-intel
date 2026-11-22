@@ -1094,6 +1094,12 @@ choices and pending actual-host gate](docs/pr34-reporting-ui.md). For a syntheti
 local test, run `python -m benchmarks.explorer_preview` and open
 `http://127.0.0.1:8033/reporter-preview`; it submits no real incident.
 
+Release `65a828b` was deployed on 2026-11-22. Real ChatGPT form controls, controlled
+five-minute automatic narration and an isolated lost-receipt retry were verified.
+The actual explorer's terminal refresh and complete customer-facing gate remain
+open; further manual testing was deferred. Temporary acceptance endpoints/data were
+removed. See [the deployment and acceptance record](docs/pr34-deployment-acceptance.md).
+
 ## Research baseline (PR 31A)
 
 Run `.venv/Scripts/python.exe -m benchmarks.research` against the local PostgreSQL

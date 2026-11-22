@@ -1,0 +1,54 @@
+{
+  "captured_at": "2026-11-22T04:34:13.558672+00:00",
+  "database_activity": {
+    "active": 1,
+    "idle_in_transaction": 0
+  },
+  "container_samples": [
+    {
+      "BlockIO": "41.5MB / 0B",
+      "CPUPerc": "0.20%",
+      "Container": "travel-scam-prod-api-1",
+      "ID": "f2f2a73c43ea",
+      "MemPerc": "8.60%",
+      "MemUsage": "336.9MiB / 3.824GiB",
+      "Name": "travel-scam-prod-api-1",
+      "NetIO": "467kB / 437kB",
+      "PIDs": "10"
+    },
+    {
+      "BlockIO": "0B / 0B",
+      "CPUPerc": "100.32%",
+      "Container": "travel-scam-prod-worker-1",
+      "ID": "b0b6312d50de",
+      "MemPerc": "3.93%",
+      "MemUsage": "154MiB / 3.824GiB",
+      "Name": "travel-scam-prod-worker-1",
+      "NetIO": "168kB / 458kB",
+      "PIDs": "4"
+    },
+    {
+      "BlockIO": "3.65MB / 623kB",
+      "CPUPerc": "0.00%",
+      "Container": "travel-scam-prod-postgres-1",
+      "ID": "9241ced7077e",
+      "MemPerc": "0.92%",
+      "MemUsage": "35.96MiB / 3.824GiB",
+      "Name": "travel-scam-prod-postgres-1",
+      "NetIO": "214kB / 441kB",
+      "PIDs": "9"
+    },
+    {
+      "BlockIO": "1.73GB / 2.71GB",
+      "CPUPerc": "1.00%",
+      "Container": "travel-scam-prod-redis-1",
+      "ID": "97856bf0ef07",
+      "MemPerc": "0.36%",
+      "MemUsage": "13.96MiB / 3.824GiB",
+      "Name": "travel-scam-prod-redis-1",
+      "NetIO": "980MB / 349MB",
+      "PIDs": "7"
+    }
+  ],
+  "note": "Point samples, not load peaks. The initial worker CPU spike settled to 0.21% in a subsequent sample; QA ran in isolation, not on the production worker."
+}

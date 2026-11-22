@@ -4,8 +4,14 @@ Deployment planning now targets a minimal DigitalOcean single-Droplet MVP for ap
 requests/day, without a separate load balancer or managed AWS stack. See the
 [deployment proposal and revised release scope](docs/minimal-mvp-deployment.md).
 
-An evidence-backed travel scam intelligence backend. The repository currently provides the
-API, local infrastructure and core domain models; research and ChatGPT integration arrive in later PRs.
+Evidence-backed travel scam research with a ChatGPT MCP integration, interactive
+explorer/reporting form and private admin dashboard. Version 0.1.0 is being prepared
+for its first release; public ChatGPT directory approval is still pending.
+
+- [User guide](docs/user-guide.md): research, evidence, confidence, scope and reporting.
+- [Admin guide](docs/admin-guide.md): moderation, deployment, monitoring and recovery.
+- [Release assessment](docs/release-0.1.0.md): validation and unresolved launch gates.
+- [Publishing readiness](docs/publishing-readiness.md): listing, policies and review.
 
 ## Local development
 
@@ -55,9 +61,11 @@ uv run --locked uvicorn app.main:app --reload --no-access-log --loop asyncio:Sel
 ```
 
 The explicit selector loop supports Psycopg async connections on Windows. uv uses Python 3.12
-from `.python-version` and the committed lockfile. No Search or LLM API keys are needed yet.
+from `.python-version` and the committed lockfile. Local tests do not need provider
+keys; live research needs Serper and Sarvam credentials and the preloaded embedding model.
 
 - `GET /`: application name and version.
+- `GET /about`, `/support`, `/privacy`, `/terms`: static product and policy pages.
 - `GET /health`: process liveness (`{"status":"ok"}`), independent of backend availability.
 - `GET /ready`: HTTP 200 when PostgreSQL and its vector extension, Redis, and the storage bucket
   are available; otherwise HTTP 503. Returns each dependency's status without connection details.

@@ -1,5 +1,11 @@
 # PR 38 hosting foundation
 
+> Historical rollout notes follow. For the current operator workflow and release
+> gates, use the [admin guide](../docs/admin-guide.md) and
+> [release assessment](../docs/release-0.1.0.md). The approved Funnel hostname now
+> serves MCP; statements below about PR 31 being future work are historical.
+> The release preparation adds exact product/policy routes, pending deployment.
+
 Status (2026-11-05): the application stack and IP-based HTTPS preview are deployed;
 encrypted offsite backup, isolated SQL restore and reboot recovery passed. See
 [host readiness](../docs/host-readiness.md). This is

@@ -1,0 +1,9 @@
+{
+  "$schema": "https://agent-plugins.org/schemas/1.0.0/mcp.schema.json",
+  "mcpServers": {
+    "travel-scam-intelligence": {
+      "type": "streamable-http",
+      "url": "https://travel-scam-prod.tailbbf557.ts.net/mcp"
+    }
+  }
+}

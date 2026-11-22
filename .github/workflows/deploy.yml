@@ -13,7 +13,7 @@ jobs:
     timeout-minutes: 30
     environment: production
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - name: Build selected commit
         run: |
           docker build --tag "travel-scam-intel:$GITHUB_SHA" .

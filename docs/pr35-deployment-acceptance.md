@@ -1,17 +1,42 @@
 # PR 35 deployment and acceptance — 2026-11-22
 
-Deployed merged `develop` release `c292b4ba085e689a07fa2eb6dddb776a567c443b`
-(PR #50) through the existing Tailscale push deployment. The encrypted pre-release
-backup completed with `Result=success` and exit status 0. API and worker run the
-same immutable image and are healthy; migration `0023` is applied with no model drift.
+Current production release: **`7d9cfecd3cd039d7c679ed5239c3566a58b250fb`** (PR #51).
+It replaces the initial PR #50 deployment, `c292b4b`, through the existing Tailscale
+push process. Both deployments took successful encrypted pre-release backups.
+API and worker run the same current immutable image and are healthy; migration
+`0023` is applied with no model drift.
 
-**Result: core acceptance passed; final UI signoff remains pending one small fix.**
-The toolbar's overview totals were captured at unlock and stayed stale after a
-mutation or list refresh. Fresh tables and audit entries were correct. The fix on
-`codex/pr-35-admin-acceptance` refreshes overview and table together, including the
-post-command reload, while preserving the lock/generation fence. It has not been
-merged or deployed. Merge it into `develop`, deploy that merged release, and check
-the totals after a synthetic action before marking the complete admin UI gate passed.
+**Result: PR 35 admin acceptance passed, including the final totals recheck.**
+Initial acceptance caught overview totals that stayed at their unlock-time values
+after a mutation or list refresh. Fresh tables and audit entries were correct.
+PR #51 refreshes overview and table together, including the post-command reload,
+while preserving the lock/generation fence. That repair is merged, deployed and
+verified in the actual dashboard against a new isolated schema.
+
+## Final repair recheck
+
+The newly deployed modules served the same private, worker-disabled fixture design
+described below. Actual browser controls demonstrated:
+
+- Initial totals: two failed jobs and one report needing review.
+- A reviewed and explicitly confirmed report rejection immediately changed the
+  toolbar to `Reports: {"rejected":1}`, without unlocking again or another prompt.
+- A reviewed and explicitly confirmed failed-process retry immediately changed the
+  toolbar to `Jobs: {"queued":1,"failed":2}`. The table showed the one queued
+  replacement and both original failed jobs.
+- **Refresh list** retained the matching fresh totals/table. **Lock and clear**
+  emptied the overview and hid private records.
+
+The fixture recorded exactly two admin actions and three jobs, with worker execution
+disabled. No real report or research request was submitted. Its server shut down
+gracefully, its exact schema and container files were removed, and the SSH forward
+was closed. Production counts remained identical to the pre-test baseline below.
+Post-cleanup checks reconfirmed the exact API/worker image and health, private-route
+blocking, twelve MCP tools, two resources and readiness. The final screenshot is
+retained locally in ignored `.tools/pr35-final/totals-verified.jpg`.
+
+This closes the PR 35 admin signoff only. The separate deferred PR 33 explorer gate
+and the live-test limits at the end of this record remain unchanged.
 
 ## Live production checks
 
@@ -78,7 +103,7 @@ and unchanged production counts were verified afterward. Readiness remained heal
 Synthetic screenshots/results remain only in the ignored local `.tools/pr35-live/`
 review directory; no fixture routes or data remain deployed.
 
-The overview-refresh repair passes **25 JavaScript tests**, including a DOM-flow
+The merged overview-refresh repair passed **25 JavaScript tests**, including a DOM-flow
 regression proving changed totals appear after Refresh and late responses cannot
 repopulate a locked view. **12 focused Python tests** verify the packaged page/CSP,
 authorization and command validation; Ruff lint/format checks pass. The previous

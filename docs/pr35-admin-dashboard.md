@@ -115,10 +115,12 @@ move history is never discarded to force an older enum. Re-upgrade is supported.
 
 ## Verification and remaining gates
 
-Deployment update, 2026-11-22: merged `c292b4b` is live. Core acceptance passed but
-found a stale-toolbar-totals defect. Its tested repair still needs merge/deployment
-and a final totals recheck. See [the deployment acceptance record](pr35-deployment-acceptance.md);
-the original implementation-time evidence below is historical.
+Deployment update, 2026-11-22: merged repair `7d9cfec` is live and healthy. PR 35
+admin acceptance passed, including actual browser verification of toolbar totals
+after confirmed actions, list refresh and lock/clear. Temporary fixtures were removed
+and production counts stayed unchanged. See [the deployment acceptance record](pr35-deployment-acceptance.md);
+the original implementation-time evidence below is historical. The separate explorer
+gate remains deferred.
 
 Local PostgreSQL tests cover authorization, bounded/redacted reads, schema/command
 validation, stale writes, replay/conflicting keys, concurrent exact commands,
@@ -143,7 +145,8 @@ all temporary server/data are removed after testing. One initial preview-harness
 isolation mistake was caught before mutations and its exact synthetic rows were
 removed from the local test database. Nothing was deployed or changed in production.
 
-Review/merge and private production acceptance remain outstanding. PR 33's actual
-ChatGPT explorer terminal-rendering gate remains **deferred/unverified** at the
-user's request, as recorded in [PR 34 acceptance](pr34-deployment-acceptance.md).
-PR 35 does not close that gate, start another host test or begin PR 36.
+PR 35 review/merge, deployment and private admin acceptance are complete, as recorded
+in the deployment update above. PR 33's actual ChatGPT explorer terminal-rendering
+gate remains **deferred/unverified** at the user's request, as recorded in
+[PR 34 acceptance](pr34-deployment-acceptance.md). PR 35 does not close that gate,
+start another host test or begin PR 36.

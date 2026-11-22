@@ -49,6 +49,12 @@ adds a regression test. Merge/deploy/recheck of that repair remains required for
 complete admin UI signoff. All temporary test infrastructure/data were removed.
 See [the acceptance evidence and limits](pr35-deployment-acceptance.md).
 
+PR 35 final signoff, 2026-11-22: merged repair `7d9cfec` is deployed. Actual dashboard
+controls verified immediate report/job totals after confirmed actions, list refresh
+and lock/clear. The isolated fixture was removed; production counts stayed unchanged,
+and image/health/filter/MCP checks passed. PR 35 admin acceptance is complete.
+PR 33's explorer terminal-rendering gate remains deferred; PR 36 has not started.
+
 - Retain exactly 38 numbered implementation PRs and their scope/review gates. PR 31 resumed on 2026-11-05 after HTTPS and ChatGPT access became available. Its hostname connection, first-ever query and follow-up gate passed with honest partial state; no completed research/findings were demonstrated before the worker deadlines. The user requested deadline investigation within PR 31: extraction time reservation, reusable partial relevance and retained diagnostics were implemented; a measured live refresh still returned zero claims because of fetch failures and grounding rejections. These remain product-readiness concerns; see `docs/pr31-mcp.md`. Any dependency-ready reordering must follow the deployment decision above and user confirmation.
 - Create each branch from the latest `develop`; target `develop`. Branch convention: `codex/pr-NN-short-description`.
 - Merge prerequisite PRs into `develop` before starting dependent work. Avoid stacked branches; independent work may proceed only when requested.

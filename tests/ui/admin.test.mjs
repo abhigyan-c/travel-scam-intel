@@ -39,3 +39,37 @@ test('default browser fetch is invoked without binding it to the client',async()
  try {const client=new AdminClient();client.token='synthetic';await client.request('/v1/admin/overview');assert.equal(called,true);}
  finally {globalThis.fetch=original;}
 });
+
+test('refresh updates toolbar totals with the table and late results cannot repopulate a locked view',async()=>{
+ const { mountAdmin }=await import('../../app/ui/admin.mjs');
+ class Element {
+  constructor(){this.value='';this.children=[];this.hidden=false;this.disabled=false;this.textContent='';}
+  append(...items){this.children.push(...items);}
+  replaceChildren(...items){this.children=items;}
+  focus(){}
+ }
+ const elements=new Map();const doc={getElementById(id){if(!elements.has(id))elements.set(id,new Element());return elements.get(id);},createElement(){return new Element();}};
+ let totals={jobs:{failed:2},reports:{needs_review:1}},pending=[];
+ let delay=false;
+ const original=globalThis.fetch;
+ globalThis.fetch=async path=>{
+  const value=path==='/v1/admin/overview'?structuredClone(totals):{items:[],total:0,has_more:false};
+  if(delay)return new Promise(resolve=>pending.push(()=>resolve(ok(value))));
+  return ok(value);
+ };
+ try {
+  mountAdmin(doc,{addEventListener(){}});
+  const $=id=>doc.getElementById(id);
+  $('token').value='synthetic-token';
+  await $('login').onsubmit({preventDefault(){}});
+  assert.match($('overview').textContent,/"failed":2/);
+  totals={jobs:{failed:2,queued:1},reports:{rejected:1}};
+  await $('refresh').onclick();
+  assert.match($('overview').textContent,/"queued":1/);
+  assert.match($('overview').textContent,/"rejected":1/);
+  assert.doesNotMatch($('overview').textContent,/needs_review/);
+  delay=true;const refreshing=$('refresh').onclick();
+  $('logout').onclick();for(const finish of pending)finish();await refreshing;
+  assert.equal($('overview').textContent,'');assert.equal($('private').hidden,true);
+ } finally {globalThis.fetch=original;}
+});

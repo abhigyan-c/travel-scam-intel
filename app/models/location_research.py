@@ -23,10 +23,12 @@ class LocationResearchState(Base):
             name="ck_location_research_running",
         ),
         CheckConstraint("jsonb_typeof(progress) = 'object'", name="ck_location_research_progress"),
+        CheckConstraint("priority_override BETWEEN -100 AND 100", name="ck_location_priority"),
     )
     location_id: Mapped[UUID] = mapped_column(
         ForeignKey("locations.id", ondelete="RESTRICT"), primary_key=True
     )
+    priority_override: Mapped[int] = mapped_column(default=0, server_default="0")
     status: Mapped[str] = mapped_column(
         String(30), default="never_researched", server_default="never_researched"
     )

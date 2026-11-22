@@ -1,3 +1,4 @@
+from app.models.admin import AdminAction
 from app.models.claim import Claim
 from app.models.claim_extraction import ClaimExtraction
 from app.models.document import Document
@@ -29,6 +30,7 @@ from app.models.source import Source
 from app.models.user_report import UserReport
 
 __all__ = [
+    "AdminAction",
     "ResearchRun",
     "ReportWatch",
     "LocationDemandHour",

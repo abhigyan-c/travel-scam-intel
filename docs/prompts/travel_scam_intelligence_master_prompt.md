@@ -2721,6 +2721,15 @@ At this point the customer-facing product should be usable inside ChatGPT.
 
 # 67. PR 35 — Admin API and Minimal Dashboard
 
+Implementation decision, 2026-11-22: use the existing shared admin bearer token and
+a self-contained `/admin` console accessed through a Tailscale SSH loopback forward.
+Keep Caddy/Funnel admin/REST routes blocked. Commands require explicit confirmation,
+a reason, idempotency and stale-record fencing; retain domain publication safeguards.
+Reprocessing initially means stored-document normalization or a guarded failed
+report retry, not a research-budget/lease reset or general semantic re-extraction.
+Manual priority is a bounded location scheduler adjustment that preserves normal
+eligibility and budgets. See `docs/pr35-admin-dashboard.md` for the complete contract.
+
 ## Goal
 
 Provide the internal tooling required to operate the intelligence system.

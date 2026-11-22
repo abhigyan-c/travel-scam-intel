@@ -34,6 +34,11 @@ class RequestContextMiddleware:
             if message["type"] == "http.response.start":
                 status = message["status"]
                 MutableHeaders(scope=message)["X-Request-ID"] = current_id
+                if scope["path"] == "/admin" or scope["path"].startswith("/v1/admin/"):
+                    headers = MutableHeaders(scope=message)
+                    headers["Cache-Control"] = "no-store"
+                    headers["Referrer-Policy"] = "no-referrer"
+                    headers["X-Content-Type-Options"] = "nosniff"
                 response_started = True
             await send(message)
 

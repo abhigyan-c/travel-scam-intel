@@ -77,6 +77,7 @@ def priority(candidate, policy, now):
         + w.incompleteness * candidate["incomplete"]
         + w.first_deep * candidate["first_deep"]
         + w.new_hypothesis * candidate["new_hypothesis"]
+        + candidate.get("priority_adjustment", 0)
     )
     return {**candidate, "tier": level, "priority": round(score, 6)}
 

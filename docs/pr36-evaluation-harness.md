@@ -66,7 +66,9 @@ production connection. No production API, Serper, R2, Redis worker, embedding do
 or LLM endpoint is used in replay.
 
 The infrastructure CI job runs replay after integration tests and uploads only the
-synthetic JSON report. No provider credentials are supplied. The normal test suite
+synthetic JSON report from `${{ runner.temp }}/intelligence-evaluation/report.json`.
+Docker can create the ignored `.tools` bind-mount parent as root on Linux, so CI
+does not use it as a runner-owned output directory. No provider credentials are supplied. The normal test suite
 also checks metric integrity, policy regressions and exact replay of the real adapters.
 
 ## Scoring and failure rules
@@ -106,7 +108,9 @@ fail visibly rather than silently rebasing the baseline.
 
 Exit codes: 0 passes, 1 quality/regression failure, 2 execution/recording/configuration
 failure. Execution failures replace stale output with an explicit failed report and
-do not print raw exception strings, source content or credentials.
+do not print raw exception strings, source content or credentials. If the destination
+is unwritable, the failed report is emitted on stdout with `report_write_failed=true`
+and exit code 2; trying to save that failure does not produce another traceback.
 
 ## Capturing a proposed prompt/model change
 
@@ -167,3 +171,13 @@ Production is untouched. PR 33's actual explorer terminal-rendering gate remains
 Local validation: the full suite passed **1,038 Python tests, 10 skipped**, and
 **25 JavaScript tests**. Ruff lint/format and the exact offline CI baseline command
 passed. Corpus/model records and the retained mismatch are reviewable before merge.
+
+CI follow-up: Linux exposed a root-owned `.tools` directory from Docker bind-mount
+creation. Evaluation completed but report persistence failed, followed by a second
+failure in the error reporter. CI now writes/uploads from runner-owned temporary
+storage, and report-write errors retain a sanitized stdout failure with exit code 2.
+The repair passed 17 focused tests, the full 49-case offline gate using a temporary
+output directory, and an unprivileged Linux filesystem check. The Linux check verified
+permission recovery/output ownership; it did not recapture model responses or rerun
+the database evaluation inside that container. Labels, quality floors and recorded
+model outcomes are unchanged; no provider calls were made for this repair.

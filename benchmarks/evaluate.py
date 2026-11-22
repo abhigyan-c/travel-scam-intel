@@ -445,10 +445,14 @@ def main():
             "quality_passed": False,
             "execution_error": type(exc).__name__,
         }
+        try:
+            if args.output.resolve() not in {args.corpus.resolve(), args.recording.resolve()}:
+                args.output.parent.mkdir(parents=True, exist_ok=True)
+                args.output.write_text(json.dumps(failure, indent=2) + "\n", encoding="utf-8")
+        except OSError:
+            # Stdout remains the failure artifact when the requested destination is unwritable.
+            failure["report_write_failed"] = True
         print(json.dumps(failure))
-        if args.output.resolve() not in {args.corpus.resolve(), args.recording.resolve()}:
-            args.output.parent.mkdir(parents=True, exist_ok=True)
-            args.output.write_text(json.dumps(failure, indent=2) + "\n", encoding="utf-8")
         result = 2
     raise SystemExit(result)
 

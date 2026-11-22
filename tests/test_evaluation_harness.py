@@ -168,3 +168,31 @@ def test_execution_failure_replaces_stale_report_without_exposing_exception(
     assert result.value.code == 2
     assert json.loads(output.read_text())["execution_passed"] is False
     assert "private-credential" not in capsys.readouterr().out
+
+
+@pytest.mark.parametrize("operation", ["mkdir", "write_text"])
+def test_unwritable_report_returns_execution_failure_without_second_traceback(
+    tmp_path, monkeypatch, capsys, operation
+):
+    from pathlib import Path
+
+    import benchmarks.evaluate as module
+
+    async def failed(args):
+        raise PermissionError("private-file-path-must-not-be-printed")
+
+    def denied(*args, **kwargs):
+        raise PermissionError("private-destination-must-not-be-printed")
+
+    monkeypatch.setattr(module, "run", failed)
+    monkeypatch.setattr(Path, operation, denied)
+    monkeypatch.setattr("sys.argv", ["evaluate", "--output", str(tmp_path / "report.json")])
+    with pytest.raises(SystemExit) as result:
+        module.main()
+    assert result.value.code == 2
+    captured = capsys.readouterr()
+    failure = json.loads(captured.out)
+    assert failure["execution_passed"] is False
+    assert failure["execution_error"] == "PermissionError"
+    assert failure["report_write_failed"] is True
+    assert "private-" not in captured.out and "Traceback" not in captured.err

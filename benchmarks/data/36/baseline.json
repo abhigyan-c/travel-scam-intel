@@ -37,8 +37,8 @@
     "confidence": "confidence-v1",
     "vectors": "controlled-v1 (not a trained retrieval measurement)"
   },
-  "source_tree_dirty": true,
-  "commit": "33c430d753e9c784509a36370c550be5a43fc1a9",
+  "source_tree_dirty": false,
+  "commit": "3918591c58484d6536629e7529a68b5f6e6892ed",
   "quality_passed": true,
   "execution_passed": true,
   "scorecard": {

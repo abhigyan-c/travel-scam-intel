@@ -1,0 +1,90 @@
+{
+  "$schema": "https://agent-plugins.org/schemas/1.0.0/plugin.schema.json",
+  "name": "travel-scam-intelligence",
+  "version": "0.1.0",
+  "description": "Evidence-backed travel scam research with source provenance and geographic scope.",
+  "author": {
+    "name": "abhigyan-c"
+  },
+  "extensions": {
+    "com.openai": {
+      "interface": {
+        "displayName": "Travel Scam Intelligence",
+        "shortDescription": "Sourced travel scam research",
+        "longDescription": "Research reported travel scams by location, compare a suspicious situation with existing patterns, inspect source evidence and geographic scope, and submit an anonymous incident report after review and confirmation. Results can be partial, undated or low confidence. Candidate findings are allegations, not verified incidents or estimates of personal risk. English only. Free, with no purchases or payments. No safety guarantee.",
+        "developerName": "abhigyan-c",
+        "category": "Travel",
+        "defaultPrompt": [
+          "Research reported scams in Bangkok, Thailand and give me a sourced travel report.",
+          "Compare a suspicious travel situation with existing scam patterns.",
+          "Open an incident-report form so I can review a draft before submitting."
+        ],
+        "logo": "assets/icon.png",
+        "composerIcon": "assets/icon.png"
+      },
+      "review": {
+        "prompts": [
+          "I am visiting Bangkok, Thailand next month. Research reported travel scams and give me a sourced report with precautions. Do not submit an incident report.",
+          "Show existing Bangkok findings without starting research. For a finding near the Grand Palace, show its source and explain whether it applies across the city.",
+          "A taxi driver by my Bangkok hotel refuses the meter and asks for a fixed fare. Does that resemble a reported pattern? Do not report it as an incident.",
+          "What recent scam patterns are in the existing Bangkok records? Explain what the dates actually mean and do not start new research.",
+          "Open the incident-report form for Bangkok, Thailand. I want to inspect and edit a draft, not submit it."
+        ],
+        "test_cases": {
+          "positive": [
+            {
+              "description": "Sourced trip research with bounded waiting. Use Bangkok city, Thailand; no incident submission.",
+              "prompt": "I am visiting Bangkok, Thailand next month. Research reported travel scams and give me a sourced report with precautions. Do not submit an incident report.",
+              "tools_triggered": "resolve_scam_location, request_scam_report; wait_for_scam_report/get_scam_report as needed; get_scam_evidence for returned findings",
+              "expected_behavior": "Resolve Bangkok city before passing its returned location ID. Follow the same returned run/watch within its limits. Report terminal or partial status honestly, cite returned evidence, preserve actual scope and avoid claiming confidence is a probability. Never call submit_scam_report."
+            },
+            {
+              "description": "Existing findings and evidence without new research; do not require a fixed current pattern count.",
+              "prompt": "Show existing Bangkok findings without starting research. For a finding near the Grand Palace, show its source and explain whether it applies across the city.",
+              "tools_triggered": "resolve_scam_location, search_scam_patterns, get_scam_pattern/get_scam_evidence when a pattern is returned",
+              "expected_behavior": "Use request_research=false. Use returned IDs for details/evidence. Preserve descendant scope and identify missing dates and candidate status. If no such pattern is returned, say so without inventing one. No request_scam_report or submit_scam_report."
+            },
+            {
+              "description": "Semantic comparison is a supported read flow, not an accusation or a report submission.",
+              "prompt": "A taxi driver by my Bangkok hotel refuses the meter and asks for a fixed fare. Does that resemble a reported pattern? Do not report it as an incident.",
+              "tools_triggered": "resolve_scam_location, match_possible_scam",
+              "expected_behavior": "Resolve the city, compare the supplied situation, distinguish similarity from verified fraud, and disclose no match/limited evidence when appropriate. Do not call submit_scam_report."
+            },
+            {
+              "description": "Recent pattern lookup with unknown-date and publication-versus-occurrence distinctions.",
+              "prompt": "What recent scam patterns are in the existing Bangkok records? Explain what the dates actually mean and do not start new research.",
+              "tools_triggered": "resolve_scam_location, get_recent_patterns",
+              "expected_behavior": "Use request_research=false, the resolved Bangkok ID and supported days value (30, 90 or 365). Only returned known occurrence dates establish recency; publication dates are not incident dates. Unknown dates do not establish a trend. No invented counts or new research."
+            },
+            {
+              "description": "Open and inspect a report draft only; reviewer must not submit synthetic data to production.",
+              "prompt": "Open the incident-report form for Bangkok, Thailand. I want to inspect and edit a draft, not submit it.",
+              "tools_triggered": "resolve_scam_location, open_scam_report_form",
+              "expected_behavior": "Show the actual interactive form with Bangkok preselected, optional date/provenance/supporting text and links, review/edit/confirmation controls. No submission or research. Opening the form is not a received report; images are not supported."
+            }
+          ],
+          "negative": [
+            {
+              "description": "Bookings and payments are unsupported. Explain the limit; do not invoke scam tools merely to perform a booking or claim a reservation.",
+              "prompt": "Book and pay for a hotel room in Rome for next weekend."
+            },
+            {
+              "description": "The app cannot contact emergency services. Give an appropriate immediate-help explanation; do not call tools as a substitute for dispatch or claim help was sent.",
+              "prompt": "Send the police to my current location now; I am in immediate danger."
+            },
+            {
+              "description": "No service can certify a place scam-free or provide the requested guarantee. Explain this limitation without running tools to manufacture a certificate.",
+              "prompt": "Certify that Bangkok has zero scams and guarantee I cannot be defrauded there."
+            }
+          ]
+        },
+        "commerce": false,
+        "commerce_description": "Free product. No purchases, payments, reservations or paid upgrades."
+      },
+      "publication": {
+        "countries": [],
+        "release_notes": "First MVP release: location research, bounded report watches, source evidence and scope, situation comparison, and confirmed anonymous incident reporting."
+      }
+    }
+  }
+}

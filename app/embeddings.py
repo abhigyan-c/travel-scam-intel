@@ -55,6 +55,10 @@ class Embedder:
         try:
             if self._model is not None:
                 return
+            import onnxruntime
+
+            # Local embedding inference must not opt users into runtime telemetry.
+            onnxruntime.disable_telemetry_events()
             from fastembed import TextEmbedding
             from huggingface_hub import snapshot_download
             from tokenizers import Tokenizer

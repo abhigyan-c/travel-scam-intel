@@ -1,4 +1,5 @@
 import asyncio
+import sys
 import threading
 from types import SimpleNamespace
 from unittest.mock import Mock
@@ -25,6 +26,32 @@ async def test_invalid_inputs_do_not_load_model(texts):
 async def test_embedding_requires_explicit_preload():
     with pytest.raises(ValueError, match="not_preloaded"):
         await Embedder().embed(["A taxi fare report"])
+
+
+def test_local_preload_disables_telemetry_before_model_creation(monkeypatch):
+    events = []
+    monkeypatch.setitem(
+        sys.modules,
+        "onnxruntime",
+        SimpleNamespace(disable_telemetry_events=lambda: events.append("disabled")),
+    )
+
+    def model(*args, **kwargs):
+        assert events == ["disabled"]
+        events.append("model")
+        return Mock()
+
+    def snapshot(*args, **kwargs):
+        assert kwargs["local_files_only"] is True
+        assert len(kwargs["revision"]) == 40
+        return "/cached-model"
+
+    monkeypatch.setitem(sys.modules, "fastembed", SimpleNamespace(TextEmbedding=model))
+    monkeypatch.setitem(sys.modules, "huggingface_hub", SimpleNamespace(snapshot_download=snapshot))
+    monkeypatch.setitem(sys.modules, "tokenizers", SimpleNamespace(Tokenizer=Mock()))
+    embedder = Embedder()
+    embedder._preload(download=False)
+    assert events == ["disabled", "model"]
 
 
 async def test_token_window_never_silently_truncates():

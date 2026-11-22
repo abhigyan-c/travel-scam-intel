@@ -1158,3 +1158,23 @@ receipt. The token and private drafts remain in memory only.
 
 See [the admin runbook](docs/pr35-admin-dashboard.md) for API details, access controls,
 retry/reprocessing limitations, migration rollback and the remaining review gates.
+
+## Intelligence quality evaluation (PR 36)
+
+Run the 49-case labeled regression harness against local PostgreSQL, without provider
+credentials or external calls:
+
+```sh
+docker compose up -d --wait postgres
+uv run --locked python -m benchmarks.evaluate --mode replay --baseline benchmarks/data/36/baseline.json --output .tools/evaluation/report.json
+```
+
+It measures extraction, geography, semantic matching/false merges/splits, stored stance,
+duplicates/groups, independence, confidence and deterministic scheduler scenarios. CI
+publishes the report and rejects missing/stale recordings, quality-floor failures and
+new per-case regressions. Matching uses controlled vectors, so it does not measure the
+trained embedding model's retrieval quality. The baseline deliberately retains one
+broader-versus-narrower matching error (8/9 cases passed).
+
+See [the evaluation runbook](docs/pr36-evaluation-harness.md) for labels, thresholds,
+safe isolated execution, bounded opt-in provider capture and baseline review rules.

@@ -55,6 +55,14 @@ and lock/clear. The isolated fixture was removed; production counts stayed uncha
 and image/health/filter/MCP checks passed. PR 35 admin acceptance is complete.
 PR 33's explorer terminal-rendering gate remains deferred; PR 36 has not started.
 
+PR 36 update, 2026-11-22: `codex/pr-36-evaluation-harness` starts from latest
+`develop` (`33c430d`). It adds 49 independently labeled synthetic cases, actual
+extraction/resolution/lifecycle replay, deterministic quality/scheduler scenarios and
+CI non-regression reporting. A bounded 16-request capture is preserved with one known
+matching error; labels/prompts were not changed to conceal it. See
+[the proposed evaluation baseline](pr36-evaluation-harness.md). No deployment or
+PR 37 work is included; the deferred explorer host gate remains unchanged.
+
 - Retain exactly 38 numbered implementation PRs and their scope/review gates. PR 31 resumed on 2026-11-05 after HTTPS and ChatGPT access became available. Its hostname connection, first-ever query and follow-up gate passed with honest partial state; no completed research/findings were demonstrated before the worker deadlines. The user requested deadline investigation within PR 31: extraction time reservation, reusable partial relevance and retained diagnostics were implemented; a measured live refresh still returned zero claims because of fetch failures and grounding rejections. These remain product-readiness concerns; see `docs/pr31-mcp.md`. Any dependency-ready reordering must follow the deployment decision above and user confirmation.
 - Create each branch from the latest `develop`; target `develop`. Branch convention: `codex/pr-NN-short-description`.
 - Merge prerequisite PRs into `develop` before starting dependent work. Avoid stacked branches; independent work may proceed only when requested.

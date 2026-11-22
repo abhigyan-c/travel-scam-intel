@@ -1,0 +1,1502 @@
+{
+  "version": "evaluation-report-v1",
+  "corpus_hash": "1324fdfadd2fb538118ace008ea6032e3beb9c639ddd2be21d17753fc5cd9055",
+  "mode": "replay",
+  "recording_hash": "e9f44f04ee20dd7a7d3a4ed88a29bb9f77bd8a8417c71358b8d5e7279d09c35b",
+  "recorded_at": "2026-11-22T12:55:17.081659+00:00",
+  "source_hashes": {
+    "app/extraction.py": "31d300cb21441254f3b74c6bd94ac91ec825e9eaf85b7d8079ad55ce38ad31ac",
+    "app/relevance.py": "5a9b3551e5fcc52967495519e3c8211717f2ade33d9454cf78e4202f3cfa365a",
+    "app/hypothesis_resolution.py": "0073614bd503f50b127f689f50821a1e36800c630e0a8e908a96c47f4d686b6c",
+    "app/db/hypothesis_resolution.py": "311b5c93ce7ed5f7d3e5abfbae8fe67a6efdb5cbd78111cd4c575bc168a13e64",
+    "app/db/resolution.py": "0bb3340a151a7dcd313e5faac9b0c0ed08028ab24ed646d57455d846ad4a6417",
+    "app/db/embeddings.py": "a01775b8dca08201b28613be25a1339e795ed4d61547158af8f5f701aff45103",
+    "app/db/hypothesis_lifecycle.py": "b6dad5087191c8679036a8c7460ea9e494c2483c7387c018dd1cf3cf73d5748f",
+    "app/integrations/sarvam.py": "d29ae7ffa0dfaeeceec35bc553b6bf188b52f7b75aa3d4d3de99a7d4463865ea",
+    "app/duplicates.py": "33026fc8e7c08fc87deb9213029eba3d201cf2c9bc1d38324148e66ece10e3c1",
+    "app/db/duplicates.py": "66c8bbef9bd5520fd87399b097f4ffa08740fe236cadfbad35f1b70679d08bec",
+    "app/independence.py": "033230e9cc66c31dfa6852263eb44219b0e762d9ac2075a048160e25f8893c38",
+    "app/confidence.py": "e8fb7554d82027dc19f4fe2a8125ecac7f27f1a62c317f74307cf2c1bdae80d9",
+    "app/evidence_weight.py": "f65eeae85ab4f88006ec2454c0f43a29ba2b2e6a7ac001bfde0d17761f919799",
+    "app/scheduling.py": "a7ebefac8b5248b64fbe57dd44791841d3a07236ff9b82a1d9f30b0d86850e0e",
+    "app/db/scheduler.py": "ec48348086601744fd36f0178b28bf11f99ed1a87245b1ef8e4e204bd85afdb8"
+  },
+  "harness_hashes": {
+    "benchmarks/evaluate.py": "0ca8276f59343b33a1d632974288b3181dbf77d7e4b36f31d505380ec147115d",
+    "benchmarks/evaluation_metrics.py": "cf6670ef1c26b38f05eb7ea357b5230bcde59ddb62f6c4fa412e7cc569632b6b",
+    "benchmarks/evaluation_policies.py": "24af4bd16757526002067f90437dd23d8708c6d917d571a1a819f782beae976e",
+    "benchmarks/research.py": "bcd603048b4659348d8a7178f928bbb06019201ee2da0b80096fa5315eabd5bf"
+  },
+  "versions": {
+    "model": "sarvam-105b",
+    "extraction": "claims-v7",
+    "location": "location-v3",
+    "matching": "hypothesis-v4",
+    "duplicates": "duplicates-v1",
+    "independence": "independence-v1",
+    "confidence": "confidence-v1",
+    "vectors": "controlled-v1 (not a trained retrieval measurement)"
+  },
+  "source_tree_dirty": true,
+  "commit": "33c430d753e9c784509a36370c550be5a43fc1a9",
+  "quality_passed": true,
+  "execution_passed": true,
+  "scorecard": {
+    "all": {
+      "tasks": {
+        "confidence": {
+          "passed": 5,
+          "total": 5,
+          "value": 1.0,
+          "target": 1.0,
+          "meets_target": true
+        },
+        "duplicate_groups": {
+          "passed": 2,
+          "total": 2,
+          "value": 1.0,
+          "target": 1.0,
+          "meets_target": true
+        },
+        "duplicates": {
+          "passed": 6,
+          "total": 6,
+          "value": 1.0,
+          "target": 1.0,
+          "meets_target": true
+        },
+        "extraction": {
+          "passed": 8,
+          "total": 8,
+          "value": 1.0,
+          "target": 0.75,
+          "meets_target": true
+        },
+        "independence": {
+          "passed": 4,
+          "total": 4,
+          "value": 1.0,
+          "target": 1.0,
+          "meets_target": true
+        },
+        "location": {
+          "passed": 8,
+          "total": 8,
+          "value": 1.0,
+          "target": 1.0,
+          "meets_target": true
+        },
+        "matching": {
+          "passed": 8,
+          "total": 9,
+          "value": 0.8888888888888888,
+          "target": 0.75,
+          "meets_target": true
+        },
+        "scheduler": {
+          "passed": 7,
+          "total": 7,
+          "value": 1.0,
+          "target": 1.0,
+          "meets_target": true
+        }
+      },
+      "metrics": {
+        "extraction_precision": {
+          "passed": 4,
+          "total": 4,
+          "value": 1.0,
+          "target": 0.8,
+          "meets_target": true
+        },
+        "extraction_recall": {
+          "passed": 4,
+          "total": 4,
+          "value": 1.0,
+          "target": 0.8,
+          "meets_target": true
+        },
+        "negative_safety": {
+          "passed": 4,
+          "total": 4,
+          "value": 1.0,
+          "target": 1.0,
+          "meets_target": true
+        },
+        "no_invented_dates": {
+          "passed": 8,
+          "total": 8,
+          "value": 1.0,
+          "target": 1.0,
+          "meets_target": true
+        },
+        "sensitivity_policy": {
+          "passed": 8,
+          "total": 8,
+          "value": 1.0,
+          "target": 1.0,
+          "meets_target": true
+        },
+        "no_false_merges": {
+          "passed": 7,
+          "total": 7,
+          "value": 1.0,
+          "target": 1.0,
+          "meets_target": true
+        },
+        "no_false_splits": {
+          "passed": 2,
+          "total": 2,
+          "value": 1.0,
+          "target": 1.0,
+          "meets_target": true
+        },
+        "stance_accuracy": {
+          "passed": 9,
+          "total": 9,
+          "value": 1.0,
+          "target": 1.0,
+          "meets_target": true
+        }
+      },
+      "matching_confusion": [
+        {
+          "expected": "CONTRADICTS",
+          "observed": "CONTRADICTS",
+          "count": 1
+        },
+        {
+          "expected": "NEW",
+          "observed": "NEW",
+          "count": 1
+        },
+        {
+          "expected": "RELATED",
+          "observed": "RELATED",
+          "count": 3
+        },
+        {
+          "expected": "RELATED",
+          "observed": "SUBTYPE",
+          "count": 1
+        },
+        {
+          "expected": "SAME",
+          "observed": "SAME",
+          "count": 2
+        },
+        {
+          "expected": "SUBTYPE",
+          "observed": "SUBTYPE",
+          "count": 1
+        }
+      ],
+      "matching_errors": {
+        "false_merges": 0,
+        "distinct_opportunities": 7,
+        "false_splits": 0,
+        "same_opportunities": 2,
+        "unavailable": 0
+      }
+    },
+    "development": {
+      "tasks": {
+        "confidence": {
+          "passed": 2,
+          "total": 2,
+          "value": 1.0,
+          "target": 1.0,
+          "meets_target": true
+        },
+        "duplicate_groups": {
+          "passed": 1,
+          "total": 1,
+          "value": 1.0,
+          "target": 1.0,
+          "meets_target": true
+        },
+        "duplicates": {
+          "passed": 3,
+          "total": 3,
+          "value": 1.0,
+          "target": 1.0,
+          "meets_target": true
+        },
+        "extraction": {
+          "passed": 4,
+          "total": 4,
+          "value": 1.0,
+          "target": 0.75,
+          "meets_target": true
+        },
+        "independence": {
+          "passed": 2,
+          "total": 2,
+          "value": 1.0,
+          "target": 1.0,
+          "meets_target": true
+        },
+        "location": {
+          "passed": 4,
+          "total": 4,
+          "value": 1.0,
+          "target": 1.0,
+          "meets_target": true
+        },
+        "matching": {
+          "passed": 4,
+          "total": 4,
+          "value": 1.0,
+          "target": 0.75,
+          "meets_target": true
+        },
+        "scheduler": {
+          "passed": 4,
+          "total": 4,
+          "value": 1.0,
+          "target": 1.0,
+          "meets_target": true
+        }
+      },
+      "metrics": {
+        "extraction_precision": {
+          "passed": 2,
+          "total": 2,
+          "value": 1.0,
+          "target": 0.8,
+          "meets_target": true
+        },
+        "extraction_recall": {
+          "passed": 2,
+          "total": 2,
+          "value": 1.0,
+          "target": 0.8,
+          "meets_target": true
+        },
+        "negative_safety": {
+          "passed": 2,
+          "total": 2,
+          "value": 1.0,
+          "target": 1.0,
+          "meets_target": true
+        },
+        "no_invented_dates": {
+          "passed": 4,
+          "total": 4,
+          "value": 1.0,
+          "target": 1.0,
+          "meets_target": true
+        },
+        "sensitivity_policy": {
+          "passed": 4,
+          "total": 4,
+          "value": 1.0,
+          "target": 1.0,
+          "meets_target": true
+        },
+        "no_false_merges": {
+          "passed": 3,
+          "total": 3,
+          "value": 1.0,
+          "target": 1.0,
+          "meets_target": true
+        },
+        "no_false_splits": {
+          "passed": 1,
+          "total": 1,
+          "value": 1.0,
+          "target": 1.0,
+          "meets_target": true
+        },
+        "stance_accuracy": {
+          "passed": 4,
+          "total": 4,
+          "value": 1.0,
+          "target": 1.0,
+          "meets_target": true
+        }
+      },
+      "matching_confusion": [
+        {
+          "expected": "CONTRADICTS",
+          "observed": "CONTRADICTS",
+          "count": 1
+        },
+        {
+          "expected": "RELATED",
+          "observed": "RELATED",
+          "count": 1
+        },
+        {
+          "expected": "SAME",
+          "observed": "SAME",
+          "count": 1
+        },
+        {
+          "expected": "SUBTYPE",
+          "observed": "SUBTYPE",
+          "count": 1
+        }
+      ],
+      "matching_errors": {
+        "false_merges": 0,
+        "distinct_opportunities": 3,
+        "false_splits": 0,
+        "same_opportunities": 1,
+        "unavailable": 0
+      }
+    },
+    "holdout": {
+      "tasks": {
+        "confidence": {
+          "passed": 3,
+          "total": 3,
+          "value": 1.0,
+          "target": 1.0,
+          "meets_target": true
+        },
+        "duplicate_groups": {
+          "passed": 1,
+          "total": 1,
+          "value": 1.0,
+          "target": 1.0,
+          "meets_target": true
+        },
+        "duplicates": {
+          "passed": 3,
+          "total": 3,
+          "value": 1.0,
+          "target": 1.0,
+          "meets_target": true
+        },
+        "extraction": {
+          "passed": 4,
+          "total": 4,
+          "value": 1.0,
+          "target": 0.75,
+          "meets_target": true
+        },
+        "independence": {
+          "passed": 2,
+          "total": 2,
+          "value": 1.0,
+          "target": 1.0,
+          "meets_target": true
+        },
+        "location": {
+          "passed": 4,
+          "total": 4,
+          "value": 1.0,
+          "target": 1.0,
+          "meets_target": true
+        },
+        "matching": {
+          "passed": 4,
+          "total": 5,
+          "value": 0.8,
+          "target": 0.75,
+          "meets_target": true
+        },
+        "scheduler": {
+          "passed": 3,
+          "total": 3,
+          "value": 1.0,
+          "target": 1.0,
+          "meets_target": true
+        }
+      },
+      "metrics": {
+        "extraction_precision": {
+          "passed": 2,
+          "total": 2,
+          "value": 1.0,
+          "target": 0.8,
+          "meets_target": true
+        },
+        "extraction_recall": {
+          "passed": 2,
+          "total": 2,
+          "value": 1.0,
+          "target": 0.8,
+          "meets_target": true
+        },
+        "negative_safety": {
+          "passed": 2,
+          "total": 2,
+          "value": 1.0,
+          "target": 1.0,
+          "meets_target": true
+        },
+        "no_invented_dates": {
+          "passed": 4,
+          "total": 4,
+          "value": 1.0,
+          "target": 1.0,
+          "meets_target": true
+        },
+        "sensitivity_policy": {
+          "passed": 4,
+          "total": 4,
+          "value": 1.0,
+          "target": 1.0,
+          "meets_target": true
+        },
+        "no_false_merges": {
+          "passed": 4,
+          "total": 4,
+          "value": 1.0,
+          "target": 1.0,
+          "meets_target": true
+        },
+        "no_false_splits": {
+          "passed": 1,
+          "total": 1,
+          "value": 1.0,
+          "target": 1.0,
+          "meets_target": true
+        },
+        "stance_accuracy": {
+          "passed": 5,
+          "total": 5,
+          "value": 1.0,
+          "target": 1.0,
+          "meets_target": true
+        }
+      },
+      "matching_confusion": [
+        {
+          "expected": "NEW",
+          "observed": "NEW",
+          "count": 1
+        },
+        {
+          "expected": "RELATED",
+          "observed": "RELATED",
+          "count": 2
+        },
+        {
+          "expected": "RELATED",
+          "observed": "SUBTYPE",
+          "count": 1
+        },
+        {
+          "expected": "SAME",
+          "observed": "SAME",
+          "count": 1
+        }
+      ],
+      "matching_errors": {
+        "false_merges": 0,
+        "distinct_opportunities": 4,
+        "false_splits": 0,
+        "same_opportunities": 1,
+        "unavailable": 0
+      }
+    }
+  },
+  "cases": [
+    {
+      "id": "fare-promise",
+      "task": "extraction",
+      "split": "development",
+      "input_hash": "449ba881ee00e3956095a081fb55a61845fc2ebe00687aabbcfe18c6f7916fba",
+      "error": null,
+      "observed": {
+        "claims": [
+          {
+            "claim": "A driver demanded extra money after a fixed taxi fare was agreed upon in Rome.",
+            "evidence_quote": "In Rome, I agreed to a fixed taxi fare, but the driver demanded extra money on arrival.",
+            "location": "In Rome",
+            "approach": [],
+            "methods": [],
+            "warning_signs": [],
+            "entities": [],
+            "occurred_at": null,
+            "first_hand": true,
+            "confidence": 1.0,
+            "sensitive": false
+          }
+        ],
+        "counts": {
+          "true_positive": 1,
+          "false_positive": 0,
+          "false_negative": 0
+        }
+      },
+      "checks": {
+        "mechanism_claims": true,
+        "no_invented_dates": true,
+        "sensitivity_policy": true
+      }
+    },
+    {
+      "id": "bracelet",
+      "task": "extraction",
+      "split": "development",
+      "input_hash": "c99778255a13e3cb87851a2f269820f0d27e2a8d3dcb46841f18ea710d5c4810",
+      "error": null,
+      "observed": {
+        "claims": [
+          {
+            "claim": "A seller in Rome falsely claimed a bracelet was free, placed it on the traveler's wrist, and then demanded payment.",
+            "evidence_quote": "In Rome a seller called a bracelet free, put it on my wrist, then demanded payment.",
+            "location": "In Rome",
+            "approach": [],
+            "methods": [],
+            "warning_signs": [],
+            "entities": [],
+            "occurred_at": null,
+            "first_hand": true,
+            "confidence": 1.0,
+            "sensitive": false
+          }
+        ],
+        "counts": {
+          "true_positive": 1,
+          "false_positive": 0,
+          "false_negative": 0
+        }
+      },
+      "checks": {
+        "mechanism_claims": true,
+        "no_invented_dates": true,
+        "sensitivity_policy": true
+      }
+    },
+    {
+      "id": "normal-fare",
+      "task": "extraction",
+      "split": "development",
+      "input_hash": "046a89da783df19619dfb473a56b3b8729e404a88acf7b8bd602caa786bca56c",
+      "error": null,
+      "observed": {
+        "claims": [],
+        "counts": {
+          "true_positive": 0,
+          "false_positive": 0,
+          "false_negative": 0
+        }
+      },
+      "checks": {
+        "mechanism_claims": true,
+        "no_invented_dates": true,
+        "sensitivity_policy": true,
+        "negative_safety": true
+      }
+    },
+    {
+      "id": "injection",
+      "task": "extraction",
+      "split": "development",
+      "input_hash": "ebf2194d4616068bc53edcbe5e49e87cef1a1f638f83182668adfbe1b54009dc",
+      "error": null,
+      "observed": {
+        "claims": [],
+        "counts": {
+          "true_positive": 0,
+          "false_positive": 0,
+          "false_negative": 0
+        }
+      },
+      "checks": {
+        "mechanism_claims": true,
+        "no_invented_dates": true,
+        "sensitivity_policy": true,
+        "negative_safety": true
+      }
+    },
+    {
+      "id": "closure",
+      "task": "extraction",
+      "split": "holdout",
+      "input_hash": "69f4a536f8340063a9cf8d29152f96361c89d2f7f6c6a10a546ab236db7cda9e",
+      "error": null,
+      "observed": {
+        "claims": [
+          {
+            "claim": "A stranger falsely claimed the Grand Palace was closed and diverted the traveler to a shop.",
+            "evidence_quote": "At the Grand Palace in Bangkok, a stranger falsely said it was closed and diverted me to a shop.",
+            "location": "At the Grand Palace in Bangkok",
+            "approach": [],
+            "methods": [],
+            "warning_signs": [],
+            "entities": [],
+            "occurred_at": null,
+            "first_hand": true,
+            "confidence": 1.0,
+            "sensitive": false
+          }
+        ],
+        "counts": {
+          "true_positive": 1,
+          "false_positive": 0,
+          "false_negative": 0
+        }
+      },
+      "checks": {
+        "mechanism_claims": true,
+        "no_invented_dates": true,
+        "sensitivity_policy": true
+      }
+    },
+    {
+      "id": "named-shop",
+      "task": "extraction",
+      "split": "holdout",
+      "input_hash": "330b7bdad4375f58bc4ce34f1a9555b2f17f41ffbca9fa299a1122ffb4fdc6e5",
+      "error": null,
+      "observed": {
+        "claims": [
+          {
+            "claim": "Example Jewel Studio promised a free tour in Rome and then demanded a hidden fee.",
+            "evidence_quote": "In Rome the fictional Example Jewel Studio promised a free tour, then demanded a hidden fee.",
+            "location": "Rome",
+            "approach": [],
+            "methods": [],
+            "warning_signs": [],
+            "entities": [
+              "Example Jewel Studio"
+            ],
+            "occurred_at": null,
+            "first_hand": null,
+            "confidence": 1.0,
+            "sensitive": true
+          }
+        ],
+        "counts": {
+          "true_positive": 1,
+          "false_positive": 0,
+          "false_negative": 0
+        }
+      },
+      "checks": {
+        "mechanism_claims": true,
+        "no_invented_dates": true,
+        "sensitivity_policy": true
+      }
+    },
+    {
+      "id": "disclosed-fee",
+      "task": "extraction",
+      "split": "holdout",
+      "input_hash": "aa863e60fc6d6a3abd23ff7a99a0add8414ab89b4b37acc96708914ac6cb0b3d",
+      "error": null,
+      "observed": {
+        "claims": [],
+        "counts": {
+          "true_positive": 0,
+          "false_positive": 0,
+          "false_negative": 0
+        }
+      },
+      "checks": {
+        "mechanism_claims": true,
+        "no_invented_dates": true,
+        "sensitivity_policy": true,
+        "negative_safety": true
+      }
+    },
+    {
+      "id": "legitimate-closure",
+      "task": "extraction",
+      "split": "holdout",
+      "input_hash": "06dfb95650aa124a46e3d67ab4dc30358dee64fba6e518c17089df4bac27bc2d",
+      "error": null,
+      "observed": {
+        "claims": [],
+        "counts": {
+          "true_positive": 0,
+          "false_positive": 0,
+          "false_negative": 0
+        }
+      },
+      "checks": {
+        "mechanism_claims": true,
+        "no_invented_dates": true,
+        "sensitivity_policy": true,
+        "negative_safety": true
+      }
+    },
+    {
+      "id": "exact-city",
+      "task": "location",
+      "split": "development",
+      "input_hash": "90069889d5b7f998f141406403b36898dde0394c2d47b1c4c9915b4ac447e43b",
+      "error": null,
+      "observed": {
+        "status": "resolved",
+        "path": [
+          "Italy",
+          "Rome"
+        ]
+      },
+      "checks": {
+        "status": true,
+        "path": true
+      }
+    },
+    {
+      "id": "qualified-poi",
+      "task": "location",
+      "split": "development",
+      "input_hash": "da4ee59e1453eeffd20ecae32e7bee28d4df6d370d64d02dc7e91dd9d9ce33b6",
+      "error": null,
+      "observed": {
+        "status": "resolved",
+        "path": [
+          "Thailand",
+          "Bangkok",
+          "Grand Palace"
+        ]
+      },
+      "checks": {
+        "status": true,
+        "path": true
+      }
+    },
+    {
+      "id": "ambiguous-name",
+      "task": "location",
+      "split": "development",
+      "input_hash": "c2a64e2b593617991d0d5cb02b443e93e3e0cc30c88688f55f4c65e0aa566905",
+      "error": null,
+      "observed": {
+        "status": "ambiguous",
+        "path": []
+      },
+      "checks": {
+        "status": true,
+        "path": true
+      }
+    },
+    {
+      "id": "unknown-no-context",
+      "task": "location",
+      "split": "development",
+      "input_hash": "d2416008f0cb692caee08d5e633ed0edbd6d4501f199ca28690a35d78578339f",
+      "error": null,
+      "observed": {
+        "status": "unresolved",
+        "path": []
+      },
+      "checks": {
+        "status": true,
+        "path": true
+      }
+    },
+    {
+      "id": "country-context",
+      "task": "location",
+      "split": "holdout",
+      "input_hash": "93de52d43b423c11cb54f7b49a28fcbf468e45f9f95b1f33446f530e3bebb5da",
+      "error": null,
+      "observed": {
+        "status": "resolved",
+        "path": [
+          "United States",
+          "Springfield"
+        ]
+      },
+      "checks": {
+        "status": true,
+        "path": true
+      }
+    },
+    {
+      "id": "provisional-poi",
+      "task": "location",
+      "split": "holdout",
+      "input_hash": "28366233ae4b3b898950470621b83f40a305f797f3abdb789450bcded894251d",
+      "error": null,
+      "observed": {
+        "status": "provisional",
+        "path": [
+          "Italy",
+          "Rome",
+          "Silver Gate Museum"
+        ]
+      },
+      "checks": {
+        "status": true,
+        "path": true
+      }
+    },
+    {
+      "id": "missing-place",
+      "task": "location",
+      "split": "holdout",
+      "input_hash": "152e028db54a90c1e3c7cccd1b4e47bc2da54d39ceeecb3ed21f0bc6345260f2",
+      "error": null,
+      "observed": {
+        "status": "unresolved",
+        "path": []
+      },
+      "checks": {
+        "status": true,
+        "path": true
+      }
+    },
+    {
+      "id": "wrong-parent",
+      "task": "location",
+      "split": "holdout",
+      "input_hash": "b5a7130a6e22b3d7c186648a075fdbced01d1164901128c32a8fda610b2e6c27",
+      "error": null,
+      "observed": {
+        "status": "unresolved",
+        "path": []
+      },
+      "checks": {
+        "status": true,
+        "path": true
+      }
+    },
+    {
+      "id": "same-meter",
+      "task": "matching",
+      "split": "development",
+      "input_hash": "8ae2abfc0976994bab1b50a5fc8f346734dce487d55e52dc70eb04d0b539a680",
+      "error": null,
+      "observed": {
+        "decision": "SAME",
+        "target": "meter",
+        "stance": "supports",
+        "review_required": true,
+        "candidate_count": 1
+      },
+      "checks": {
+        "decision": true,
+        "target": true,
+        "stance": true
+      }
+    },
+    {
+      "id": "distinct-method",
+      "task": "matching",
+      "split": "development",
+      "input_hash": "0d478cd99a5a5735c92508490cb489c1176a1057a4cd070f9d717e7794e32d92",
+      "error": null,
+      "observed": {
+        "decision": "RELATED",
+        "target": "meter",
+        "stance": "supports",
+        "review_required": true,
+        "candidate_count": 1
+      },
+      "checks": {
+        "decision": true,
+        "target": true,
+        "stance": true
+      }
+    },
+    {
+      "id": "narrower",
+      "task": "matching",
+      "split": "development",
+      "input_hash": "5fe5da07ae66331a91016589c059de15e3e085e4f0b93e97ac2ab53028cf7362",
+      "error": null,
+      "observed": {
+        "decision": "SUBTYPE",
+        "target": "umbrella",
+        "stance": "supports",
+        "review_required": true,
+        "candidate_count": 1
+      },
+      "checks": {
+        "decision": true,
+        "target": true,
+        "stance": true
+      }
+    },
+    {
+      "id": "explicit-opposition",
+      "task": "matching",
+      "split": "development",
+      "input_hash": "890b6893fcdf89c76e7e694581eb3a1f7b2b612005f86d125dd28c2f749bbd2d",
+      "error": null,
+      "observed": {
+        "decision": "CONTRADICTS",
+        "target": "event",
+        "stance": "contradicts",
+        "review_required": true,
+        "candidate_count": 1
+      },
+      "checks": {
+        "decision": true,
+        "target": true,
+        "stance": true
+      }
+    },
+    {
+      "id": "same-paraphrase",
+      "task": "matching",
+      "split": "holdout",
+      "input_hash": "a89aefebd5d7be4d4bcfe371ef954ba8aec5fe51d826dacc4ad2f6446f683ee2",
+      "error": null,
+      "observed": {
+        "decision": "SAME",
+        "target": "meter",
+        "stance": "supports",
+        "review_required": true,
+        "candidate_count": 1
+      },
+      "checks": {
+        "decision": true,
+        "target": true,
+        "stance": true
+      }
+    },
+    {
+      "id": "different-trick",
+      "task": "matching",
+      "split": "holdout",
+      "input_hash": "df8e53a9d98ef664ab20da6d5ca787ea0cdfc68aa49cf0c6fec816ccc292e59a",
+      "error": null,
+      "observed": {
+        "decision": "RELATED",
+        "target": "diversion",
+        "stance": "supports",
+        "review_required": true,
+        "candidate_count": 1
+      },
+      "checks": {
+        "decision": true,
+        "target": true,
+        "stance": true
+      }
+    },
+    {
+      "id": "normal-not-contradiction",
+      "task": "matching",
+      "split": "holdout",
+      "input_hash": "7b25036aed498f2d7fe1f541e4b340471ad6d376c1b467c85b8b0b5a5ae63e26",
+      "error": null,
+      "observed": {
+        "decision": "RELATED",
+        "target": "meter",
+        "stance": "supports",
+        "review_required": true,
+        "candidate_count": 1
+      },
+      "checks": {
+        "decision": true,
+        "target": true,
+        "stance": true
+      }
+    },
+    {
+      "id": "broader-not-subtype",
+      "task": "matching",
+      "split": "holdout",
+      "input_hash": "e75f4933c83d0d27daeb3e89b59217090beebfb706367cb3613fd99e1fe0cfe8",
+      "error": null,
+      "observed": {
+        "decision": "SUBTYPE",
+        "target": "specific",
+        "stance": "supports",
+        "review_required": true,
+        "candidate_count": 1
+      },
+      "checks": {
+        "decision": false,
+        "target": true,
+        "stance": true
+      }
+    },
+    {
+      "id": "geography-separation",
+      "task": "matching",
+      "split": "holdout",
+      "input_hash": "53e542f79f1ed5060083ac4eb03d708c4bfca7bb4c70119875c9307e9706af73",
+      "error": null,
+      "observed": {
+        "decision": "NEW",
+        "target": null,
+        "stance": "supports",
+        "review_required": false,
+        "candidate_count": 0
+      },
+      "checks": {
+        "decision": true,
+        "target": true,
+        "stance": true
+      }
+    },
+    {
+      "id": "copy-origin",
+      "task": "duplicates",
+      "split": "development",
+      "input_hash": "3f86f66f867f0d1da201cd4b60a250571f8f1ba240afb3ca54c8db253b12ca16",
+      "error": null,
+      "observed": {
+        "classification": "duplicate",
+        "signals": {
+          "same_normalized_claim": true,
+          "same_document": false,
+          "same_quote_span": false,
+          "same_url": true,
+          "same_raw_hash": false,
+          "same_clean_hash": false,
+          "same_platform_author": false,
+          "same_platform_thread": false,
+          "exact_quote": true,
+          "substantial_quote": true,
+          "quote_overlap": 1.0,
+          "embedding_cosine": null,
+          "cross_post_reference": false,
+          "conflicting_context": false
+        }
+      },
+      "checks": {
+        "classification": true
+      }
+    },
+    {
+      "id": "independent-accounts",
+      "task": "duplicates",
+      "split": "development",
+      "input_hash": "5ab7c0f450c939d818ae9cc34e26cb0ace6aef75599fd5c259dfa14eb8fa7831",
+      "error": null,
+      "observed": {
+        "classification": "no_match",
+        "signals": {
+          "same_normalized_claim": false,
+          "same_document": false,
+          "same_quote_span": false,
+          "same_url": false,
+          "same_raw_hash": false,
+          "same_clean_hash": false,
+          "same_platform_author": false,
+          "same_platform_thread": false,
+          "exact_quote": false,
+          "substantial_quote": false,
+          "quote_overlap": 0.0,
+          "embedding_cosine": null,
+          "cross_post_reference": false,
+          "conflicting_context": false
+        }
+      },
+      "checks": {
+        "classification": true
+      }
+    },
+    {
+      "id": "short-quote",
+      "task": "duplicates",
+      "split": "development",
+      "input_hash": "612ab695212e94a190d4ef39d8a57745f12aa09e0525265435a834ad85f8bb1a",
+      "error": null,
+      "observed": {
+        "classification": "suspected",
+        "signals": {
+          "same_normalized_claim": true,
+          "same_document": false,
+          "same_quote_span": false,
+          "same_url": true,
+          "same_raw_hash": false,
+          "same_clean_hash": false,
+          "same_platform_author": false,
+          "same_platform_thread": false,
+          "exact_quote": true,
+          "substantial_quote": false,
+          "quote_overlap": 0,
+          "embedding_cosine": null,
+          "cross_post_reference": false,
+          "conflicting_context": false
+        }
+      },
+      "checks": {
+        "classification": true
+      }
+    },
+    {
+      "id": "copy-conflict",
+      "task": "duplicates",
+      "split": "holdout",
+      "input_hash": "c9a37519b5960d860840ee466a3026284d574de4be4f31aac32cadd53f8b7b1f",
+      "error": null,
+      "observed": {
+        "classification": "suspected",
+        "signals": {
+          "same_normalized_claim": true,
+          "same_document": false,
+          "same_quote_span": false,
+          "same_url": true,
+          "same_raw_hash": false,
+          "same_clean_hash": false,
+          "same_platform_author": false,
+          "same_platform_thread": false,
+          "exact_quote": true,
+          "substantial_quote": true,
+          "quote_overlap": 1.0,
+          "embedding_cosine": null,
+          "cross_post_reference": false,
+          "conflicting_context": true
+        }
+      },
+      "checks": {
+        "classification": true
+      }
+    },
+    {
+      "id": "crosspost",
+      "task": "duplicates",
+      "split": "holdout",
+      "input_hash": "e4d20a5fbce909453ad760a6667d02166763c9be77dd1ddb73b4753741b9a8d8",
+      "error": null,
+      "observed": {
+        "classification": "duplicate",
+        "signals": {
+          "same_normalized_claim": true,
+          "same_document": false,
+          "same_quote_span": false,
+          "same_url": false,
+          "same_raw_hash": false,
+          "same_clean_hash": false,
+          "same_platform_author": false,
+          "same_platform_thread": false,
+          "exact_quote": true,
+          "substantial_quote": true,
+          "quote_overlap": 1.0,
+          "embedding_cosine": null,
+          "cross_post_reference": true,
+          "conflicting_context": false
+        }
+      },
+      "checks": {
+        "classification": true
+      }
+    },
+    {
+      "id": "anonymous-parallel",
+      "task": "duplicates",
+      "split": "holdout",
+      "input_hash": "249466548c9dcc05f155dca95eed53fa028446c7a2bca2547d08cb806b20530d",
+      "error": null,
+      "observed": {
+        "classification": "no_match",
+        "signals": {
+          "same_normalized_claim": true,
+          "same_document": false,
+          "same_quote_span": false,
+          "same_url": false,
+          "same_raw_hash": false,
+          "same_clean_hash": false,
+          "same_platform_author": false,
+          "same_platform_thread": false,
+          "exact_quote": false,
+          "substantial_quote": false,
+          "quote_overlap": 0.0,
+          "embedding_cosine": null,
+          "cross_post_reference": false,
+          "conflicting_context": false
+        }
+      },
+      "checks": {
+        "classification": true
+      }
+    },
+    {
+      "id": "copy-group",
+      "task": "duplicate_groups",
+      "split": "development",
+      "input_hash": "d041254911d0ae635c471ed0dac5461347d90fed2ed41b73a270d4d2581198f5",
+      "error": null,
+      "observed": {
+        "groups": [
+          [
+            "c0",
+            "c1",
+            "c2"
+          ]
+        ]
+      },
+      "checks": {
+        "groups": true
+      }
+    },
+    {
+      "id": "conflicting-copy-group",
+      "task": "duplicate_groups",
+      "split": "holdout",
+      "input_hash": "f5d18a32ab572d48f13715e505563169242728c784020cf9588a188a48fdd05e",
+      "error": null,
+      "observed": {
+        "groups": [
+          [
+            "c0",
+            "c1"
+          ]
+        ]
+      },
+      "checks": {
+        "groups": true
+      }
+    },
+    {
+      "id": "documented-independent",
+      "task": "independence",
+      "split": "development",
+      "input_hash": "890ac25d076671907ecb3c39a753ebc6ab7531cc8090bf928ebd18d9375df2b3",
+      "error": null,
+      "observed": {
+        "scores": [
+          1.0,
+          1.0
+        ]
+      },
+      "checks": {
+        "credit_bounds": true
+      }
+    },
+    {
+      "id": "same-author",
+      "task": "independence",
+      "split": "development",
+      "input_hash": "722f18e1baa9da510fc859c291d906f4ecd7f9776806db11d835a43ed66c073c",
+      "error": null,
+      "observed": {
+        "scores": [
+          1.0,
+          0.25
+        ]
+      },
+      "checks": {
+        "credit_bounds": true
+      }
+    },
+    {
+      "id": "unknown-origins",
+      "task": "independence",
+      "split": "holdout",
+      "input_hash": "c69c42eaf38741801441e6d9b70dfcc1322d4474929784ecdb583e1780d95eec",
+      "error": null,
+      "observed": {
+        "scores": [
+          0.5,
+          0.5
+        ]
+      },
+      "checks": {
+        "credit_bounds": true
+      }
+    },
+    {
+      "id": "confirmed-copy-credit",
+      "task": "independence",
+      "split": "holdout",
+      "input_hash": "591fac6cdb7bd602d9976e67b44bc131fea26f0e58bcb7ec0d329abbebdb4ba8",
+      "error": null,
+      "observed": {
+        "scores": [
+          1.0,
+          0.0
+        ]
+      },
+      "checks": {
+        "credit_bounds": true
+      }
+    },
+    {
+      "id": "independent-growth",
+      "task": "confidence",
+      "split": "development",
+      "input_hash": "de6f546caf140e1ae94dec2bcee3303cd84c7eeaaa4e5fe4c9f10929aa4dcd54",
+      "error": null,
+      "observed": {
+        "base": 0.266667,
+        "variant": 0.571429,
+        "relation": "greater"
+      },
+      "checks": {
+        "scenario": true
+      }
+    },
+    {
+      "id": "copies-no-growth",
+      "task": "confidence",
+      "split": "development",
+      "input_hash": "ebcf6d5deee251fcd591cebb3f2127b048ae059ddc0f0bf06a88ef48c5697b13",
+      "error": null,
+      "observed": {
+        "base": 0.266667,
+        "variant": 0.266667,
+        "relation": "equal"
+      },
+      "checks": {
+        "scenario": true
+      }
+    },
+    {
+      "id": "contradictions-reduce",
+      "task": "confidence",
+      "split": "holdout",
+      "input_hash": "24472184f9045d6e944d49172349f824d8161d4591bf04b854305ca48795c635",
+      "error": null,
+      "observed": {
+        "base": 0.266667,
+        "variant": 0.16,
+        "relation": "less"
+      },
+      "checks": {
+        "scenario": true
+      }
+    },
+    {
+      "id": "held-excluded",
+      "task": "confidence",
+      "split": "holdout",
+      "input_hash": "06d33c79626520b103aaf6101ec3fb88454b9076ffa7e0b2be21a6e39790a60d",
+      "error": null,
+      "observed": {
+        "base": 0.266667,
+        "variant": 0.266667,
+        "relation": "equal"
+      },
+      "checks": {
+        "scenario": true
+      }
+    },
+    {
+      "id": "wrong-geography",
+      "task": "confidence",
+      "split": "holdout",
+      "input_hash": "e5ae8fe83f8398acca7ab340f779887e6a5a91452ebc30e296c3764c03c0c38e",
+      "error": null,
+      "observed": {
+        "base": 0.266667,
+        "variant": 0.0,
+        "relation": "less"
+      },
+      "checks": {
+        "scenario": true
+      }
+    },
+    {
+      "id": "hot-outranks-cold",
+      "task": "scheduler",
+      "split": "development",
+      "input_hash": "421dfdddfce266d4cd04b0a78f5184643cdd25627c41003a2ead0383577d632b",
+      "error": null,
+      "observed": {
+        "hot": 110.5,
+        "cold": null
+      },
+      "checks": {
+        "scenario": true
+      }
+    },
+    {
+      "id": "uncertain-hypothesis",
+      "task": "scheduler",
+      "split": "development",
+      "input_hash": "bf2cb12ca4839ddca582126ac1098f59fd289de457ecceed1ae34aea1b633005",
+      "error": null,
+      "observed": {
+        "special": 65.5,
+        "routine": 10.5
+      },
+      "checks": {
+        "scenario": true
+      }
+    },
+    {
+      "id": "first-enrichment",
+      "task": "scheduler",
+      "split": "development",
+      "input_hash": "24426cb8f40b6e99f1d791beffb056c84649613e164564bf8493d7a75d76bdbd",
+      "error": null,
+      "observed": {
+        "special": 100.5,
+        "routine": 10.5
+      },
+      "checks": {
+        "scenario": true
+      }
+    },
+    {
+      "id": "cycle-all-dimensions",
+      "task": "scheduler",
+      "split": "development",
+      "input_hash": "9eb7ed8128279b44685314d3496657745602d2186e3e9a17ce5ad6391e86a560",
+      "error": null,
+      "observed": {
+        "admitted": 2,
+        "used": {
+          "jobs": 2,
+          "queries": 6,
+          "fetches": 6,
+          "llm_calls": 6
+        },
+        "caps": {
+          "jobs": 2,
+          "queries": 6,
+          "fetches": 6,
+          "llm_calls": 6
+        }
+      },
+      "checks": {
+        "scenario": true
+      }
+    },
+    {
+      "id": "demand-decay",
+      "task": "scheduler",
+      "split": "holdout",
+      "input_hash": "1bf32b9ebe361f21b61e726512d72b4d653920df204e8a84c58e4a2b0d7d7ff4",
+      "error": null,
+      "observed": {
+        "tiers": [
+          "HOT",
+          "ACTIVE",
+          "NORMAL",
+          "COLD",
+          "DORMANT"
+        ]
+      },
+      "checks": {
+        "scenario": true
+      }
+    },
+    {
+      "id": "cooldown-no-override",
+      "task": "scheduler",
+      "split": "holdout",
+      "input_hash": "1639ee18450213c6e6ea64ca7ede12de1a755fe989352fcd216ee71f40c0dbfa",
+      "error": null,
+      "observed": {
+        "priority": null
+      },
+      "checks": {
+        "scenario": true
+      }
+    },
+    {
+      "id": "dormant-no-override",
+      "task": "scheduler",
+      "split": "holdout",
+      "input_hash": "2c25537c08a155ae3674b6ccd2f5e4c10671664913d8bd7be80b282393274432",
+      "error": null,
+      "observed": {
+        "priority": null
+      },
+      "checks": {
+        "scenario": true
+      }
+    }
+  ],
+  "provider": {
+    "recorded_calls_consumed": 16,
+    "live_calls_this_run": 0,
+    "recorded_tokens": 15723,
+    "usage_complete": true
+  },
+  "limitations": [
+    "Original small synthetic regression corpus, not population accuracy or scam truth.",
+    "Mechanism-term and quote matching is a bounded extraction proxy, not semantic equivalence.",
+    "Controlled vectors expose all in-scope candidates; trained retrieval quality and latency are not measured.",
+    "Stance is the stored attachment stance after reviewed lifecycle application; RELATED/SUBTYPE create supporting evidence on their own child pattern.",
+    "Synthetic sources only; no Serper, live acquisition, R2 or production writes.",
+    "Replay model responses/timings are historical; prompt/source changes require explicit recapture."
+  ]
+}

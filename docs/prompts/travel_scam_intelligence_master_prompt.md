@@ -2760,6 +2760,13 @@ Build the simplest usable internal interface.
 
 # 68. PR 36 — Evaluation Harness
 
+Implementation decision, 2026-11-22: use the labeled synthetic corpus and bounded
+capture/offline replay in `benchmarks/evaluate.py`. Future prompt/model/scheduler
+changes should include the per-case report and baseline comparison described in
+`docs/pr36-evaluation-harness.md`. Missing/stale recordings must never invoke a live
+provider automatically. Controlled vectors isolate semantic matching; this baseline
+does not claim to measure the trained embedding model's retrieval quality.
+
 ## Goal
 
 Measure whether changes improve or damage intelligence quality.

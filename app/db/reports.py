@@ -33,7 +33,7 @@ from app.reports import VERSION, InvalidReport, ReportConflict, prepare_text, re
 from app.research import _LimitedClient
 
 
-async def accept_report(session, payload, key, *, storage, bucket):
+async def accept_report(session, payload, key, *, storage, bucket, admission=None):
     if re.fullmatch(r"[A-Za-z0-9][A-Za-z0-9_.:-]{15,127}", key) is None:
         raise InvalidReport("invalid_idempotency_key")
     raw = json.dumps(
@@ -50,6 +50,8 @@ async def accept_report(session, payload, key, *, storage, bucket):
             raise ReportConflict("idempotency_payload_conflict")
         return existing, True
     clean, flags = prepare_text(payload.report_text)
+    if admission is not None:
+        await admission.require("reports", key_hash)
     processed = await asyncio.to_thread(process_bytes, clean.encode(), content_type="text/plain")
     if processed.language != "en":
         flags.append("english_not_confirmed")

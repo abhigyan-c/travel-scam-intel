@@ -5,10 +5,10 @@ from app.db.reports import accept_report
 from app.schemas.report import ReportReceipt
 
 
-async def submit_report(session, payload, key, *, storage, bucket, queue):
+async def submit_report(session, payload, key, *, storage, bucket, queue, admission=None):
     async with session.begin():
         report, replayed = await accept_report(
-            session, payload, key, storage=storage, bucket=bucket
+            session, payload, key, storage=storage, bucket=bucket, admission=admission
         )
     queue_pending = False
     if report.processing_job_id is not None:

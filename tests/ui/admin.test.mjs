@@ -53,7 +53,7 @@ test('refresh updates toolbar totals with the table and late results cannot repo
  let delay=false;
  const original=globalThis.fetch;
  globalThis.fetch=async path=>{
-  const value=path==='/v1/admin/overview'?structuredClone(totals):{items:[],total:0,has_more:false};
+  const value=path==='/v1/admin/overview'?structuredClone(totals):path==='/v1/admin/operations'?{counters:{available:true,values:{'http.mcp.count':7}}}:{items:[],total:0,has_more:false};
   if(delay)return new Promise(resolve=>pending.push(()=>resolve(ok(value))));
   return ok(value);
  };
@@ -68,8 +68,12 @@ test('refresh updates toolbar totals with the table and late results cannot repo
   assert.match($('overview').textContent,/"queued":1/);
   assert.match($('overview').textContent,/"rejected":1/);
   assert.doesNotMatch($('overview').textContent,/needs_review/);
+  $('kind').value='operations';await $('kind').onchange();
+  assert.match($('operations').textContent,/http.mcp.count/);
+  assert.equal($('prev').disabled,true);assert.equal($('next').disabled,true);
   delay=true;const refreshing=$('refresh').onclick();
   $('logout').onclick();for(const finish of pending)finish();await refreshing;
   assert.equal($('overview').textContent,'');assert.equal($('private').hidden,true);
+  assert.equal($('operations').textContent,'');
  } finally {globalThis.fetch=original;}
 });

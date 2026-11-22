@@ -1178,3 +1178,20 @@ broader-versus-narrower matching error (8/9 cases passed).
 
 See [the evaluation runbook](docs/pr36-evaluation-harness.md) for labels, thresholds,
 safe isolated execution, bounded opt-in provider capture and baseline review rules.
+
+## Operational controls (PR 37)
+
+Production applies shared anonymous quotas for new reports/research/watches and
+separate HTTP rate/concurrency allowances. Accepted report retries and existing
+research polling preserve their existing behavior. Request bodies are bounded
+before parsing; private image uploads retain their separate size/decoder controls.
+Configure overrides with `APP_OPERATIONS` JSON (host Compose: `OPERATIONS_POLICY`).
+
+The private admin console's **Operations metrics** view shows current UTC-day
+latency/provider counters, persisted job/moderation counts and a bounded research
+latency sample. It uses the existing admin token and private network access.
+Run `uv run --locked python -m benchmarks.operations` for an isolated local read-load
+measurement. CI audits the locked runtime dependencies and checks quality replay.
+
+See [the operational runbook](docs/pr37-operational-hardening.md) for defaults,
+quota/outage behavior, measured limits, monitoring interpretation and rollback.

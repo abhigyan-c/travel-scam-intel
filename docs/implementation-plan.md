@@ -63,6 +63,15 @@ matching error; labels/prompts were not changed to conceal it. See
 [the proposed evaluation baseline](pr36-evaluation-harness.md). No deployment or
 PR 37 work is included; the deferred explorer host gate remains unchanged.
 
+PR 37 update, 2026-11-22: `codex/pr-37-operational-hardening` starts from latest
+`develop` (`7e59ed9`). It adds bounded ingress, shared anonymous new-work quotas,
+private numeric operations metrics, dependency auditing and isolated read-load
+measurements. Existing report retries, polling, public candidate disclaimers and
+moderation safeguards are preserved. See [the operational runbook](pr37-operational-hardening.md).
+No deployment, final-release signoff or completion of the deferred explorer host
+gate is included. Local tests/quality replay/audits pass; Linux image construction
+remains an open CI gate after two registry-download timeouts.
+
 - Retain exactly 38 numbered implementation PRs and their scope/review gates. PR 31 resumed on 2026-11-05 after HTTPS and ChatGPT access became available. Its hostname connection, first-ever query and follow-up gate passed with honest partial state; no completed research/findings were demonstrated before the worker deadlines. The user requested deadline investigation within PR 31: extraction time reservation, reusable partial relevance and retained diagnostics were implemented; a measured live refresh still returned zero claims because of fetch failures and grounding rejections. These remain product-readiness concerns; see `docs/pr31-mcp.md`. Any dependency-ready reordering must follow the deployment decision above and user confirmation.
 - Create each branch from the latest `develop`; target `develop`. Branch convention: `codex/pr-NN-short-description`.
 - Merge prerequisite PRs into `develop` before starting dependent work. Avoid stacked branches; independent work may proceed only when requested.

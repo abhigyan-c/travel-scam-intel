@@ -23,7 +23,7 @@ export function mountAdmin(doc, host = window) {
  const clearError=()=>{$("error").hidden=true;$("error").textContent="";};
  const clearMedia=()=>{for(const url of blobs)URL.revokeObjectURL(url);blobs=[];$("media").replaceChildren();};
  const resetDetail=()=>{viewEpoch++;record=null;target=null;selected.clear();pending=null;uncertain=false;$("detail").hidden=true;$("confirmation").hidden=true;$("action-form").hidden=false;$("record").textContent="";$("target-summary").textContent="";$("command-preview").textContent="";$("evidence").replaceChildren();$("reason").value="";for(const id of ["title","description","category","target-id","priority"])$(id).value="";$("edit-action").disabled=false;disableNavigation(false);clearMedia();};
- function lock() {client.lock();resetDetail();$("private").hidden=true;$("login").hidden=false;$("token").value="";$("rows").replaceChildren();$("overview").textContent="";$("page-info").textContent="";$("search").value="";$("status-filter").value="";$("message").textContent="Locked. Private view cleared.";clearError();}
+ function lock() {client.lock();resetDetail();$("private").hidden=true;$("login").hidden=false;$("token").value="";$("rows").replaceChildren();$("overview").textContent="";$("operations").textContent="";$("page-info").textContent="";$("search").value="";$("status-filter").value="";$("message").textContent="Locked. Private view cleared.";clearError();}
  function drawRows(items) {
   $("rows").replaceChildren();$("action-heading").textContent=kind==="audit"?"Decision / audit":"Inspect";for(const item of items){
    const row=node("tr");row.append(node("td",item.title||item.name||item.hypothesis_id||item.id),node("td",item.status||item.moderation_status||item.review?.status||item.operation||item.decision||""));
@@ -35,6 +35,14 @@ export function mountAdmin(doc, host = window) {
   resetDetail();clearError();const epoch=viewEpoch;
   const status=$("status-filter").value.trim(), q=$("search").value.trim();
   const params=new URLSearchParams({limit:"20",offset:String(offset)});if(status)params.set("status",status);if(q)params.set("q",q);
+  $("operations").textContent="";
+  if(kind==="operations"){
+   $("overview").textContent="";
+   const snapshot=await client.request("/v1/admin/operations");if(epoch!==viewEpoch||!client.token)return;
+   if(snapshot.persisted_counts)$("overview").textContent=`Jobs: ${JSON.stringify(snapshot.persisted_counts.jobs)} · Reports: ${JSON.stringify(snapshot.persisted_counts.reports_moderation)}`;
+   $("rows").replaceChildren();$("operations").textContent=JSON.stringify(snapshot,null,2);$("page-info").textContent="UTC-day counters and current database counts. Latency sample: latest 200 research runs; missing timings excluded.";
+   pageFlags.prev=pageFlags.next=true;disableNavigation(false);$("message").textContent="Private operations snapshot loaded.";return;
+  }
   const path=kind==="emerging"?"/v1/admin/emerging-patterns":kind==="audit"?"/v1/admin/audit":`/v1/admin/items/${kind}`;
   const [page,summary]=await Promise.all([client.request(path+"?"+params),client.request("/v1/admin/overview")]);if(epoch!==viewEpoch||!client.token)return;
   $("overview").textContent=`Jobs: ${JSON.stringify(summary.jobs)} · Reports: ${JSON.stringify(summary.reports)}`;
@@ -81,7 +89,7 @@ export function mountAdmin(doc, host = window) {
  function disableNavigation(value){for(const id of ["kind","status-filter","search","refresh","prev","next","load-target","load-evidence","load-media","e-prev","e-next"])$(id).disabled=value||!!pageFlags[id];}
  $("login").onsubmit=async event=>{event.preventDefault();clearError();client.lock();client.token=$("token").value;$("token").value="";try{const summary=await client.request("/v1/admin/overview");$("overview").textContent=`Jobs: ${JSON.stringify(summary.jobs)} · Reports: ${JSON.stringify(summary.reports)}`;$("login").hidden=true;$("private").hidden=false;await load();}catch(error){client.lock();showError(error);}};
  $("logout").onclick=lock;$("refresh").onclick=()=>load().catch(showError);
- $("kind").onchange=()=>{kind=$("kind").value;offset=0;$("status-filter").value="";load().catch(showError);};
+ $("kind").onchange=()=>{kind=$("kind").value;offset=0;$("status-filter").value="";return load().catch(showError);};
  $("prev").onclick=()=>{offset=Math.max(0,offset-20);load().catch(showError);};$("next").onclick=()=>{offset+=20;load().catch(showError);};
  $("operation").onchange=configure;$("target-id").oninput=()=>{target=null;$("target-summary").textContent="";};
  $("load-target").onclick=async()=>{try{const epoch=viewEpoch,id=$("target-id").value.trim();const loaded=await client.request(`/v1/admin/items/hypotheses/${encodeURIComponent(id)}`);if(epoch!==viewEpoch||id!==$("target-id").value.trim())return;target=loaded;$("target-summary").textContent=JSON.stringify(target,null,2);}catch(error){target=null;showError(error);}};

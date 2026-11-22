@@ -1,5 +1,6 @@
 import asyncio
 import logging
+import time
 from datetime import UTC, datetime, timedelta
 from uuid import UUID, uuid4
 
@@ -11,6 +12,7 @@ from sqlalchemy.ext.asyncio import async_sessionmaker
 
 from app.core.config import Settings
 from app.core.logging import configure_logging
+from app.core.telemetry import ObservedClient, Telemetry
 from app.db.ingestion import DiscoveryResult, ingest_url
 from app.db.jobs import dispatch_pending
 from app.db.processing import process_document
@@ -41,6 +43,14 @@ async def startup(ctx):
     ctx["fetcher"] = Fetcher()
     ctx["provider"] = Serper(settings.serper_api_key)
     ctx["llm"] = Sarvam(settings.sarvam_api_key)
+    ctx["telemetry"] = Telemetry(lambda: ctx.get("redis"))
+    for key, kind in (
+        ("provider", "search"),
+        ("fetcher", "fetch"),
+        ("llm", "sarvam"),
+        ("embedder", "embedding"),
+    ):
+        ctx[key] = ObservedClient(ctx[key], ctx["telemetry"], kind)
     async with ctx["sessions"]() as session:
         await dispatch_pending(session, ctx["redis"])
 
@@ -103,6 +113,27 @@ async def _perform(ctx, kind, payload, session, identity, token):
 
 
 async def run_job(ctx, job_id: str):
+    started = time.perf_counter()
+    error = retry = False
+    try:
+        return await _run_job(ctx, job_id)
+    except Retry:
+        retry = True
+        raise
+    except BaseException:
+        error = True
+        raise
+    finally:
+        if telemetry := ctx.get("telemetry"):
+            await telemetry.record(
+                "worker.job",
+                milliseconds=(time.perf_counter() - started) * 1000,
+                error=error,
+                retries=int(retry),
+            )
+
+
+async def _run_job(ctx, job_id: str):
     identity, token = UUID(job_id), uuid4()
     async with ctx["sessions"]() as session:
         kind = await session.scalar(select(ResearchJob.kind).where(ResearchJob.id == identity))
@@ -272,7 +303,18 @@ async def redispatch_jobs(ctx):
 async def schedule_research(ctx):
     from app.db.scheduler import scheduler_cycle
 
-    return await scheduler_cycle(ctx)
+    started = time.perf_counter()
+    error = False
+    try:
+        return await scheduler_cycle(ctx)
+    except BaseException:
+        error = True
+        raise
+    finally:
+        if telemetry := ctx.get("telemetry"):
+            await telemetry.record(
+                "scheduler.cycle", milliseconds=(time.perf_counter() - started) * 1000, error=error
+            )
 
 
 class WorkerSettings:

@@ -122,6 +122,10 @@ async def _reserve(ctx, location_id):
         if state.next_retry_at is not None and state.next_retry_at > now:
             return None, False
         phase = "initial" if state.initial_completed_at is None else "refresh"
+        if admission := ctx.get("admission"):
+            await admission.require(
+                "research", f"{location_id}:{state.current_run_id or 'initial'}:{phase}"
+            )
         job = await _new_job(session, state, phase)
         return job.id, phase == "initial"
 

@@ -8,14 +8,16 @@ from starlette.types import ASGIApp, Message, Receive, Scope, Send
 
 from app.core.errors import error_response
 from app.core.logging import request_id
+from app.core.telemetry import group
 
 logger = logging.getLogger("app.requests")
 REQUEST_ID_PATTERN = re.compile(r"[A-Za-z0-9][A-Za-z0-9._-]{0,63}", re.ASCII)
 
 
 class RequestContextMiddleware:
-    def __init__(self, app: ASGIApp) -> None:
+    def __init__(self, app: ASGIApp, telemetry=None) -> None:
         self.app = app
+        self.telemetry = telemetry
 
     async def __call__(self, scope: Scope, receive: Receive, send: Send) -> None:
         if scope["type"] != "http":
@@ -56,9 +58,18 @@ class RequestContextMiddleware:
                 "request_completed",
                 extra={
                     "method": scope["method"],
-                    "path": scope["path"],
+                    "path": getattr(scope.get("route"), "path", "/<unmatched>"),
                     "status": status,
                     "duration_ms": round((perf_counter() - start) * 1000, 3),
                 },
             )
-            request_id.reset(token)
+            try:
+                if self.telemetry is not None:
+                    await self.telemetry.record(
+                        "http." + group(scope["path"]),
+                        milliseconds=(perf_counter() - start) * 1000,
+                        error=status >= 500,
+                        rejected=int(400 <= status < 500),
+                    )
+            finally:
+                request_id.reset(token)

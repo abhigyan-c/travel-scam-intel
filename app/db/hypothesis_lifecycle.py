@@ -450,6 +450,59 @@ async def merge_hypotheses(session, source_id: UUID, target_id: UUID, *, key: st
         return event
 
 
+async def move_evidence(session, source_id, target_id, evidence_ids, *, key, review):
+    """Archive/recreate selected attachments; never rewrite a claim's geography or history."""
+    if not 1 <= len(evidence_ids) <= 100 or len(set(evidence_ids)) != len(evidence_ids):
+        raise ValueError("move_requires_unique_evidence")
+    if source_id == target_id:
+        raise ValueError("cannot_move_to_self")
+    async with session.begin_nested():
+        event, fresh = await _reserve(
+            session,
+            key,
+            "move",
+            {"source": source_id, "target": target_id, "evidence": sorted(evidence_ids)},
+            review,
+        )
+        if not fresh:
+            return event
+        rows = await _lock(session, source_id, target_id)
+        source, target = rows[source_id], rows[target_id]
+        _current(source)
+        _current(target)
+        if source.primary_location_id != target.primary_location_id:
+            raise ValueError("move_requires_same_location")
+        selected = list(
+            await session.scalars(
+                select(Evidence)
+                .where(
+                    Evidence.hypothesis_id == source_id,
+                    Evidence.id.in_(evidence_ids),
+                    Evidence.archived_at.is_(None),
+                )
+                .order_by(Evidence.id)
+                .with_for_update()
+            )
+        )
+        if len(selected) != len(evidence_ids):
+            raise ValueError("evidence_not_current_or_not_owned")
+        before = {"source": _snapshot(source), "target": _snapshot(target)}
+        transfers = [await _transfer(session, item, target_id) for item in selected]
+        await _refresh_dates(session, source)
+        await _refresh_dates(session, target)
+        if source.first_seen is None:
+            source.status = HypothesisStatus.INACTIVE
+        event.source_id, event.target_id = source_id, target_id
+        event.details = {
+            "version": LIFECYCLE_VERSION,
+            "before": before,
+            "transfers": transfers,
+            "after": {"source": _snapshot(source), "target": _snapshot(target)},
+        }
+        await session.flush()
+        return event
+
+
 async def split_hypothesis(
     session,
     source_id: UUID,

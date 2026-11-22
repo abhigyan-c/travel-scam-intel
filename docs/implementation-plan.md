@@ -33,7 +33,14 @@ Production form rendering, five-minute automatic ChatGPT narration and an isolat
 real-intake lost-receipt retry passed. Active-explorer terminal rendering and the
 overall customer-facing gate remain unverified/deferred at the user's request.
 All temporary routes, forwarding and test data were removed. See
-[the qualified acceptance record](pr34-deployment-acceptance.md). PR 35 has not started.
+[the qualified acceptance record](pr34-deployment-acceptance.md).
+
+PR 35 update, 2026-11-22: `codex/pr-35-admin-dashboard` starts from latest
+`origin/develop` (`2ac0c12`). It adds the private token-protected admin console,
+audited/replay-safe operator commands, evidence moves and bounded eligible-location
+priority adjustments. See [the operator workflow and limits](pr35-admin-dashboard.md).
+No public admin exposure or production deployment is included. The deferred explorer
+gate remains open; PR 36 has not started.
 
 - Retain exactly 38 numbered implementation PRs and their scope/review gates. PR 31 resumed on 2026-11-05 after HTTPS and ChatGPT access became available. Its hostname connection, first-ever query and follow-up gate passed with honest partial state; no completed research/findings were demonstrated before the worker deadlines. The user requested deadline investigation within PR 31: extraction time reservation, reusable partial relevance and retained diagnostics were implemented; a measured live refresh still returned zero claims because of fetch failures and grounding rejections. These remain product-readiness concerns; see `docs/pr31-mcp.md`. Any dependency-ready reordering must follow the deployment decision above and user confirmation.
 - Create each branch from the latest `develop`; target `develop`. Branch convention: `codex/pr-NN-short-description`.

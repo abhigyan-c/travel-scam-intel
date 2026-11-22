@@ -533,7 +533,8 @@ Inputs are rechecked under locks after comparison; edits or newly observed candi
 the result. A snapshot is not a permanent guarantee about future graph changes.
 
 The helper leaves commit ownership to its caller. The CLI commits the audit record and emits JSON;
-review rows can be inspected in PostgreSQL with `needs_review=true` until the admin tools in PR 35.
+review rows can be inspected through PR 35's private admin console or in PostgreSQL
+with `needs_review=true`.
 Provider requests interrupted by a deadline may still consume credits; an unfinished request count
 is unknown. Model output and stored explanations remain untrusted data, never executable actions.
 This PR records decisions without creating/merging hypotheses, attaching evidence or changing
@@ -609,7 +610,7 @@ Source and child keep their separate identities and provenance.
 
 Manual edits, merges, splits and links require a `Review(actor=..., reason=...)` supplied by a
 trusted operator adapter. These internal functions do not authenticate arbitrary actor strings;
-protected admin endpoints arrive in PR 35. `link_hypotheses` preserves symmetric edge identity and
+protected admin commands are available in PR 35. `link_hypotheses` preserves symmetric edge identity and
 checks directed subtype cycles. Subtype checks serialize with a transaction-level PostgreSQL
 advisory lock ([locking reference](https://www.postgresql.org/docs/17/explicit-locking.html#ADVISORY-LOCKS)).
 Commit promptly and retry transactions rejected for deadlock/serialization errors; keep provider
@@ -686,7 +687,7 @@ an unknown-location bridge cannot transitively join conflicting known locations.
 makes conservative partitions repeatable. Confirmed pairs left across separate partitions are
 flagged for group review. Existing manual/legacy groups are preserved, and partial automatic
 assignment is reported with `complete=false` and explicit review reasons. Suspected pairs remain
-queryable in the assessment table until the admin review interface arrives in PR 35.
+queryable in the assessment table and PR 35's private emerging-candidate queue.
 
 `DuplicateDetectionRun` retains versioned policy thresholds, evidence/claim/document/source IDs
 and the full input snapshot. `DuplicateAssessment` records each pair's classification and signals.
@@ -1136,3 +1137,24 @@ is separate from code validation.
 bounded parallel search, host diversity, run-local failure feedback and the
 configurable fetch-only cap. It includes measured source-access limitations and
 controlled cases where deferral helps or loses a recovering source.
+
+## Private administration (PR 35)
+
+Apply migration `0023`, start the API and open `http://127.0.0.1:8000/admin`.
+Unlock with the existing `ADMIN_API_TOKEN` (at least 32 characters). For a deployed
+release, forward the private API through the existing Tailscale SSH alias:
+
+```sh
+ssh -N -L 127.0.0.1:8035:127.0.0.1:8000 travel-scam-prod
+```
+
+Then open `http://127.0.0.1:8035/admin`. Keep public Caddy/Funnel routes unchanged.
+The console supports hypothesis/evidence review, merge/split/move, report moderation,
+emerging-candidate review, job/location inspection, bounded failed-job reissues and
+stored-document normalization. Location scheduler priority can be adjusted without
+bypassing eligibility or budgets. Each command requires a reason, review preview,
+explicit confirmation and stale-record fencing; exact retries recover one audit
+receipt. The token and private drafts remain in memory only.
+
+See [the admin runbook](docs/pr35-admin-dashboard.md) for API details, access controls,
+retry/reprocessing limitations, migration rollback and the remaining review gates.

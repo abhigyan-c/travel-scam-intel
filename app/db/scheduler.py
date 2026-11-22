@@ -218,6 +218,7 @@ async def _candidates(session, policy, now):
             .outerjoin(location_activity, location_activity.c.location_id == Location.id)
             .where(or_(demand.c.location_id.is_not(None), location_activity.c.activity > 0))
             .order_by(
+                func.coalesce(LocationResearchState.priority_override, 0).desc(),
                 func.coalesce(demand.c.d24, 0).desc(),
                 func.coalesce(location_activity.c.activity, 0).desc(),
                 Location.id,
@@ -256,6 +257,7 @@ async def _candidates(session, policy, now):
                 "incomplete": bool(state is None or state.progress.get("complete") is not True),
                 "first_deep": first,
                 "new_hypothesis": False,
+                "priority_adjustment": state.priority_override if state else 0,
             }
         )
     hyps = (

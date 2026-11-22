@@ -15,7 +15,8 @@ class HypothesisLifecycleEvent(Base):
         UniqueConstraint("resolution_id", name="uq_lifecycle_resolution"),
         CheckConstraint("input_hash ~ '^[0-9a-f]{64}$'", name="ck_lifecycle_input_hash"),
         CheckConstraint(
-            "operation IN ('apply','update','merge','split','link')", name="ck_lifecycle_operation"
+            "operation IN ('apply','update','merge','split','link','move')",
+            name="ck_lifecycle_operation",
         ),
         CheckConstraint("length(trim(key)) > 0", name="ck_lifecycle_key"),
         CheckConstraint(

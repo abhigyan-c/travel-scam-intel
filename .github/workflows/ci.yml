@@ -26,7 +26,7 @@ jobs:
           uv export --locked --no-dev --no-hashes --format requirements-txt --output-file "$RUNNER_TEMP/runtime-requirements.txt" > /dev/null
           uvx pip-audit==2.10.0 --no-deps --disable-pip -r "$RUNNER_TEMP/runtime-requirements.txt"
       - run: uv run --locked pytest
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@v7
         with:
           node-version: "22"
       - run: node --test tests/ui/*.test.mjs

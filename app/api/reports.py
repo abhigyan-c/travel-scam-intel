@@ -45,6 +45,7 @@ async def submit_report(
             storage=request.app.state.storage,
             bucket=request.app.state.settings.s3_bucket,
             queue=request.app.state.report_queue,
+            admission=request.app.state.admission,
         )
     except ReportConflict:
         raise HTTPException(

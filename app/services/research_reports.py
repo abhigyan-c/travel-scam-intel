@@ -4,7 +4,7 @@ import asyncio
 import hashlib
 import json
 from datetime import UTC, datetime, timedelta
-from uuid import UUID
+from uuid import UUID, uuid4
 
 from sqlalchemy import delete, select, update
 
@@ -44,10 +44,11 @@ def stable(value):
 
 
 class ResearchReports:
-    def __init__(self, sessions, settings, *, clock=None):
+    def __init__(self, sessions, settings, *, clock=None, admission=None):
         self.sessions, self.settings = sessions, settings
         self.clock = clock or (lambda: datetime.now(UTC))
         self.active_waits = 0
+        self.admission = admission
 
     async def get(self, run_id, *, limit=5, offset=0, watch_id=None):
         now = self.clock()
@@ -161,7 +162,12 @@ class ResearchReports:
         pending = False
         if follow_run_id is None:
             pending = await request_location_research(
-                {**ctx, "settings": self.settings}, location_id
+                {
+                    **ctx,
+                    "settings": self.settings,
+                    "admission": self.admission or ctx.get("admission"),
+                },
+                location_id,
             )
             async with self.sessions() as session, session.begin():
                 state = await session.scalar(
@@ -203,13 +209,18 @@ class ResearchReports:
                 run = await session.get(ResearchRun, run_id)
                 if run is None or run.location_id != location_id:
                     raise IntelligenceNotFound("report_run_not_found")
+        watch_identity = uuid4()
+        if admission := self.admission or ctx.get("admission"):
+            await admission.require("watches", watch_identity)
         async with self.sessions() as session, session.begin():
             # Watches are operational control metadata, never provider/research allowances.
             await session.execute(
                 delete(ReportWatch).where(ReportWatch.expires_at < self.clock() - timedelta(days=7))
             )
             watch = ReportWatch(
-                run_id=run_id, expires_at=watch_start + timedelta(seconds=watch_seconds)
+                id=watch_identity,
+                run_id=run_id,
+                expires_at=watch_start + timedelta(seconds=watch_seconds),
             )
             session.add(watch)
             await session.flush()

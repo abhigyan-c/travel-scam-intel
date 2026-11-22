@@ -109,6 +109,24 @@ async def process(api):
     await run_job(ctx, str(report.processing_job_id))
 
 
+async def test_slow_media_body_times_out_without_storage_or_attachment_write(media_api):
+    _, ctx, _, _, _, objects = media_api
+    ctx["settings"].operations.body_seconds = 0.02
+    before = len(objects)
+
+    async def slow():
+        yield png()[:8]
+        await asyncio.sleep(0.1)
+        yield png()[8:]
+
+    response = await upload(media_api, raw=slow())
+    assert response.status_code == 408
+    assert len(objects) == before
+    async with ctx["sessions"]() as session:
+        assert await session.scalar(select(func.count()).select_from(ReportAttachment)) == 0
+    assert (await upload(media_api)).status_code == 201
+
+
 async def test_private_upload_then_processing_then_authenticated_acceptance(media_api):
     result = await upload(media_api)
     assert result.status_code == 201 and result.json()["status"] == "needs_review"

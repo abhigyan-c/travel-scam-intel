@@ -3,6 +3,7 @@
 import asyncio
 import json
 import logging
+import time
 from datetime import datetime
 from typing import Annotated, Any, Literal
 from urllib.parse import urlsplit
@@ -16,7 +17,9 @@ from mcp.types import CallToolResult, TextContent, ToolAnnotations
 from pydantic import Field, ValidationError
 from sqlalchemy.exc import SQLAlchemyError
 
+from app.core.admission import AdmissionError
 from app.core.logging import request_id
+from app.core.telemetry import TOOLS
 from app.db.resolution import resolve_location
 from app.explorer import EXPLORER_META, EXPLORER_URI, REPORTER_URI, explorer_html, reporter_html
 from app.models.location import LocationType
@@ -61,6 +64,17 @@ def failure(code, message):
 
 class PublicMCPServer(MCPServer):
     async def call_tool(self, name, arguments, context=None):
+        started = time.perf_counter()
+        result = await self._call_safe(name, arguments, context)
+        if telemetry := getattr(self, "telemetry", None):
+            await telemetry.record(
+                "mcp." + (name if name in TOOLS else "other"),
+                milliseconds=(time.perf_counter() - started) * 1000,
+                error=bool(getattr(result, "is_error", False)),
+            )
+        return result
+
+    async def _call_safe(self, name, arguments, context=None):
         # SDK validation errors include submitted values. Do not return or log
         # those values, or exception traces from storage/provider failures.
         try:
@@ -69,6 +83,11 @@ class PublicMCPServer(MCPServer):
         except ToolError as exc:
             cause = exc
             while cause is not None:
+                if isinstance(cause, AdmissionError):
+                    return failure(
+                        "unavailable" if cause.unavailable else "rate_limited",
+                        "New-work allowance unavailable or exceeded; retry with the same inputs.",
+                    )
                 if isinstance(cause, IntelligenceNotFound):
                     return failure("not_found", "Public resource or report run/watch not found.")
                 if isinstance(cause, ReportConflict):
@@ -124,10 +143,16 @@ def build_mcp(application):
         ),
     )
 
+    server.telemetry = getattr(application.state, "telemetry", None)
+
     def reports():
         value = getattr(application.state, "research_reports", None)
         if value is None or value.sessions is not application.state.db_sessions:
-            value = ResearchReports(application.state.db_sessions, application.state.settings)
+            value = ResearchReports(
+                application.state.db_sessions,
+                application.state.settings,
+                admission=getattr(application.state, "admission", None),
+            )
             application.state.research_reports = value
         return value
 
@@ -193,6 +218,7 @@ def build_mcp(application):
                 {
                     "sessions": application.state.db_sessions,
                     "redis": application.state.report_queue,
+                    "admission": getattr(application.state, "admission", None),
                 },
                 location_id,
                 follow_run_id=follow_run_id,
@@ -283,6 +309,7 @@ def build_mcp(application):
                 "sessions": application.state.db_sessions,
                 "redis": application.state.report_queue,
                 "settings": application.state.settings,
+                "admission": getattr(application.state, "admission", None),
             },
             location_id,
         )
@@ -425,6 +452,7 @@ def build_mcp(application):
                 storage=application.state.storage,
                 bucket=application.state.settings.s3_bucket,
                 queue=application.state.report_queue,
+                admission=getattr(application.state, "admission", None),
             )
         return result.model_dump(mode="json")
 

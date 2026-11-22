@@ -4,6 +4,7 @@ from typing import Literal
 from pydantic import AnyHttpUrl, Field, SecretStr, field_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
+from app.core.admission import OperationalPolicy
 from app.scheduling import SchedulerPolicy
 
 
@@ -58,3 +59,4 @@ class Settings(BaseSettings):
     research_fresh_seconds: int = Field(default=86400, ge=60, le=2592000)
     research_retry_seconds: int = Field(default=300, ge=1, le=86400)
     scheduler: SchedulerPolicy = Field(default_factory=SchedulerPolicy)
+    operations: OperationalPolicy = Field(default_factory=OperationalPolicy)

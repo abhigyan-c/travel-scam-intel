@@ -2816,6 +2816,13 @@ Future prompt/model/scheduler changes should be evaluated against this harness.
 
 # 69. PR 37 — Security, Observability and Performance
 
+Implementation note, 2026-11-22: see `docs/pr37-operational-hardening.md` for
+anonymous shared allowances, private telemetry semantics, dependency checks and
+local load measurements. These controls preserve low-confidence public candidates
+and existing sensitive-data holds. No new account requirement or public admin
+route is introduced; production deployment and deferred host acceptance remain
+separate gates.
+
 ## Goal
 
 Harden the application enough for MVP operation.

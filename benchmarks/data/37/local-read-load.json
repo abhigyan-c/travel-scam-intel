@@ -1,0 +1,60 @@
+{
+  "version": "operational-load-v1",
+  "at": "2026-11-22T14:11:57.031062+00:00",
+  "environment": {
+    "os": "Windows",
+    "python": "3.12.15",
+    "database_pool_size": 5,
+    "http": "in-process ASGI",
+    "telemetry_redis": true
+  },
+  "corpus": {
+    "locations": 1,
+    "patterns": 50,
+    "documents": 250,
+    "claims": 250,
+    "evidence": 250
+  },
+  "measurements": [
+    {
+      "concurrency": 1,
+      "requests": 60,
+      "seconds": 4.094928600000458,
+      "requests_per_second": 14.65227012749216,
+      "statuses": {
+        "200": 60
+      },
+      "sql_statements": 960,
+      "p50_ms": 22.453999999925145,
+      "p95_ms": 166.79219999969064,
+      "p99_ms": 185.72719999974652
+    },
+    {
+      "concurrency": 4,
+      "requests": 60,
+      "seconds": 1.7006664000000455,
+      "requests_per_second": 35.280287774250375,
+      "statuses": {
+        "200": 60
+      },
+      "sql_statements": 960,
+      "p50_ms": 43.164900000192574,
+      "p95_ms": 270.6409000002168,
+      "p99_ms": 300.0785000003816
+    },
+    {
+      "concurrency": 8,
+      "requests": 60,
+      "seconds": 1.8778470999995989,
+      "requests_per_second": 31.95148316389168,
+      "statuses": {
+        "200": 60
+      },
+      "sql_statements": 960,
+      "p50_ms": 121.59710000014456,
+      "p95_ms": 534.5884000007572,
+      "p99_ms": 597.6362999999765
+    }
+  ],
+  "limits": "Local warm reads only. Excludes TLS, network, embedding, worker/provider load and VPS capacity."
+}

@@ -46,6 +46,14 @@ MODELS = dict(
 )
 
 
+@router.get("/operations")
+async def operational_snapshot(request: Request, session: Session, response: Response):
+    from app.services.operations import operations
+
+    response.headers["Cache-Control"] = "no-store"
+    return await operations(session, request.app.state.telemetry)
+
+
 @page_router.get("/admin", include_in_schema=False)
 async def dashboard():
     # An empty login shell only. All private reads and writes require Authorization.

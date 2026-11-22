@@ -84,6 +84,7 @@ async def research_if_needed(request, location_id, enabled):
                     "sessions": request.app.state.db_sessions,
                     "redis": request.app.state.report_queue,
                     "settings": request.app.state.settings,
+                    "admission": request.app.state.admission,
                 },
                 location_id,
             )

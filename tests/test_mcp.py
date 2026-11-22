@@ -9,8 +9,40 @@ import pytest
 from mcp import Client
 
 from app import mcp_server
+from app.core.admission import AdmissionError
 from app.core.config import Settings
 from app.main import create_app
+
+
+@pytest.mark.parametrize("unavailable,code", [(False, "rate_limited"), (True, "unavailable")])
+async def test_admission_errors_preserve_mcp_contract_and_read_polling(
+    application, monkeypatch, unavailable, code
+):
+    application.state.db_sessions = object()
+    application.state.report_queue = object()
+    service = SimpleNamespace(
+        search_location_scams=AsyncMock(
+            return_value=SimpleNamespace(
+                model_dump=lambda **kwargs: {"items": [], "outcome": "research_incomplete"}
+            )
+        )
+    )
+    monkeypatch.setattr(mcp_server, "IntelligenceService", lambda *args, **kwargs: service)
+    monkeypatch.setattr(
+        mcp_server, "request_location_research", AsyncMock(side_effect=AdmissionError(unavailable))
+    )
+    metrics = SimpleNamespace(record=AsyncMock())
+    application.state.mcp_server.telemetry = metrics
+    async with Client(application.state.mcp_server, mode="legacy") as client:
+        arguments = {"location_id": str(uuid4())}
+        denied = await client.call_tool("search_scam_patterns", arguments)
+        existing = await client.call_tool(
+            "search_scam_patterns", {**arguments, "request_research": False}
+        )
+    assert denied.is_error and denied.structured_content["error"]["code"] == code
+    assert not existing.is_error
+    assert metrics.record.await_args_list[0].kwargs["error"] is True
+    assert metrics.record.await_args_list[1].kwargs["error"] is False
 
 
 @pytest.fixture

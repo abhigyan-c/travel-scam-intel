@@ -64,10 +64,11 @@ async def upload_attachment(
             raise MediaError("unsupported_content_encoding", 415)
         media_type = request.headers.get("content-type", "").split(";", 1)[0].strip().lower()
         raw = bytearray()
-        async for chunk in request.stream():
-            if len(raw) + len(chunk) > MAX_BYTES:
-                raise MediaError("invalid_media_size", 413)
-            raw.extend(chunk)
+        async with asyncio.timeout(request.app.state.settings.operations.body_seconds):
+            async for chunk in request.stream():
+                if len(raw) + len(chunk) > MAX_BYTES:
+                    raise MediaError("invalid_media_size", 413)
+                raw.extend(chunk)
         image = await asyncio.to_thread(validate_image, bytes(raw), media_type)
         async with session.begin():
             report, attachment, replayed = await add_attachment(
@@ -89,6 +90,8 @@ async def upload_attachment(
         )
     except MediaError as exc:
         raise HTTPException(exc.status, exc.code) from None
+    except TimeoutError:
+        raise HTTPException(408, "Request body timed out") from None
     except (BotoCoreError, ClientError):
         raise HTTPException(
             503, "Private media storage is unavailable; retry with the same key"

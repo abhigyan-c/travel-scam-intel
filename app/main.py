@@ -17,10 +17,13 @@ from app.api.locations import router as locations_router
 from app.api.report_media import router as report_media_router
 from app.api.reports import router as reports_router
 from app.api.routes import router
+from app.core.admission import Admission, AdmissionError
 from app.core.config import Settings
-from app.core.errors import http_error_handler, validation_error_handler
+from app.core.errors import error_response, http_error_handler, validation_error_handler
+from app.core.ingress import IngressMiddleware
 from app.core.logging import configure_logging
 from app.core.middleware import RequestContextMiddleware
+from app.core.telemetry import ObservedClient, Telemetry
 from app.db.session import create_database_engine
 from app.embeddings import Embedder
 from app.integrations.storage import create_storage_client
@@ -44,6 +47,10 @@ async def lifespan(application: FastAPI):
         application.state.db_engine = engine
         application.state.db_sessions = async_sessionmaker(engine, expire_on_commit=False)
         application.state.redis = redis
+        if not isinstance(application.state.embedder, ObservedClient):
+            application.state.embedder = ObservedClient(
+                application.state.embedder, application.state.telemetry, "embedding"
+            )
         report_queue = ArqRedis(connection_pool=redis.connection_pool)
         cleanup.push_async_callback(report_queue.aclose)
         application.state.report_queue = report_queue
@@ -58,7 +65,24 @@ def create_app(settings: Settings | None = None) -> FastAPI:
     application = FastAPI(title=settings.name, version="0.1.0", lifespan=lifespan)
     application.state.settings = settings
     application.state.embedder = Embedder(settings.embedding_cache_dir)
-    application.add_middleware(RequestContextMiddleware)
+    application.state.telemetry = Telemetry(lambda: getattr(application.state, "redis", None))
+    application.state.admission = Admission(
+        settings, lambda: getattr(application.state, "redis", None)
+    )
+    application.add_middleware(IngressMiddleware, settings=settings)
+    application.add_middleware(RequestContextMiddleware, telemetry=application.state.telemetry)
+
+    async def admission_error(request, exc):
+        return error_response(
+            exc.status,
+            "unavailable" if exc.unavailable else "rate_limited",
+            "Admission temporarily unavailable; retry safely."
+            if exc.unavailable
+            else "New-work allowance exceeded; reuse the same inputs and retry later.",
+            headers={"Retry-After": "5" if exc.unavailable else "600", "Cache-Control": "no-store"},
+        )
+
+    application.add_exception_handler(AdmissionError, admission_error)
     application.add_exception_handler(HTTPException, http_error_handler)
     application.add_exception_handler(RequestValidationError, validation_error_handler)
     application.include_router(router)

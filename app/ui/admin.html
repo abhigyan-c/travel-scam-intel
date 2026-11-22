@@ -8,9 +8,9 @@ input,textarea { font:inherit; width:100%; padding:9px; color:inherit; backgroun
 <p id="message" role="status" aria-live="polite">Locked. No private data loaded.</p><p id="error" role="alert" hidden></p>
 <section id="private" hidden>
 <div class="toolbar"><button id="logout">Lock and clear</button><button id="refresh">Refresh list</button><span id="overview"></span></div>
-<div class="filters"><label>Queue<select id="kind"><option value="hypotheses">Hypotheses</option><option value="resolutions">Pending hypothesis resolutions</option><option value="reports">Reports</option><option value="jobs">Jobs</option><option value="locations">Location research</option><option value="documents">Documents</option><option value="emerging">Emerging candidates</option><option value="audit">Audit log</option></select></label>
+<div class="filters"><label>Queue<select id="kind"><option value="hypotheses">Hypotheses</option><option value="resolutions">Pending hypothesis resolutions</option><option value="reports">Reports</option><option value="jobs">Jobs</option><option value="locations">Location research</option><option value="documents">Documents</option><option value="emerging">Emerging candidates</option><option value="audit">Audit log</option><option value="operations">Operations metrics</option></select></label>
 <label>Status filter<input id="status-filter" maxlength="40" placeholder="Optional: failed, pending, candidate…"></label><label>Name/title search<input id="search" maxlength="200" placeholder="Locations or hypotheses"></label></div>
-<p id="page-info"></p><div class="scroll"><table><thead><tr><th>Record</th><th>Status / summary</th><th id="action-heading">Inspect</th></tr></thead><tbody id="rows"></tbody></table></div>
+<p id="page-info"></p><pre id="operations"></pre><div class="scroll"><table><thead><tr><th>Record</th><th>Status / summary</th><th id="action-heading">Inspect</th></tr></thead><tbody id="rows"></tbody></table></div>
 <nav aria-label="Queue pages"><button id="prev">Previous</button><button id="next">Next</button></nav>
 <section id="detail" hidden><h2 id="detail-title" tabindex="-1">Record details</h2><pre id="record"></pre>
 <div class="row-actions"><button id="load-evidence" hidden>Inspect evidence</button><button id="load-media" hidden>Inspect private report media</button></div>

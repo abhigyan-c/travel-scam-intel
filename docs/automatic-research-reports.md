@@ -6,6 +6,12 @@ terminal partial results and six backend waits. See [acceptance and caveats](pr3
 The PR 33 explorer is implemented on `codex/pr-33-scam-explorer`; review, deployment
 and actual ChatGPT UI acceptance remain open. See [UI behavior and host limitations](pr33-scam-explorer.md).
 
+Update — 2026-11-22: merged PR 33/34 release `65a828b` is deployed. A real ChatGPT
+five-minute controlled run delivered its final narrative automatically after 45
+model waits. Actual active-explorer refresh remains unverified; the user's pasted
+cards did not identify the app view, and further testing was deferred. Reporting
+form/retry checks passed in isolation. See [deployment acceptance](pr34-deployment-acceptance.md).
+
 ## Product requirement
 
 A traveler can ask once: “Use Travel Scam Intelligence to check scams in Rome,

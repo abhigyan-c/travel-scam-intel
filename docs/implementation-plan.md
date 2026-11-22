@@ -28,6 +28,13 @@ Branch `codex/pr-34-reporting-ui` adds exact review/confirmation and same-key re
 over the existing intake, without a migration. Local checks do not close PR 33's
 host gate or PR 34's customer-facing review gate. See [PR 34](pr34-reporting-ui.md).
 
+Deployment/acceptance update, 2026-11-22: release `65a828b` is live and healthy.
+Production form rendering, five-minute automatic ChatGPT narration and an isolated
+real-intake lost-receipt retry passed. Active-explorer terminal rendering and the
+overall customer-facing gate remain unverified/deferred at the user's request.
+All temporary routes, forwarding and test data were removed. See
+[the qualified acceptance record](pr34-deployment-acceptance.md). PR 35 has not started.
+
 - Retain exactly 38 numbered implementation PRs and their scope/review gates. PR 31 resumed on 2026-11-05 after HTTPS and ChatGPT access became available. Its hostname connection, first-ever query and follow-up gate passed with honest partial state; no completed research/findings were demonstrated before the worker deadlines. The user requested deadline investigation within PR 31: extraction time reservation, reusable partial relevance and retained diagnostics were implemented; a measured live refresh still returned zero claims because of fetch failures and grounding rejections. These remain product-readiness concerns; see `docs/pr31-mcp.md`. Any dependency-ready reordering must follow the deployment decision above and user confirmation.
 - Create each branch from the latest `develop`; target `develop`. Branch convention: `codex/pr-NN-short-description`.
 - Merge prerequisite PRs into `develop` before starting dependent work. Avoid stacked branches; independent work may proceed only when requested.

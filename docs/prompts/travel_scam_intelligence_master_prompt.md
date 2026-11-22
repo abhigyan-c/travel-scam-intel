@@ -76,6 +76,13 @@ retry over existing intake. No image uploads, new service or migration is added.
 See [`docs/pr34-reporting-ui.md`](../pr34-reporting-ui.md); the customer-facing
 review gate is not passed by local mocks.
 
+Deployment update — 2026-11-22: merged `65a828b` is deployed. Production form controls,
+controlled five-minute automatic narration and isolated confirmed-submission retry
+passed. The active explorer's terminal display remains unverified; the user deferred
+further manual tests. The overall customer-facing gate stays open. Temporary test
+routes and data were removed. See
+[`docs/pr34-deployment-acceptance.md`](../pr34-deployment-acceptance.md).
+
 - Plan all 38 PRs, with detailed implementation planning beginning at PR 01. Implement one numbered PR at a time and preserve the review gates.
 - Create each PR branch from the latest `develop` and target `develop`. Use `codex/pr-NN-short-description`, for example `codex/pr-01-repository-foundation`.
 - Use Serper.dev for search discovery. Request its API key when real integration validation requires it.

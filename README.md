@@ -9,6 +9,7 @@ explorer/reporting form and private admin dashboard. Version 0.1.0 is being prep
 for its first release; public ChatGPT directory approval is still pending.
 
 - [User guide](docs/user-guide.md): research, evidence, confidence, scope and reporting.
+- [Connect to ChatGPT](docs/connect-chatgpt.md): custom plugin setup and public-link safety.
 - [Admin guide](docs/admin-guide.md): moderation, deployment, monitoring and recovery.
 - [Release assessment](docs/release-0.1.0.md): validation and unresolved launch gates.
 - [Publishing readiness](docs/publishing-readiness.md): listing, policies and review.

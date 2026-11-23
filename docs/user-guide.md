@@ -9,9 +9,11 @@ purchases or payments. It is not an emergency service or a guarantee of safety.
 
 ## Getting access
 
+See [Connect to ChatGPT](connect-chatgpt.md) for current installation steps and sharing guidance.
+
 The public ChatGPT listing is **not yet approved or published**. During the preview,
 use a ChatGPT account/workspace that permits custom MCP connections. In its
-developer/plugin settings, add **Travel Scam Intelligence**, select authentication
+Plugins / Add custom MCP server settings, add **Travel Scam Intelligence**, select authentication
 **None**, and use:
 
 `https://travel-scam-prod.tailbbf557.ts.net/mcp`

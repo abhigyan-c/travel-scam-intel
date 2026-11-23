@@ -62,7 +62,9 @@ services:
       start_period: 20s
 
   postgres:
-    image: pgvector/pgvector:0.8.6-pg17-trixie
+    build:
+      context: .
+      dockerfile: docker/postgres.Dockerfile
     environment:
       POSTGRES_USER: ${POSTGRES_USER:-travel}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-travel-local}

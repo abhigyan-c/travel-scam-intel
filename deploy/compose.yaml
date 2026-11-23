@@ -67,7 +67,7 @@ services:
       retries: 3
       start_period: 30s
   postgres:
-    image: pgvector/pgvector:0.8.6-pg17-trixie
+    image: ${POSTGRES_IMAGE:?Set the immutable patched PostgreSQL image tag}
     restart: unless-stopped
     environment:
       POSTGRES_USER: travel

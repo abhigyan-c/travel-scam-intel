@@ -1,0 +1,402 @@
+{
+  "version": "evaluation-recording-v1",
+  "corpus_hash": "1324fdfadd2fb538118ace008ea6032e3beb9c639ddd2be21d17753fc5cd9055",
+  "semantic_source_hash": "41832dbec0a726044cecbeab4dd397656f71be0f103e65d167cd247c9f0c1491",
+  "recorded_at": "2026-11-22T12:55:17.081659+00:00",
+  "records": {
+    "c64ad2c86adc502db1ee0c68c5ba7aa3230381e6ae8d0471bbd1157e34e480d6": [
+      {
+        "seconds": 0.766,
+        "completion": {
+          "data": {
+            "claims": [
+              {
+                "claim": "A driver demanded extra money after a fixed taxi fare was agreed upon in Rome.",
+                "evidence_quote": "In Rome, I agreed to a fixed taxi fare, but the driver demanded extra money on arrival.",
+                "location": "In Rome",
+                "approach": [],
+                "methods": [],
+                "warning_signs": [],
+                "entities": [],
+                "occurred_at": null,
+                "first_hand": true,
+                "confidence": 1.0,
+                "sensitive": false
+              }
+            ]
+          },
+          "error": null,
+          "model": "sarvam-105b",
+          "requests": 1,
+          "usage": {
+            "completion_tokens": 139,
+            "prompt_tokens": 510,
+            "total_tokens": 649
+          }
+        },
+        "usage_complete": true
+      }
+    ],
+    "498433c61fd28898830763a2e1ea77c0c821ece402b63c7534bda7b7b893a498": [
+      {
+        "seconds": 0.672,
+        "completion": {
+          "data": {
+            "claims": [
+              {
+                "claim": "A seller in Rome falsely claimed a bracelet was free, placed it on the traveler's wrist, and then demanded payment.",
+                "evidence_quote": "In Rome a seller called a bracelet free, put it on my wrist, then demanded payment.",
+                "location": "In Rome",
+                "approach": [],
+                "methods": [],
+                "warning_signs": [],
+                "entities": [],
+                "occurred_at": null,
+                "first_hand": true,
+                "confidence": 1.0,
+                "sensitive": false
+              }
+            ]
+          },
+          "error": null,
+          "model": "sarvam-105b",
+          "requests": 1,
+          "usage": {
+            "completion_tokens": 147,
+            "prompt_tokens": 509,
+            "total_tokens": 656
+          }
+        },
+        "usage_complete": true
+      }
+    ],
+    "c1538036ecb7bf64f7fff38a9e2fa69a2ae62f1a999190f276b808ab36d960be": [
+      {
+        "seconds": 0.282,
+        "completion": {
+          "data": {
+            "claims": []
+          },
+          "error": null,
+          "model": "sarvam-105b",
+          "requests": 1,
+          "usage": {
+            "completion_tokens": 10,
+            "prompt_tokens": 506,
+            "total_tokens": 516
+          }
+        },
+        "usage_complete": true
+      }
+    ],
+    "a88c9ec3b16f0cfe210f06142b7d79b20f3b9bc354d23cddb53a3c4625e8061b": [
+      {
+        "seconds": 0.281,
+        "completion": {
+          "data": {
+            "claims": []
+          },
+          "error": null,
+          "model": "sarvam-105b",
+          "requests": 1,
+          "usage": {
+            "completion_tokens": 10,
+            "prompt_tokens": 510,
+            "total_tokens": 520
+          }
+        },
+        "usage_complete": true
+      }
+    ],
+    "ba1c514e7205f87fcec144694b702a6af11ad61080d0557bc5ce218e29ed54b4": [
+      {
+        "seconds": 0.516,
+        "completion": {
+          "data": {
+            "claims": [
+              {
+                "claim": "A stranger falsely claimed the Grand Palace was closed and diverted the traveler to a shop.",
+                "evidence_quote": "At the Grand Palace in Bangkok, a stranger falsely said it was closed and diverted me to a shop.",
+                "location": "At the Grand Palace in Bangkok",
+                "approach": [],
+                "methods": [],
+                "warning_signs": [],
+                "entities": [],
+                "occurred_at": null,
+                "first_hand": true,
+                "confidence": 1.0,
+                "sensitive": false
+              }
+            ]
+          },
+          "error": null,
+          "model": "sarvam-105b",
+          "requests": 1,
+          "usage": {
+            "completion_tokens": 145,
+            "prompt_tokens": 511,
+            "total_tokens": 656
+          }
+        },
+        "usage_complete": true
+      }
+    ],
+    "34a77324176945cdbe1f491a0d97505ea4a2b42990510e5e31310be30ae80c74": [
+      {
+        "seconds": 0.609,
+        "completion": {
+          "data": {
+            "claims": [
+              {
+                "claim": "Example Jewel Studio promised a free tour in Rome and then demanded a hidden fee.",
+                "evidence_quote": "In Rome the fictional Example Jewel Studio promised a free tour, then demanded a hidden fee.",
+                "location": "Rome",
+                "approach": [],
+                "methods": [],
+                "warning_signs": [],
+                "entities": [
+                  "Example Jewel Studio"
+                ],
+                "occurred_at": null,
+                "first_hand": null,
+                "confidence": 1.0,
+                "sensitive": true
+              }
+            ]
+          },
+          "error": null,
+          "model": "sarvam-105b",
+          "requests": 1,
+          "usage": {
+            "completion_tokens": 146,
+            "prompt_tokens": 508,
+            "total_tokens": 654
+          }
+        },
+        "usage_complete": true
+      }
+    ],
+    "de7f693291beac2255076ba36a72277b105f40247fc9269f1aa494fcaf9f7070": [
+      {
+        "seconds": 0.266,
+        "completion": {
+          "data": {
+            "claims": []
+          },
+          "error": null,
+          "model": "sarvam-105b",
+          "requests": 1,
+          "usage": {
+            "completion_tokens": 10,
+            "prompt_tokens": 508,
+            "total_tokens": 518
+          }
+        },
+        "usage_complete": true
+      }
+    ],
+    "b057980ccadb340911ea94f1cbeb9fdf33e887e723dd23a5ad0889e0acd88cf1": [
+      {
+        "seconds": 0.36,
+        "completion": {
+          "data": {
+            "claims": []
+          },
+          "error": null,
+          "model": "sarvam-105b",
+          "requests": 1,
+          "usage": {
+            "completion_tokens": 10,
+            "prompt_tokens": 506,
+            "total_tokens": 516
+          }
+        },
+        "usage_complete": true
+      }
+    ],
+    "f63a0772abe4207d6504b77ccb56b258c014ce362ed5bd794389204b92fcfc4b": [
+      {
+        "seconds": 0.953,
+        "completion": {
+          "data": {
+            "decision": "SAME",
+            "target_id": "d1f929b9-7bf7-5982-b21f-933ee2a69d18",
+            "confidence": 0.95,
+            "ambiguous": false,
+            "reason": "The claim states the driver refused to turn on the meter and demanded an overpriced flat fare; the candidate states taxi drivers refuse the meter and demand an inflated fixed fare. Both describe the identical concrete trick\u2014meter refusal paired with a fixed inflated fare\u2014at the same specificity and location (Rome, Italy). The wording differs only in minor lexical variation (e.g., 'overpriced' vs 'inflated', 'flat fare' vs 'fixed fare'), without adding any distinguishing mechanism, scope, or negation."
+          },
+          "error": null,
+          "model": "sarvam-105b",
+          "requests": 1,
+          "usage": {
+            "completion_tokens": 182,
+            "prompt_tokens": 1228,
+            "total_tokens": 1410
+          }
+        },
+        "usage_complete": true
+      }
+    ],
+    "e764d60e24c7865c1e01a25df36d6a74e5205f649e436aa467227885d47ed8e7": [
+      {
+        "seconds": 0.672,
+        "completion": {
+          "data": {
+            "decision": "RELATED",
+            "target_id": "2e7de25f-50f9-5125-adc5-65065611faf5",
+            "confidence": 0.85,
+            "ambiguous": false,
+            "reason": "The claim describes a driver rigging the taxi meter to inflate the fare, which is a specific method of meter tampering. The candidate describes a driver refusing the meter entirely and demanding an inflated fixed fare. Both involve overcharging in the Rome taxi context, but the claim specifies meter rigging/tampering while the candidate specifies meter refusal and a fixed-fare demand; these are different methods, so they are RELATED rather than SAME or SUBTYPE."
+          },
+          "error": null,
+          "model": "sarvam-105b",
+          "requests": 1,
+          "usage": {
+            "completion_tokens": 164,
+            "prompt_tokens": 1209,
+            "total_tokens": 1373
+          }
+        },
+        "usage_complete": true
+      }
+    ],
+    "0f0dd1df38d9868f74d9f28e7ff7b2ba951d72ceb109269a0e9234aaee60aa29": [
+      {
+        "seconds": 0.61,
+        "completion": {
+          "data": {
+            "decision": "SUBTYPE",
+            "target_id": "f04c62f0-1905-50a4-b324-e591fa62b0fd",
+            "confidence": 0.85,
+            "ambiguous": false,
+            "reason": "The claim describes a specific concrete trick\u2014a rigged taxi meter inflating a single fare\u2014while the candidate describes a broad umbrella pattern that drivers use deceptive methods to inflate taxi fares. The claim is a narrower, specific instance of the candidate's general description, making it a SUBTYPE."
+          },
+          "error": null,
+          "model": "sarvam-105b",
+          "requests": 1,
+          "usage": {
+            "completion_tokens": 138,
+            "prompt_tokens": 1207,
+            "total_tokens": 1345
+          }
+        },
+        "usage_complete": true
+      }
+    ],
+    "436d7622d91f737e5e15677f19a6262c1c499cf5f5c5b0499db0ec1abcea1d79": [
+      {
+        "seconds": 0.703,
+        "completion": {
+          "data": {
+            "decision": "CONTRADICTS",
+            "target_id": "94924dd0-3d79-5334-8ea0-c1210a987e18",
+            "confidence": 1.0,
+            "ambiguous": false,
+            "reason": "The claim explicitly asserts that the ticket office at Silver Gate Museum was open on Monday, while the candidate explicitly asserts that the ticket office at Silver Gate Museum was closed on Monday. These are direct logical opposites regarding the same event, time, and subject."
+          },
+          "error": null,
+          "model": "sarvam-105b",
+          "requests": 1,
+          "usage": {
+            "completion_tokens": 132,
+            "prompt_tokens": 1219,
+            "total_tokens": 1351
+          }
+        },
+        "usage_complete": true
+      }
+    ],
+    "c7c9f920bfb2d4a94823c1d63ed1dddba95e822cd44c49b1a7413b36a14a8e87": [
+      {
+        "seconds": 0.843,
+        "completion": {
+          "data": {
+            "decision": "SAME",
+            "target_id": "6a4915e7-c0bb-5b6c-a988-1027c874db7c",
+            "confidence": 1.0,
+            "ambiguous": false,
+            "reason": "The claim states the driver 'would not use the meter and instead demanded an inflated fixed fare,' while the candidate describes drivers who 'refuse the meter and demand an inflated fixed fare.' Both describe the identical concrete trick\u2014refusal to use the meter coupled with a demand for an inflated fixed fare\u2014at the same specificity and location (Bangkok). There are no material distinguishing mechanisms, scope differences, or negations between the two descriptions."
+          },
+          "error": null,
+          "model": "sarvam-105b",
+          "requests": 1,
+          "usage": {
+            "completion_tokens": 167,
+            "prompt_tokens": 1218,
+            "total_tokens": 1385
+          }
+        },
+        "usage_complete": true
+      }
+    ],
+    "625c3ae2a00f803695af7e3616b339aadd3bf34755a16c814c13477cd7328341": [
+      {
+        "seconds": 0.891,
+        "completion": {
+          "data": {
+            "decision": "RELATED",
+            "target_id": "4bda0e84-48b6-5147-9df1-51612381a404",
+            "confidence": 0.75,
+            "ambiguous": false,
+            "reason": "The claim describes demanding an inflated flat fare without using the meter, while the candidate describes a diversion scam where drivers falsely claim a palace is closed to redirect tourists to commission shops. Both involve overcharging in Bangkok taxis, but the claim's trick is an inflated fixed-fare demand without meter use, whereas the candidate's trick is a false closure diversion to commission shops. These are distinct methods sharing the same general transport context and location, making them RELATED rather than SAME or SUBTYPE."
+          },
+          "error": null,
+          "model": "sarvam-105b",
+          "requests": 1,
+          "usage": {
+            "completion_tokens": 178,
+            "prompt_tokens": 1212,
+            "total_tokens": 1390
+          }
+        },
+        "usage_complete": true
+      }
+    ],
+    "bf1360a391dc8f9a1c4c299acbff690ca727cb4adbf781e47bed0a6ea50855d0": [
+      {
+        "seconds": 1.047,
+        "completion": {
+          "data": {
+            "decision": "RELATED",
+            "target_id": "2c523249-9616-5923-a720-9a1e4cd07257",
+            "confidence": 0.85,
+            "ambiguous": false,
+            "reason": "The claim describes a normal, correct meter usage resulting in a normal fare, whereas the candidate describes a scam where the driver refuses the meter and demands an inflated fixed fare. These are different methods within the same transport context in Rome, Italy: one is a legitimate experience, the other is a fraudulent tactic. They are not explicitly opposite (CONTRADICTS) because a normal experience does not disprove the scam sometimes occurs, nor are they the same specific trick (SAME) due to differing methods and outcomes. The claim is a narrower, non-scam instance related to the broader taxi fraud category."
+          },
+          "error": null,
+          "model": "sarvam-105b",
+          "requests": 1,
+          "usage": {
+            "completion_tokens": 201,
+            "prompt_tokens": 1220,
+            "total_tokens": 1421
+          }
+        },
+        "usage_complete": true
+      }
+    ],
+    "cc0b83d1ab2abd4e9d01c08d763b4b932bcbda1997a47f3a656112d9437f675a": [
+      {
+        "seconds": 0.953,
+        "completion": {
+          "data": {
+            "decision": "SUBTYPE",
+            "target_id": "c4e1f0ea-8b80-5210-95b6-aef57917ce9a",
+            "confidence": 0.85,
+            "ambiguous": false,
+            "reason": "The claim states a broad umbrella pattern that taxi drivers use deceptive methods to inflate fares in Rome, while the candidate describes the specific concrete trick of drivers rigging the taxi meter to inflate the fare. The claim is a narrower variant (SUBTYPE) of the candidate's broader pattern, as it encompasses meter rigging along with other unspecified deceptive methods, without adding a material distinguishing mechanism or negation."
+          },
+          "error": null,
+          "model": "sarvam-105b",
+          "requests": 1,
+          "usage": {
+            "completion_tokens": 157,
+            "prompt_tokens": 1206,
+            "total_tokens": 1363
+          }
+        },
+        "usage_complete": true
+      }
+    ]
+  }
+}

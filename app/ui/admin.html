@@ -1,0 +1,29 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Travel Scam Intelligence — Admin</title><style>/* EXPLORER_CSS */
+input,textarea { font:inherit; width:100%; padding:9px; color:inherit; background:var(--color-background-primary, light-dark(#fff,#222833)); border:1px solid #8192a4; border-radius:7px; } textarea{min-height:90px;resize:vertical}label{margin:10px 0}pre{white-space:pre-wrap;overflow-wrap:anywhere;font-size:.82rem;line-height:1.5}table{width:100%;border-collapse:collapse;font-size:.85rem}th,td{text-align:left;padding:10px;border-bottom:1px solid #8192a4;overflow-wrap:anywhere} .scroll{overflow:auto} .check{display:flex;align-items:flex-start;gap:8px}.check input{width:auto;margin-top:5px}img{max-width:100%;max-height:500px}fieldset{border:1px solid #8192a4;border-radius:10px;padding:14px}#private{margin-top:20px} .row-actions{display:flex;gap:8px;flex-wrap:wrap}
+</style></head><body><main>
+<header><p class="eyebrow">Travel Scam Intelligence · Internal operations</p><h1>Admin dashboard</h1>
+<p>Private data and review decisions. Access through the tailnet or local server.</p></header>
+<form id="login"><label>Admin token<input id="token" type="password" autocomplete="off" required minlength="32"></label><button>Unlock dashboard</button></form>
+<p id="message" role="status" aria-live="polite">Locked. No private data loaded.</p><p id="error" role="alert" hidden></p>
+<section id="private" hidden>
+<div class="toolbar"><button id="logout">Lock and clear</button><button id="refresh">Refresh list</button><span id="overview"></span></div>
+<div class="filters"><label>Queue<select id="kind"><option value="hypotheses">Hypotheses</option><option value="resolutions">Pending hypothesis resolutions</option><option value="reports">Reports</option><option value="jobs">Jobs</option><option value="locations">Location research</option><option value="documents">Documents</option><option value="emerging">Emerging candidates</option><option value="audit">Audit log</option><option value="operations">Operations metrics</option></select></label>
+<label>Status filter<input id="status-filter" maxlength="40" placeholder="Optional: failed, pending, candidate…"></label><label>Name/title search<input id="search" maxlength="200" placeholder="Locations or hypotheses"></label></div>
+<p id="page-info"></p><pre id="operations"></pre><div class="scroll"><table><thead><tr><th>Record</th><th>Status / summary</th><th id="action-heading">Inspect</th></tr></thead><tbody id="rows"></tbody></table></div>
+<nav aria-label="Queue pages"><button id="prev">Previous</button><button id="next">Next</button></nav>
+<section id="detail" hidden><h2 id="detail-title" tabindex="-1">Record details</h2><pre id="record"></pre>
+<div class="row-actions"><button id="load-evidence" hidden>Inspect evidence</button><button id="load-media" hidden>Inspect private report media</button></div>
+<div id="evidence"></div><nav id="evidence-pager" hidden><button id="e-prev">Previous evidence</button><button id="e-next">Next evidence</button></nav><div id="media"></div>
+<form id="action-form"><fieldset><legend>Reviewed operator action</legend>
+<label>Action<select id="operation"></select></label><p id="action-help" class="muted"></p>
+<div id="draft-fields" hidden><label>Title<input id="title" maxlength="200"></label><label>Description<textarea id="description" maxlength="4000"></textarea></label><label>Category<input id="category" maxlength="100"></label></div>
+<div id="target-fields" hidden><label>Target hypothesis UUID<input id="target-id"></label><button type="button" id="load-target">Inspect target</button><pre id="target-summary"></pre></div>
+<label id="status-field" hidden>New status<select id="new-status"></select></label>
+<label id="priority-field" hidden>Location priority adjustment (−100 to 100; 0 resets)<input id="priority" type="number" min="-100" max="100" step="1"></label>
+<label>Reason for this decision<textarea id="reason" maxlength="2000" required></textarea></label>
+<p class="muted">Held/sensitive evidence remains protected. Merge and move require the same location. Research budgets and active leases are never reset here.</p>
+<button id="preview" type="submit">Review action</button></fieldset></form>
+<section id="confirmation" hidden><h3>Confirm exact action</h3><pre id="command-preview"></pre><label class="check"><input id="confirmed" type="checkbox">I reviewed this record, target/evidence selection and reason.</label>
+<div class="toolbar"><button id="edit-action">Edit action</button><button id="commit" disabled>Commit reviewed action</button></div></section>
+</section></section></main><script type="module">/* EXPLORER_JS */</script></body></html>

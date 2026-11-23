@@ -1,0 +1,408 @@
+{
+  "corpus_hash": "bb639492e9464ef5aed1ed3fcd47331cbf518a86c3894f7a25b112cf3c85db8a",
+  "split": "holdout",
+  "rows": [
+    {
+      "case": "rome-city",
+      "expected": {
+        "relevant": true,
+        "claim": true,
+        "evidence_terms": [
+          "demanded an undisclosed fee"
+        ],
+        "location_path": [
+          "Italy",
+          "Rome"
+        ],
+        "public_pattern": true
+      },
+      "passed": true,
+      "response": {
+        "data": {
+          "claims": [
+            {
+              "claim": "A seller in Rome advertised a free tour but demanded an undisclosed fee before letting the travelers leave.",
+              "evidence_quote": "In Rome, a seller advertised a free tour but demanded an undisclosed fee before letting us leave.",
+              "location": "In Rome",
+              "approach": [],
+              "methods": [],
+              "warning_signs": [],
+              "entities": [
+                "a seller"
+              ],
+              "occurred_at": null,
+              "first_hand": true,
+              "confidence": 1.0,
+              "sensitive": true
+            }
+          ]
+        },
+        "error": null,
+        "model": "sarvam-105b",
+        "requests": 1,
+        "usage": {
+          "completion_tokens": 144,
+          "prompt_tokens": 639,
+          "total_tokens": 783
+        }
+      }
+    },
+    {
+      "case": "suva-city",
+      "expected": {
+        "relevant": true,
+        "claim": true,
+        "evidence_terms": [
+          "demanded an inflated fixed fare"
+        ],
+        "location_path": [
+          "Fiji",
+          "Suva"
+        ],
+        "public_pattern": true
+      },
+      "passed": true,
+      "response": {
+        "data": {
+          "claims": [
+            {
+              "claim": "A driver in Suva agreed to use the meter but then demanded an inflated fixed fare instead, which is a deceptive act of overcharging contrary to the agreed-upon method of payment.",
+              "evidence_quote": "In Suva, a driver agreed to use the meter but demanded an inflated fixed fare instead.",
+              "location": "Suva",
+              "approach": [],
+              "methods": [
+                "demanded an inflated fixed fare instead"
+              ],
+              "warning_signs": [],
+              "entities": [],
+              "occurred_at": null,
+              "first_hand": null,
+              "confidence": 1.0,
+              "sensitive": false
+            }
+          ]
+        },
+        "error": null,
+        "model": "sarvam-105b",
+        "requests": 1,
+        "usage": {
+          "completion_tokens": 167,
+          "prompt_tokens": 639,
+          "total_tokens": 806
+        }
+      }
+    },
+    {
+      "case": "missing-geography",
+      "expected": {
+        "relevant": true,
+        "claim": true,
+        "evidence_terms": [
+          "demanded money"
+        ],
+        "location_path": null,
+        "public_pattern": false
+      },
+      "passed": true,
+      "response": {
+        "data": {
+          "claims": [
+            {
+              "claim": "A driver falsely claimed the traveler's hotel was closed and demanded money for another hotel.",
+              "evidence_quote": "At the old station, a driver falsely said our hotel was closed and demanded money for another hotel.",
+              "location": "At the old station",
+              "approach": [
+                "falsely said our hotel was closed"
+              ],
+              "methods": [
+                "demanded money for another hotel"
+              ],
+              "warning_signs": [],
+              "entities": [],
+              "occurred_at": null,
+              "first_hand": true,
+              "confidence": 1.0,
+              "sensitive": false
+            }
+          ]
+        },
+        "error": null,
+        "model": "sarvam-105b",
+        "requests": 1,
+        "usage": {
+          "completion_tokens": 159,
+          "prompt_tokens": 640,
+          "total_tokens": 799
+        }
+      }
+    },
+    {
+      "case": "conflicting-geography",
+      "expected": {
+        "relevant": true,
+        "claim": true,
+        "evidence_terms": [
+          "demanded extra money"
+        ],
+        "location_path": null,
+        "public_pattern": false
+      },
+      "passed": true,
+      "response": {
+        "data": {
+          "claims": [
+            {
+              "claim": "A driver in Paris demanded extra money after promising a fixed fare.",
+              "evidence_quote": "In Paris, a driver demanded extra money after promising a fixed fare.",
+              "location": "Paris",
+              "approach": [],
+              "methods": [],
+              "warning_signs": [],
+              "entities": [],
+              "occurred_at": null,
+              "first_hand": null,
+              "confidence": 1.0,
+              "sensitive": false
+            }
+          ]
+        },
+        "error": null,
+        "model": "sarvam-105b",
+        "requests": 1,
+        "usage": {
+          "completion_tokens": 129,
+          "prompt_tokens": 634,
+          "total_tokens": 763
+        }
+      }
+    },
+    {
+      "case": "closure-negative",
+      "expected": {
+        "relevant": false,
+        "claim": false,
+        "evidence_terms": [],
+        "location_path": null,
+        "public_pattern": false
+      },
+      "passed": true,
+      "response": {
+        "data": {
+          "claims": []
+        },
+        "error": null,
+        "model": "sarvam-105b",
+        "requests": 1,
+        "usage": {
+          "completion_tokens": 10,
+          "prompt_tokens": 637,
+          "total_tokens": 647
+        }
+      }
+    },
+    {
+      "case": "injection-negative",
+      "expected": {
+        "relevant": false,
+        "claim": false,
+        "evidence_terms": [],
+        "location_path": null,
+        "public_pattern": false
+      },
+      "passed": true,
+      "response": {
+        "data": {
+          "claims": []
+        },
+        "error": null,
+        "model": "sarvam-105b",
+        "requests": 1,
+        "usage": {
+          "completion_tokens": 10,
+          "prompt_tokens": 651,
+          "total_tokens": 661
+        }
+      }
+    }
+  ],
+  "records": {
+    "47765cc02f0536cc10647ce40c29d95dc83d3f4beba63ccc6da1c2ed6074eec6": [
+      {
+        "seconds": 1.047,
+        "completion": {
+          "data": {
+            "claims": [
+              {
+                "claim": "A seller in Rome advertised a free tour but demanded an undisclosed fee before letting the travelers leave.",
+                "evidence_quote": "In Rome, a seller advertised a free tour but demanded an undisclosed fee before letting us leave.",
+                "location": "In Rome",
+                "approach": [],
+                "methods": [],
+                "warning_signs": [],
+                "entities": [
+                  "a seller"
+                ],
+                "occurred_at": null,
+                "first_hand": true,
+                "confidence": 1.0,
+                "sensitive": true
+              }
+            ]
+          },
+          "error": null,
+          "model": "sarvam-105b",
+          "requests": 1,
+          "usage": {
+            "completion_tokens": 144,
+            "prompt_tokens": 639,
+            "total_tokens": 783
+          }
+        },
+        "usage_complete": true
+      }
+    ],
+    "6fda71d82dd7943dbfa7271912c9e3e27e618e5a74b0f2da51b8cefd537f3678": [
+      {
+        "seconds": 0.89,
+        "completion": {
+          "data": {
+            "claims": [
+              {
+                "claim": "A driver in Suva agreed to use the meter but then demanded an inflated fixed fare instead, which is a deceptive act of overcharging contrary to the agreed-upon method of payment.",
+                "evidence_quote": "In Suva, a driver agreed to use the meter but demanded an inflated fixed fare instead.",
+                "location": "Suva",
+                "approach": [],
+                "methods": [
+                  "demanded an inflated fixed fare instead"
+                ],
+                "warning_signs": [],
+                "entities": [],
+                "occurred_at": null,
+                "first_hand": null,
+                "confidence": 1.0,
+                "sensitive": false
+              }
+            ]
+          },
+          "error": null,
+          "model": "sarvam-105b",
+          "requests": 1,
+          "usage": {
+            "completion_tokens": 167,
+            "prompt_tokens": 639,
+            "total_tokens": 806
+          }
+        },
+        "usage_complete": true
+      }
+    ],
+    "2d9265db993ece1be46645b6d9ae5da39786643edb5b9685ba3d8feae833be6c": [
+      {
+        "seconds": 0.859,
+        "completion": {
+          "data": {
+            "claims": [
+              {
+                "claim": "A driver falsely claimed the traveler's hotel was closed and demanded money for another hotel.",
+                "evidence_quote": "At the old station, a driver falsely said our hotel was closed and demanded money for another hotel.",
+                "location": "At the old station",
+                "approach": [
+                  "falsely said our hotel was closed"
+                ],
+                "methods": [
+                  "demanded money for another hotel"
+                ],
+                "warning_signs": [],
+                "entities": [],
+                "occurred_at": null,
+                "first_hand": true,
+                "confidence": 1.0,
+                "sensitive": false
+              }
+            ]
+          },
+          "error": null,
+          "model": "sarvam-105b",
+          "requests": 1,
+          "usage": {
+            "completion_tokens": 159,
+            "prompt_tokens": 640,
+            "total_tokens": 799
+          }
+        },
+        "usage_complete": true
+      }
+    ],
+    "2361edb908db724c49d66e0ab2c6ff590a1bdafad7ad6fb304e21d07da22d87e": [
+      {
+        "seconds": 0.907,
+        "completion": {
+          "data": {
+            "claims": [
+              {
+                "claim": "A driver in Paris demanded extra money after promising a fixed fare.",
+                "evidence_quote": "In Paris, a driver demanded extra money after promising a fixed fare.",
+                "location": "Paris",
+                "approach": [],
+                "methods": [],
+                "warning_signs": [],
+                "entities": [],
+                "occurred_at": null,
+                "first_hand": null,
+                "confidence": 1.0,
+                "sensitive": false
+              }
+            ]
+          },
+          "error": null,
+          "model": "sarvam-105b",
+          "requests": 1,
+          "usage": {
+            "completion_tokens": 129,
+            "prompt_tokens": 634,
+            "total_tokens": 763
+          }
+        },
+        "usage_complete": true
+      }
+    ],
+    "2279bf5d83efed10e0864523a281f75c34669e540a496b3f3b7fca6ae2a7f560": [
+      {
+        "seconds": 0.296,
+        "completion": {
+          "data": {
+            "claims": []
+          },
+          "error": null,
+          "model": "sarvam-105b",
+          "requests": 1,
+          "usage": {
+            "completion_tokens": 10,
+            "prompt_tokens": 637,
+            "total_tokens": 647
+          }
+        },
+        "usage_complete": true
+      }
+    ],
+    "55018b8f7ae26521dea7b883473368ef332fea0a6a241803e8ed5f84dc244044": [
+      {
+        "seconds": 0.329,
+        "completion": {
+          "data": {
+            "claims": []
+          },
+          "error": null,
+          "model": "sarvam-105b",
+          "requests": 1,
+          "usage": {
+            "completion_tokens": 10,
+            "prompt_tokens": 651,
+            "total_tokens": 661
+          }
+        },
+        "usage_complete": true
+      }
+    ]
+  }
+}

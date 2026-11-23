@@ -1,0 +1,118 @@
+{
+  "captured_at": "2026-11-21T15:16:39.188080+00:00",
+  "run": {
+    "id": "7507399a-4a00-44df-a303-1a5119c68578",
+    "status": "partial",
+    "coverage": "partial",
+    "created_at": "2026-11-21 15:14:02.009436+00:00",
+    "started_at": "2026-11-21 15:14:02.184965+00:00",
+    "finished_at": "2026-11-21 15:15:17.514665+00:00",
+    "stop_reasons": [
+      "resource_limit",
+      "source_failures"
+    ]
+  },
+  "usage": {
+    "caps": {
+      "fetches": 20,
+      "queries": 6,
+      "documents": 10,
+      "llm_calls": 24
+    },
+    "used": {
+      "fetches": 20,
+      "queries": 6,
+      "documents": 7,
+      "llm_calls": 23
+    }
+  },
+  "jobs": [
+    {
+      "id": "e948a76f-465b-4ca2-bbb6-3c256ddefafc",
+      "phase": "refresh",
+      "status": "succeeded",
+      "attempts": 1,
+      "created_at": "2026-11-21 15:14:01.941750+00:00",
+      "updated_at": "2026-11-21 15:14:46.819922+00:00",
+      "llm_calls": 20,
+      "complete": false
+    },
+    {
+      "id": "52210508-3a07-4fb9-a1ea-4ae004a9bf4c",
+      "phase": "continuation",
+      "status": "succeeded",
+      "attempts": 1,
+      "created_at": "2026-11-21 15:14:46.819922+00:00",
+      "updated_at": "2026-11-21 15:15:15.321856+00:00",
+      "llm_calls": 3,
+      "complete": false
+    },
+    {
+      "id": "081bd692-0e12-4c0e-adb6-e23bd9585438",
+      "phase": "continuation",
+      "status": "succeeded",
+      "attempts": 1,
+      "created_at": "2026-11-21 15:15:15.321856+00:00",
+      "updated_at": "2026-11-21 15:15:17.494320+00:00",
+      "llm_calls": 0,
+      "complete": false
+    }
+  ],
+  "watches": [
+    {
+      "id": "d5ffff2d-e847-450c-b9b8-6a0bcbdc34d5",
+      "expires_at": "2026-11-21 15:17:01.939565+00:00",
+      "waits": 6
+    }
+  ],
+  "database_activity": {
+    "active": 1,
+    "idle_in_transaction": 0
+  },
+  "container_samples": [
+    {
+      "BlockIO": "42.7MB / 0B",
+      "CPUPerc": "0.26%",
+      "Container": "travel-scam-prod-api-1",
+      "ID": "2ae1c35584d4",
+      "MemPerc": "8.66%",
+      "MemUsage": "339.2MiB / 3.824GiB",
+      "Name": "travel-scam-prod-api-1",
+      "NetIO": "5.21MB / 1.07MB",
+      "PIDs": "9"
+    },
+    {
+      "BlockIO": "1.57MB / 0B",
+      "CPUPerc": "0.20%",
+      "Container": "travel-scam-prod-worker-1",
+      "ID": "2c74d4537bde",
+      "MemPerc": "5.31%",
+      "MemUsage": "207.9MiB / 3.824GiB",
+      "Name": "travel-scam-prod-worker-1",
+      "NetIO": "17.3MB / 13.2MB",
+      "PIDs": "6"
+    },
+    {
+      "BlockIO": "7.15MB / 7.67MB",
+      "CPUPerc": "0.03%",
+      "Container": "travel-scam-prod-postgres-1",
+      "ID": "1bbd66cae9fd",
+      "MemPerc": "1.26%",
+      "MemUsage": "49.35MiB / 3.824GiB",
+      "Name": "travel-scam-prod-postgres-1",
+      "NetIO": "10.1MB / 15.4MB",
+      "PIDs": "10"
+    },
+    {
+      "BlockIO": "1.67GB / 2.56GB",
+      "CPUPerc": "5.33%",
+      "Container": "travel-scam-prod-redis-1",
+      "ID": "97856bf0ef07",
+      "MemPerc": "0.36%",
+      "MemUsage": "13.96MiB / 3.824GiB",
+      "Name": "travel-scam-prod-redis-1",
+      "NetIO": "948MB / 337MB",
+      "PIDs": "7"
+    }
+  ]
+}

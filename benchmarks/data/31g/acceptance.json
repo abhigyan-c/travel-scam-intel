@@ -1,0 +1,93 @@
+{
+  "version": "quality-repair-acceptance-v1",
+  "controlled_quality_pass": true,
+  "recording_reproduced": true,
+  "corpus_hash": "bb639492e9464ef5aed1ed3fcd47331cbf518a86c3894f7a25b112cf3c85db8a",
+  "versions": {
+    "model": "sarvam-105b",
+    "relevance": "relevance-v1",
+    "extraction": "claims-v6",
+    "processing": "article-v1",
+    "location": "location-v3",
+    "discovery": "discovery-v2",
+    "acquisition": "acquisition-v1"
+  },
+  "scorecard": {
+    "cold": {
+      "positive_claim_coverage": {
+        "passed": 9,
+        "total": 9,
+        "target": 0.8,
+        "meets_target": true
+      },
+      "correct_geography_coverage": {
+        "passed": 7,
+        "total": 7,
+        "target": 0.9,
+        "meets_target": true
+      },
+      "eligible_pattern_coverage": {
+        "passed": 5,
+        "total": 6,
+        "target": 0.8,
+        "meets_target": true
+      },
+      "negative_claim_safety": {
+        "passed": 6,
+        "total": 6,
+        "target": 1.0,
+        "meets_target": true
+      },
+      "withheld_pattern_safety": {
+        "passed": 9,
+        "total": 9,
+        "target": 1.0,
+        "meets_target": true
+      }
+    },
+    "warm": {
+      "positive_claim_coverage": {
+        "passed": 9,
+        "total": 9,
+        "target": 0.8,
+        "meets_target": true
+      },
+      "correct_geography_coverage": {
+        "passed": 7,
+        "total": 7,
+        "target": 0.9,
+        "meets_target": true
+      },
+      "eligible_pattern_coverage": {
+        "passed": 5,
+        "total": 6,
+        "target": 0.8,
+        "meets_target": true
+      },
+      "negative_claim_safety": {
+        "passed": 6,
+        "total": 6,
+        "target": 1.0,
+        "meets_target": true
+      },
+      "withheld_pattern_safety": {
+        "passed": 9,
+        "total": 9,
+        "target": 1.0,
+        "meets_target": true
+      }
+    }
+  },
+  "source_hashes": {
+    "app/extraction.py": "ed2035d62dd31631f117f110f6c2baa311848d7f25e50e76141e148b052d3913",
+    "app/db/extraction.py": "2462277291dc8401ab7c32a01113df9f071a9f664daba80c17b2dd4ae299053a",
+    "app/db/resolution.py": "7e1f6379dc6071535581f6b44a26a131037a856b2da017e3e3ff1d529cb9e98b"
+  },
+  "investigation_model_calls": 90,
+  "selected_capture_calls": 26,
+  "selected_reported_tokens": 12413,
+  "production_changed": false,
+  "deployed_reacceptance": "pending_review_and_merge",
+  "ready_for_pr32": false,
+  "limitation": "One small visible corpus, sequential revised protocols; not statistical reliability."
+}

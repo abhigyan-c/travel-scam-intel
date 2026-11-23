@@ -1,0 +1,66 @@
+name: CI
+
+on:
+  push:
+    branches: [develop, main]
+  pull_request:
+    branches: [develop, main]
+
+permissions:
+  contents: read
+
+jobs:
+  checks:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v7
+        with:
+          enable-cache: true
+          python-version: "3.12"
+      - run: uv sync --locked
+      - run: uv run --locked ruff check .
+      - run: uv run --locked ruff format --check .
+      - name: Audit locked runtime dependencies
+        run: |
+          uv export --locked --no-dev --no-hashes --format requirements-txt --output-file "$RUNNER_TEMP/runtime-requirements.txt" > /dev/null
+          uvx pip-audit==2.10.0 --no-deps --disable-pip -r "$RUNNER_TEMP/runtime-requirements.txt"
+      - run: uv run --locked pytest
+      - uses: actions/setup-node@v7
+        with:
+          node-version: "22"
+      - run: node --test tests/ui/*.test.mjs
+      - run: docker compose --env-file deploy/production.env.example -f deploy/compose.yaml config --quiet
+      - run: for script in deploy/*.sh; do bash -n "$script" || exit; done
+
+  infrastructure:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v7
+        with:
+          enable-cache: true
+          python-version: "3.12"
+      - run: uv sync --locked
+      - run: docker compose up --build --wait --wait-timeout 180
+      - run: uv run --locked pytest -m integration
+        env:
+          RUN_INFRA_TESTS: "1"
+      - name: Validate PostgreSQL minor upgrade and vector dump restore
+        run: uv run --locked python -m deploy.check_database_upgrade "$(docker compose images -q postgres)"
+      - name: Replay intelligence quality baseline (no provider credentials)
+        run: >-
+          uv run --locked python -m benchmarks.evaluate
+          --mode replay
+          --baseline benchmarks/data/36/baseline.json
+          --output "${{ runner.temp }}/intelligence-evaluation/report.json"
+      - uses: actions/upload-artifact@v7
+        if: always()
+        with:
+          name: intelligence-evaluation
+          path: ${{ runner.temp }}/intelligence-evaluation/report.json
+          if-no-files-found: ignore
+      - if: failure()
+        run: docker compose logs --no-color --tail 100
+      - if: always()
+        run: docker compose down

@@ -1,0 +1,332 @@
+{
+  "synthetic": true,
+  "production_writes": 0,
+  "provider_calls": 0,
+  "database": "disposable localhost schema",
+  "raw_storage": "private process memory",
+  "counts": {
+    "user_reports": 0,
+    "documents": 0,
+    "research_jobs": 0
+  },
+  "stored_objects": 0,
+  "fixture_roots": 1,
+  "fixture_status": {
+    "status": "completed",
+    "terminal": true,
+    "created_at": "2026-11-22T04:35:31.844658Z",
+    "started_at": "2026-11-22T04:35:31.844658Z",
+    "last_checked_at": "2026-11-22T04:40:31.844658Z",
+    "stop_reasons": []
+  },
+  "watches": [
+    {
+      "waits": 45,
+      "expires_at": "2026-11-22T04:45:31.844658+00:00"
+    },
+    {
+      "waits": 1,
+      "expires_at": "2026-11-22T04:46:18.811953+00:00"
+    }
+  ],
+  "tool_counts": {
+    "resolve_scam_location": 2,
+    "open_scam_report_form": 1,
+    "request_scam_report": 1,
+    "get_scam_report": 7,
+    "wait_for_scam_report": 46,
+    "watch_scam_report": 1
+  },
+  "calls": [
+    {
+      "tool": "resolve_scam_location",
+      "elapsed_ms": 16.0,
+      "error": false
+    },
+    {
+      "tool": "open_scam_report_form",
+      "elapsed_ms": 0.0,
+      "error": false
+    },
+    {
+      "tool": "resolve_scam_location",
+      "elapsed_ms": 0.0,
+      "error": false
+    },
+    {
+      "tool": "request_scam_report",
+      "elapsed_ms": 0.0,
+      "error": false
+    },
+    {
+      "tool": "get_scam_report",
+      "elapsed_ms": 0.0,
+      "error": false
+    },
+    {
+      "tool": "wait_for_scam_report",
+      "elapsed_ms": 2297.0,
+      "error": false
+    },
+    {
+      "tool": "wait_for_scam_report",
+      "elapsed_ms": 5110.0,
+      "error": false
+    },
+    {
+      "tool": "wait_for_scam_report",
+      "elapsed_ms": 5125.0,
+      "error": false
+    },
+    {
+      "tool": "wait_for_scam_report",
+      "elapsed_ms": 5187.0,
+      "error": false
+    },
+    {
+      "tool": "wait_for_scam_report",
+      "elapsed_ms": 5140.0,
+      "error": false
+    },
+    {
+      "tool": "wait_for_scam_report",
+      "elapsed_ms": 5047.0,
+      "error": false
+    },
+    {
+      "tool": "get_scam_report",
+      "elapsed_ms": 0.0,
+      "error": false
+    },
+    {
+      "tool": "watch_scam_report",
+      "elapsed_ms": 0.0,
+      "error": false
+    },
+    {
+      "tool": "wait_for_scam_report",
+      "elapsed_ms": 5141.0,
+      "error": false
+    },
+    {
+      "tool": "wait_for_scam_report",
+      "elapsed_ms": 5109.0,
+      "error": false
+    },
+    {
+      "tool": "wait_for_scam_report",
+      "elapsed_ms": 5109.0,
+      "error": false
+    },
+    {
+      "tool": "wait_for_scam_report",
+      "elapsed_ms": 5125.0,
+      "error": false
+    },
+    {
+      "tool": "wait_for_scam_report",
+      "elapsed_ms": 5156.0,
+      "error": false
+    },
+    {
+      "tool": "wait_for_scam_report",
+      "elapsed_ms": 5125.0,
+      "error": false
+    },
+    {
+      "tool": "wait_for_scam_report",
+      "elapsed_ms": 5140.0,
+      "error": false
+    },
+    {
+      "tool": "wait_for_scam_report",
+      "elapsed_ms": 5063.0,
+      "error": false
+    },
+    {
+      "tool": "get_scam_report",
+      "elapsed_ms": 0.0,
+      "error": false
+    },
+    {
+      "tool": "wait_for_scam_report",
+      "elapsed_ms": 5078.0,
+      "error": false
+    },
+    {
+      "tool": "wait_for_scam_report",
+      "elapsed_ms": 5109.0,
+      "error": false
+    },
+    {
+      "tool": "wait_for_scam_report",
+      "elapsed_ms": 5062.0,
+      "error": false
+    },
+    {
+      "tool": "wait_for_scam_report",
+      "elapsed_ms": 5172.0,
+      "error": false
+    },
+    {
+      "tool": "wait_for_scam_report",
+      "elapsed_ms": 5141.0,
+      "error": false
+    },
+    {
+      "tool": "wait_for_scam_report",
+      "elapsed_ms": 5109.0,
+      "error": false
+    },
+    {
+      "tool": "wait_for_scam_report",
+      "elapsed_ms": 5046.0,
+      "error": false
+    },
+    {
+      "tool": "wait_for_scam_report",
+      "elapsed_ms": 5141.0,
+      "error": false
+    },
+    {
+      "tool": "wait_for_scam_report",
+      "elapsed_ms": 5125.0,
+      "error": false
+    },
+    {
+      "tool": "get_scam_report",
+      "elapsed_ms": 0.0,
+      "error": false
+    },
+    {
+      "tool": "wait_for_scam_report",
+      "elapsed_ms": 5094.0,
+      "error": false
+    },
+    {
+      "tool": "wait_for_scam_report",
+      "elapsed_ms": 5000.0,
+      "error": false
+    },
+    {
+      "tool": "wait_for_scam_report",
+      "elapsed_ms": 5000.0,
+      "error": false
+    },
+    {
+      "tool": "wait_for_scam_report",
+      "elapsed_ms": 5062.0,
+      "error": false
+    },
+    {
+      "tool": "wait_for_scam_report",
+      "elapsed_ms": 5094.0,
+      "error": false
+    },
+    {
+      "tool": "wait_for_scam_report",
+      "elapsed_ms": 5016.0,
+      "error": false
+    },
+    {
+      "tool": "wait_for_scam_report",
+      "elapsed_ms": 5141.0,
+      "error": false
+    },
+    {
+      "tool": "wait_for_scam_report",
+      "elapsed_ms": 5047.0,
+      "error": false
+    },
+    {
+      "tool": "wait_for_scam_report",
+      "elapsed_ms": 5094.0,
+      "error": false
+    },
+    {
+      "tool": "wait_for_scam_report",
+      "elapsed_ms": 5172.0,
+      "error": false
+    },
+    {
+      "tool": "wait_for_scam_report",
+      "elapsed_ms": 5172.0,
+      "error": false
+    },
+    {
+      "tool": "wait_for_scam_report",
+      "elapsed_ms": 5156.0,
+      "error": false
+    },
+    {
+      "tool": "wait_for_scam_report",
+      "elapsed_ms": 5250.0,
+      "error": false
+    },
+    {
+      "tool": "wait_for_scam_report",
+      "elapsed_ms": 5093.0,
+      "error": false
+    },
+    {
+      "tool": "wait_for_scam_report",
+      "elapsed_ms": 5156.0,
+      "error": false
+    },
+    {
+      "tool": "wait_for_scam_report",
+      "elapsed_ms": 5203.0,
+      "error": false
+    },
+    {
+      "tool": "wait_for_scam_report",
+      "elapsed_ms": 5156.0,
+      "error": false
+    },
+    {
+      "tool": "get_scam_report",
+      "elapsed_ms": 0.0,
+      "error": false
+    },
+    {
+      "tool": "wait_for_scam_report",
+      "elapsed_ms": 5156.0,
+      "error": false
+    },
+    {
+      "tool": "wait_for_scam_report",
+      "elapsed_ms": 5140.0,
+      "error": false
+    },
+    {
+      "tool": "wait_for_scam_report",
+      "elapsed_ms": 5125.0,
+      "error": false
+    },
+    {
+      "tool": "wait_for_scam_report",
+      "elapsed_ms": 5156.0,
+      "error": false
+    },
+    {
+      "tool": "get_scam_report",
+      "elapsed_ms": 0.0,
+      "error": false
+    },
+    {
+      "tool": "wait_for_scam_report",
+      "elapsed_ms": 5172.0,
+      "error": false
+    },
+    {
+      "tool": "wait_for_scam_report",
+      "elapsed_ms": 0.0,
+      "error": false
+    },
+    {
+      "tool": "get_scam_report",
+      "elapsed_ms": 0.0,
+      "error": false
+    }
+  ]
+}

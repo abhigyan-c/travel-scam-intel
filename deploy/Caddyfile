@@ -1,0 +1,66 @@
+{
+	auto_https off
+}
+
+:80 {
+	handle /.well-known/acme-challenge/* {
+		root * /var/lib/travel-scam/acme
+		file_server
+	}
+	respond 503
+}
+
+(public_mcp_preview) {
+	header {
+		X-Content-Type-Options nosniff
+		Referrer-Policy no-referrer
+		Cache-Control no-store
+	}
+	request_body {
+		max_size 12MB
+	}
+	# Exact public product/policy routes. REST/admin/docs/media remain private.
+	@product {
+		method GET HEAD
+		path /about /privacy /terms /support
+	}
+	handle @product {
+		reverse_proxy 127.0.0.1:8000
+	}
+	# Install only the portal-provided public challenge token at this exact file.
+	@verification {
+		method GET HEAD
+		path /.well-known/openai-apps-challenge
+	}
+	handle @verification {
+		header Content-Type "text/plain; charset=utf-8"
+		root * /var/lib/travel-scam/openai-verification
+		file_server
+	}
+	@health {
+		method GET HEAD
+		path /health
+	}
+	handle @health {
+		reverse_proxy 127.0.0.1:8000
+	}
+	@mcp path /mcp /mcp/*
+	handle @mcp {
+		reverse_proxy 127.0.0.1:8000
+	}
+	handle {
+		respond 404
+	}
+}
+
+https://{$VPS_IP} {
+	tls /etc/caddy/certs/fullchain.pem /etc/caddy/certs/privkey.pem
+	import public_mcp_preview
+}
+
+# Funnel terminates hostname TLS and reaches only this filtered loopback listener.
+# Never point Funnel directly at the application port, which also serves admin.
+http://:8080 {
+	bind 127.0.0.1
+	import public_mcp_preview
+}

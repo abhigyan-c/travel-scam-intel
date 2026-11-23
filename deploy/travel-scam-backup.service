@@ -1,0 +1,11 @@
+[Unit]
+Description=Encrypted offsite travel scam database backup
+Requires=docker.service
+After=docker.service network-online.target
+Wants=network-online.target
+
+[Service]
+Type=oneshot
+UMask=0077
+TimeoutStartSec=900
+ExecStart=/bin/bash /opt/travel-scam/current/deploy/backup.sh

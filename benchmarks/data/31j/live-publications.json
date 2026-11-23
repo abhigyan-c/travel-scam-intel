@@ -1,0 +1,27 @@
+{
+  "run_id": "acd38567-2e04-49aa-8acd-018d6b4653df",
+  "research": {
+    "status": "stale",
+    "initial": true,
+    "enriched": false,
+    "in_progress": false,
+    "stale": true,
+    "complete": false,
+    "last_success_at": null,
+    "fresh_until": null
+  },
+  "public_patterns": 2,
+  "new_policy_publications": [
+    {
+      "pattern_id": "6693cba7-31f7-4b73-a5ed-2d087eeee881",
+      "event_id": "a0874ef4-fa7f-4859-8aae-53e5e0354fe9",
+      "resolution_version": "hypothesis-v4",
+      "decision": "NEW",
+      "reviewed": false,
+      "public_status": "candidate",
+      "scope": "exact",
+      "confidence": "limited",
+      "disclaimer_present": true
+    }
+  ]
+}

@@ -1,0 +1,17 @@
+{
+  "date": "2026-11-08",
+  "previous_release": "13cdcb20fd34e7987ad0a9241a450ef9e6113ad9",
+  "active_release": "fc936c436d3a49804f042f3e38cdce3ad4390e14",
+  "deployment": "Existing push-release entry point over private Tailscale SSH",
+  "deployed_from": "Merged develop; PR 31F adds no application changes",
+  "api_image": "travel-scam-intel:fc936c436d3a49804f042f3e38cdce3ad4390e14",
+  "worker_image": "travel-scam-intel:fc936c436d3a49804f042f3e38cdce3ad4390e14",
+  "container_health": {"api": "healthy", "worker": "healthy", "postgres": "healthy", "redis": "healthy"},
+  "readiness": {"postgres": "ok", "redis": "ok", "storage": "ok"},
+  "final_host_memory_mib": {"total": 3915, "used": 1233, "available": 2682},
+  "memory_note": "One free -m observation after the runs; not peak RSS or a load test",
+  "public_endpoint": "https://travel-scam-prod.tailbbf557.ts.net/mcp",
+  "new_public_listener": false,
+  "synthetic_production_reports_created": false,
+  "reviewer": "Operator SSH/readiness inspection plus user ChatGPT test"
+}

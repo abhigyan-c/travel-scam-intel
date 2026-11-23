@@ -1,0 +1,111 @@
+[
+  {
+    "url": "https://library.siam-legal.com/how-to-avoid-common-scams-in-thailand/",
+    "attempts": [
+      {
+        "error": "invalid_grounding",
+        "fields": [
+          "methods",
+          "warning_signs"
+        ],
+        "requests": 1,
+        "usage": {
+          "completion_tokens": 332,
+          "prompt_tokens": 1326,
+          "total_tokens": 1658
+        },
+        "claims": null,
+        "locations": [],
+        "held": []
+      },
+      {
+        "error": "invalid_grounding",
+        "fields": [
+          "location"
+        ],
+        "requests": 1,
+        "usage": {
+          "completion_tokens": 117,
+          "prompt_tokens": 1599,
+          "total_tokens": 1716
+        },
+        "claims": null,
+        "locations": [],
+        "held": []
+      }
+    ]
+  },
+  {
+    "url": "https://yourthaiguide.com/top-10-bangkok-scams-you-should-avoid/",
+    "attempts": [
+      {
+        "error": "invalid_grounding",
+        "fields": [
+          "methods",
+          "warning_signs"
+        ],
+        "requests": 1,
+        "usage": {
+          "completion_tokens": 272,
+          "prompt_tokens": 1530,
+          "total_tokens": 1802
+        },
+        "claims": null,
+        "locations": [],
+        "held": []
+      },
+      {
+        "error": null,
+        "fields": [],
+        "requests": 1,
+        "usage": {
+          "completion_tokens": 246,
+          "prompt_tokens": 1803,
+          "total_tokens": 2049
+        },
+        "claims": 1,
+        "locations": [
+          "Bangkok"
+        ],
+        "held": [
+          false
+        ]
+      }
+    ]
+  },
+  {
+    "url": "https://toasttothailand.com/planning-your-trip/common-scams-staying-safe/",
+    "attempts": [
+      {
+        "error": "invalid_grounding",
+        "fields": [
+          "location",
+          "approach",
+          "methods"
+        ],
+        "requests": 1,
+        "usage": {
+          "completion_tokens": 203,
+          "prompt_tokens": 1476,
+          "total_tokens": 1679
+        },
+        "claims": null,
+        "locations": [],
+        "held": []
+      },
+      {
+        "error": null,
+        "fields": [],
+        "requests": 1,
+        "usage": {
+          "completion_tokens": 6,
+          "prompt_tokens": 1749,
+          "total_tokens": 1755
+        },
+        "claims": 0,
+        "locations": [],
+        "held": []
+      }
+    ]
+  }
+]

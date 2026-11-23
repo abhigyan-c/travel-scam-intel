@@ -1,0 +1,366 @@
+{
+  "version": "acquisition-corpus-v1",
+  "provenance": "Synthetic acquisition outcomes and virtual timings; not website measurements or scam claims.",
+  "cases": [
+    {
+      "id": "repeated-denials",
+      "pages": [
+        {
+          "url": "https://denied.example/0",
+          "status": 403,
+          "error": null,
+          "outcome": "ready",
+          "seconds": 1,
+          "resource": "denied-0"
+        },
+        {
+          "url": "https://denied.example/1",
+          "status": 403,
+          "error": null,
+          "outcome": "ready",
+          "seconds": 1,
+          "resource": "denied-1"
+        },
+        {
+          "url": "https://denied.example/2",
+          "status": 403,
+          "error": null,
+          "outcome": "ready",
+          "seconds": 1,
+          "resource": "denied-2"
+        },
+        {
+          "url": "https://denied.example/3",
+          "status": 403,
+          "error": null,
+          "outcome": "ready",
+          "seconds": 1,
+          "resource": "denied-3"
+        },
+        {
+          "url": "https://denied.example/4",
+          "status": 403,
+          "error": null,
+          "outcome": "ready",
+          "seconds": 1,
+          "resource": "denied-4"
+        },
+        {
+          "url": "https://blog0.example/1",
+          "status": 200,
+          "error": null,
+          "outcome": "ready",
+          "seconds": 1,
+          "resource": "blog0-1"
+        },
+        {
+          "url": "https://blog1.example/1",
+          "status": 200,
+          "error": null,
+          "outcome": "ready",
+          "seconds": 1,
+          "resource": "blog1-1"
+        },
+        {
+          "url": "https://blog2.example/1",
+          "status": 200,
+          "error": null,
+          "outcome": "ready",
+          "seconds": 1,
+          "resource": "blog2-1"
+        },
+        {
+          "url": "https://blog3.example/1",
+          "status": 200,
+          "error": null,
+          "outcome": "ready",
+          "seconds": 1,
+          "resource": "blog3-1"
+        },
+        {
+          "url": "https://blog4.example/1",
+          "status": 200,
+          "error": null,
+          "outcome": "ready",
+          "seconds": 1,
+          "resource": "blog4-1"
+        }
+      ],
+      "fetch_limit": 8,
+      "time_limit": 15
+    },
+    {
+      "id": "single-host-valid",
+      "pages": [
+        {
+          "url": "https://articles.example/0",
+          "status": 200,
+          "error": null,
+          "outcome": "ready",
+          "seconds": 1,
+          "resource": "articles-0"
+        },
+        {
+          "url": "https://articles.example/1",
+          "status": 200,
+          "error": null,
+          "outcome": "ready",
+          "seconds": 1,
+          "resource": "articles-1"
+        },
+        {
+          "url": "https://articles.example/2",
+          "status": 200,
+          "error": null,
+          "outcome": "ready",
+          "seconds": 1,
+          "resource": "articles-2"
+        },
+        {
+          "url": "https://articles.example/3",
+          "status": 200,
+          "error": null,
+          "outcome": "ready",
+          "seconds": 1,
+          "resource": "articles-3"
+        }
+      ],
+      "fetch_limit": 8,
+      "time_limit": 15
+    },
+    {
+      "id": "page-errors-not-host-errors",
+      "pages": [
+        {
+          "url": "https://articles.example/1",
+          "status": 404,
+          "error": null,
+          "outcome": "ready",
+          "seconds": 1,
+          "resource": "articles-1"
+        },
+        {
+          "url": "https://articles.example/2",
+          "status": 403,
+          "error": null,
+          "outcome": "ready",
+          "seconds": 1,
+          "resource": "articles-2"
+        },
+        {
+          "url": "https://articles.example/3",
+          "status": 200,
+          "error": null,
+          "outcome": "ready",
+          "seconds": 1,
+          "resource": "articles-3"
+        },
+        {
+          "url": "https://other.example/1",
+          "status": 200,
+          "error": null,
+          "outcome": "ready",
+          "seconds": 1,
+          "resource": "other-1"
+        }
+      ],
+      "fetch_limit": 8,
+      "time_limit": 15
+    },
+    {
+      "id": "repeated-empty",
+      "pages": [
+        {
+          "url": "https://shell.example/0",
+          "status": 200,
+          "error": null,
+          "outcome": "empty",
+          "seconds": 1,
+          "resource": "shell-0"
+        },
+        {
+          "url": "https://shell.example/1",
+          "status": 200,
+          "error": null,
+          "outcome": "empty",
+          "seconds": 1,
+          "resource": "shell-1"
+        },
+        {
+          "url": "https://shell.example/2",
+          "status": 200,
+          "error": null,
+          "outcome": "empty",
+          "seconds": 1,
+          "resource": "shell-2"
+        },
+        {
+          "url": "https://shell.example/3",
+          "status": 200,
+          "error": null,
+          "outcome": "empty",
+          "seconds": 1,
+          "resource": "shell-3"
+        },
+        {
+          "url": "https://blog1.example/1",
+          "status": 200,
+          "error": null,
+          "outcome": "ready",
+          "seconds": 1,
+          "resource": "blog1-1"
+        },
+        {
+          "url": "https://blog2.example/1",
+          "status": 200,
+          "error": null,
+          "outcome": "ready",
+          "seconds": 1,
+          "resource": "blog2-1"
+        }
+      ],
+      "fetch_limit": 4,
+      "time_limit": 15
+    },
+    {
+      "id": "late-host-recovery",
+      "pages": [
+        {
+          "url": "https://recovering.example/1",
+          "status": 200,
+          "error": "fetch_timeout",
+          "outcome": "ready",
+          "seconds": 4,
+          "resource": "recovering-1"
+        },
+        {
+          "url": "https://recovering.example/2",
+          "status": 200,
+          "error": "fetch_timeout",
+          "outcome": "ready",
+          "seconds": 4,
+          "resource": "recovering-2"
+        },
+        {
+          "url": "https://recovering.example/3",
+          "status": 200,
+          "error": null,
+          "outcome": "ready",
+          "seconds": 1,
+          "resource": "recovering-3"
+        }
+      ],
+      "fetch_limit": 8,
+      "time_limit": 15
+    },
+    {
+      "id": "tracking-duplicates",
+      "pages": [
+        {
+          "url": "https://article.example/report?id=1&utm_source=a",
+          "status": 200,
+          "error": null,
+          "outcome": "ready",
+          "seconds": 1,
+          "resource": "article-1"
+        },
+        {
+          "url": "https://article.example/report?id=1&utm_source=b",
+          "status": 200,
+          "error": null,
+          "outcome": "ready",
+          "seconds": 1,
+          "resource": "article-1"
+        },
+        {
+          "url": "https://article.example/report?id=2",
+          "status": 200,
+          "error": null,
+          "outcome": "ready",
+          "seconds": 1,
+          "resource": "article-2"
+        }
+      ],
+      "fetch_limit": 8,
+      "time_limit": 15
+    },
+    {
+      "id": "rate-limited",
+      "pages": [
+        {
+          "url": "https://limited.example/0",
+          "status": 429,
+          "error": null,
+          "outcome": "ready",
+          "seconds": 1,
+          "resource": "limited-0"
+        },
+        {
+          "url": "https://limited.example/1",
+          "status": 429,
+          "error": null,
+          "outcome": "ready",
+          "seconds": 1,
+          "resource": "limited-1"
+        },
+        {
+          "url": "https://limited.example/2",
+          "status": 429,
+          "error": null,
+          "outcome": "ready",
+          "seconds": 1,
+          "resource": "limited-2"
+        },
+        {
+          "url": "https://blog1.example/1",
+          "status": 200,
+          "error": null,
+          "outcome": "ready",
+          "seconds": 1,
+          "resource": "blog1-1"
+        },
+        {
+          "url": "https://blog2.example/1",
+          "status": 200,
+          "error": null,
+          "outcome": "ready",
+          "seconds": 1,
+          "resource": "blog2-1"
+        }
+      ],
+      "fetch_limit": 8,
+      "time_limit": 15
+    },
+    {
+      "id": "slow-origin",
+      "pages": [
+        {
+          "url": "https://slow.example/1",
+          "status": 200,
+          "error": null,
+          "outcome": "ready",
+          "seconds": 10,
+          "resource": "slow-1"
+        },
+        {
+          "url": "https://blog1.example/1",
+          "status": 200,
+          "error": null,
+          "outcome": "ready",
+          "seconds": 1,
+          "resource": "blog1-1"
+        },
+        {
+          "url": "https://blog2.example/1",
+          "status": 200,
+          "error": null,
+          "outcome": "ready",
+          "seconds": 1,
+          "resource": "blog2-1"
+        }
+      ],
+      "fetch_limit": 8,
+      "time_limit": 9
+    }
+  ]
+}

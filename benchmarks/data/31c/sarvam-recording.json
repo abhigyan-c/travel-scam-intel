@@ -1,0 +1,586 @@
+{
+  "corpus_hash": "bb639492e9464ef5aed1ed3fcd47331cbf518a86c3894f7a25b112cf3c85db8a",
+  "model": "sarvam-105b",
+  "records": {
+    "9a4ae4704c4a5e1e11362aaed83fc37f57542613554dad5322942626aadec41b": [
+      {
+        "seconds": 0.875,
+        "completion": {
+          "data": {
+            "relevant": true,
+            "category": "Deceptive overcharging",
+            "confidence": 0.95,
+            "reason": "The driver demanded extra money after a fixed fare was agreed upon, which is a form of deceptive overcharging."
+          },
+          "error": null,
+          "model": "sarvam-105b",
+          "requests": 1,
+          "usage": {
+            "completion_tokens": 51,
+            "prompt_tokens": 186,
+            "total_tokens": 237
+          }
+        }
+      }
+    ],
+    "fecc3096e6321cde27458c216a961e92786e15f031fa8098248c3ff6f222884e": [
+      {
+        "seconds": 1.281,
+        "completion": {
+          "data": {
+            "claims": [
+              {
+                "claim": "A driver demanded extra money after a fixed fare was agreed upon.",
+                "evidence_quote": "I was in Bangkok when a driver demanded extra money after I agreed to a fixed fare.",
+                "location": "Bangkok",
+                "approach": [],
+                "methods": [
+                  "demanded extra money after I agreed to a fixed fare"
+                ],
+                "warning_signs": [],
+                "entities": [],
+                "occurred_at": null,
+                "first_hand": true,
+                "confidence": 1.0,
+                "sensitive": false
+              }
+            ]
+          },
+          "error": null,
+          "model": "sarvam-105b",
+          "requests": 1,
+          "usage": {
+            "completion_tokens": 110,
+            "prompt_tokens": 508,
+            "total_tokens": 618
+          }
+        }
+      }
+    ],
+    "754274dd5ad426c2b32a6fc03bef53f5c816d853b60e34bb99f75bb5c81b66a1": [
+      {
+        "seconds": 1.0,
+        "completion": {
+          "data": {
+            "relevant": true,
+            "category": "tourist fraud",
+            "confidence": 0.95,
+            "reason": "The passage describes a deceptive act where a man falsely claimed the palace was closed to direct the tourist to a commission shop, which is a form of tourist fraud."
+          },
+          "error": null,
+          "model": "sarvam-105b",
+          "requests": 1,
+          "usage": {
+            "completion_tokens": 72,
+            "prompt_tokens": 191,
+            "total_tokens": 263
+          }
+        }
+      }
+    ],
+    "ae200d6bf5cd1aaa96d90519e34903ba16087a7e9cf4f2958196baf65d4fdb95": [
+      {
+        "seconds": 0.266,
+        "completion": {
+          "data": {
+            "claims": []
+          },
+          "error": null,
+          "model": "sarvam-105b",
+          "requests": 1,
+          "usage": {
+            "completion_tokens": 6,
+            "prompt_tokens": 513,
+            "total_tokens": 519
+          }
+        }
+      }
+    ],
+    "e902332d0307090cc37a9e65eb2d04477b3e24950c4fa801aee61feb030eefe1": [
+      {
+        "seconds": 0.75,
+        "completion": {
+          "data": {
+            "relevant": true,
+            "category": "deceptive overcharging",
+            "confidence": 1.0,
+            "reason": "The passage describes a driver who promised a fixed fare but then demanded extra money upon arrival, which is a form of deceptive overcharging."
+          },
+          "error": null,
+          "model": "sarvam-105b",
+          "requests": 1,
+          "usage": {
+            "completion_tokens": 55,
+            "prompt_tokens": 186,
+            "total_tokens": 241
+          }
+        }
+      }
+    ],
+    "768b68e325dfdaad0cfe46a32ad2938359187e3868f762a20a1e8c2ffeadbbab": [
+      {
+        "seconds": 1.562,
+        "completion": {
+          "data": {
+            "claims": [
+              {
+                "claim": "A driver in Chiang Mai promised a fixed fare but demanded extra money upon arrival.",
+                "evidence_quote": "In Chiang Mai, a driver promised a fixed fare but demanded extra money when we arrived.",
+                "location": "Chiang Mai",
+                "approach": [
+                  "promised a fixed fare"
+                ],
+                "methods": [
+                  "demanded extra money when we arrived"
+                ],
+                "warning_signs": [],
+                "entities": [],
+                "occurred_at": null,
+                "first_hand": true,
+                "confidence": 1.0,
+                "sensitive": false
+              }
+            ]
+          },
+          "error": null,
+          "model": "sarvam-105b",
+          "requests": 1,
+          "usage": {
+            "completion_tokens": 151,
+            "prompt_tokens": 508,
+            "total_tokens": 659
+          }
+        }
+      }
+    ],
+    "c18c476ac319f615c27e5c92f3012f759b1bd4680ea77762e842685dc79d2841": [
+      {
+        "seconds": 0.968,
+        "completion": {
+          "data": {
+            "relevant": true,
+            "category": "tourist fraud",
+            "confidence": 0.95,
+            "reason": "The passage describes a deceptive practice where a free item is given but payment is demanded after it is already attached, which is a classic tourist fraud tactic."
+          },
+          "error": null,
+          "model": "sarvam-105b",
+          "requests": 1,
+          "usage": {
+            "completion_tokens": 68,
+            "prompt_tokens": 186,
+            "total_tokens": 254
+          }
+        }
+      }
+    ],
+    "cd9afb1dc2025e4dd3c09d0d680049551b9ccd51a3966edd54981b303ee623a6": [
+      {
+        "seconds": 1.797,
+        "completion": {
+          "data": {
+            "claims": [
+              {
+                "claim": "In Paris, a person offered a free bracelet but demanded payment after fastening it to the traveler's wrist.",
+                "evidence_quote": "In Paris, someone offered a free bracelet but demanded payment after fastening it to my wrist.",
+                "location": "Paris",
+                "approach": [
+                  "offered a free bracelet"
+                ],
+                "methods": [
+                  "demanded payment after fastening it to my wrist"
+                ],
+                "warning_signs": [
+                  "someone offered a free bracelet but demanded payment after fastening it to my wrist"
+                ],
+                "entities": [],
+                "occurred_at": null,
+                "first_hand": true,
+                "confidence": 1.0,
+                "sensitive": false
+              }
+            ]
+          },
+          "error": null,
+          "model": "sarvam-105b",
+          "requests": 1,
+          "usage": {
+            "completion_tokens": 135,
+            "prompt_tokens": 508,
+            "total_tokens": 643
+          }
+        }
+      }
+    ],
+    "c207a86be134c904fe062525064cb34bb396ab53b9085ebc5dd8aa2dbfc702b0": [
+      {
+        "seconds": 1.235,
+        "completion": {
+          "data": {
+            "relevant": true,
+            "category": "tourist fraud",
+            "confidence": 1.0,
+            "reason": "The passage describes a seller who advertised a free tour but then demanded an undisclosed fee to let the tourists leave, which is a deceptive practice related to a tourist service."
+          },
+          "error": null,
+          "model": "sarvam-105b",
+          "requests": 1,
+          "usage": {
+            "completion_tokens": 72,
+            "prompt_tokens": 187,
+            "total_tokens": 259
+          }
+        }
+      }
+    ],
+    "ea4223c7ac98428c1204f34e6827eaf51be59d3212e6a2326f12388bdf92f160": [
+      {
+        "seconds": 2.344,
+        "completion": {
+          "data": {
+            "claims": [
+              {
+                "claim": "A seller advertised a free tour in Rome but demanded an undisclosed fee before letting the travelers leave.",
+                "evidence_quote": "In Rome, a seller advertised a free tour but demanded an undisclosed fee before letting us leave.",
+                "location": "Rome",
+                "approach": [
+                  "advertised a free tour"
+                ],
+                "methods": [
+                  "demanded an undisclosed fee before letting us leave"
+                ],
+                "warning_signs": [],
+                "entities": [],
+                "occurred_at": null,
+                "first_hand": true,
+                "confidence": 1.0,
+                "sensitive": true
+              }
+            ]
+          },
+          "error": null,
+          "model": "sarvam-105b",
+          "requests": 1,
+          "usage": {
+            "completion_tokens": 156,
+            "prompt_tokens": 509,
+            "total_tokens": 665
+          }
+        }
+      }
+    ],
+    "c6bfdf51568d9c31d4de7f3ddf8fd9d61a1ec4e2cb15eb4adc1809489b8edd0a": [
+      {
+        "seconds": 1.032,
+        "completion": {
+          "data": {
+            "relevant": true,
+            "category": "Deceptive overcharging",
+            "confidence": 1.0,
+            "reason": "The passage describes a driver who agreed to use a meter but then demanded an inflated fixed fare, which is a clear example of deceptive overcharging."
+          },
+          "error": null,
+          "model": "sarvam-105b",
+          "requests": 1,
+          "usage": {
+            "completion_tokens": 67,
+            "prompt_tokens": 187,
+            "total_tokens": 254
+          }
+        }
+      }
+    ],
+    "0852d2ab73ddab324bb0a00dba885a6dc5dd86362226ebd8390a162a1fdde039": [
+      {
+        "seconds": 2.0,
+        "completion": {
+          "data": {
+            "claims": [
+              {
+                "claim": "A driver in Suva agreed to use the meter but demanded an inflated fixed fare instead.",
+                "evidence_quote": "In Suva, a driver agreed to use the meter but demanded an inflated fixed fare instead.",
+                "location": "Suva",
+                "approach": [],
+                "methods": [],
+                "warning_signs": [],
+                "entities": [],
+                "occurred_at": null,
+                "first_hand": null,
+                "confidence": 1.0,
+                "sensitive": false
+              }
+            ]
+          },
+          "error": null,
+          "model": "sarvam-105b",
+          "requests": 1,
+          "usage": {
+            "completion_tokens": 140,
+            "prompt_tokens": 509,
+            "total_tokens": 649
+          }
+        }
+      }
+    ],
+    "7aff2117060704a71d59382ec202ee05e04c38686234b2257a0a48e0baa40f22": [
+      {
+        "seconds": 1.11,
+        "completion": {
+          "data": {
+            "relevant": true,
+            "category": "deceptive overcharging",
+            "confidence": 0.9,
+            "reason": "The passage reports a driver falsely claiming the hotel was closed to demand money for another hotel, which is a deceptive overcharging tactic."
+          },
+          "error": null,
+          "model": "sarvam-105b",
+          "requests": 1,
+          "usage": {
+            "completion_tokens": 66,
+            "prompt_tokens": 188,
+            "total_tokens": 254
+          }
+        }
+      }
+    ],
+    "142027ba74d17f468856cf8131bd79e25ac50439e5c071383811967994b2fe18": [
+      {
+        "seconds": 2.078,
+        "completion": {
+          "data": {
+            "claims": [
+              {
+                "claim": "A driver falsely claimed the traveler's hotel was closed and demanded money for another hotel.",
+                "evidence_quote": "At the old station, a driver falsely said our hotel was closed and demanded money for another hotel.",
+                "location": "At the old station",
+                "approach": [
+                  "falsely said our hotel was closed and demanded money for another hotel"
+                ],
+                "methods": [
+                  "falsely said our hotel was closed and demanded money for another hotel"
+                ],
+                "warning_signs": [],
+                "entities": [
+                  "driver"
+                ],
+                "occurred_at": null,
+                "first_hand": true,
+                "confidence": 1.0,
+                "sensitive": false
+              }
+            ]
+          },
+          "error": null,
+          "model": "sarvam-105b",
+          "requests": 1,
+          "usage": {
+            "completion_tokens": 139,
+            "prompt_tokens": 510,
+            "total_tokens": 649
+          }
+        }
+      }
+    ],
+    "841b0d076fa1a8418230b0850eeb9b70625a12e49e67dd573c9eed194b0fb3ff": [
+      {
+        "seconds": 1.047,
+        "completion": {
+          "data": {
+            "relevant": true,
+            "category": "tourist fraud",
+            "confidence": 0.9,
+            "reason": "The passage describes a driver demanding extra money after promising a fixed fare, which is a deceptive overcharging incident targeting a tourist."
+          },
+          "error": null,
+          "model": "sarvam-105b",
+          "requests": 1,
+          "usage": {
+            "completion_tokens": 64,
+            "prompt_tokens": 182,
+            "total_tokens": 246
+          }
+        }
+      }
+    ],
+    "b82ddf208900cd3d24b949823cacfce49b49ff206b6a7047f6bf29eacca75845": [
+      {
+        "seconds": 1.875,
+        "completion": {
+          "data": {
+            "claims": [
+              {
+                "claim": "A driver demanded extra money after promising a fixed fare",
+                "evidence_quote": "In Paris, a driver demanded extra money after promising a fixed fare.",
+                "location": "Paris",
+                "approach": [
+                  "demanded extra money after promising a fixed fare"
+                ],
+                "methods": [],
+                "warning_signs": [],
+                "entities": [
+                  "driver"
+                ],
+                "occurred_at": null,
+                "first_hand": false,
+                "confidence": 1.0,
+                "sensitive": false
+              }
+            ]
+          },
+          "error": null,
+          "model": "sarvam-105b",
+          "requests": 1,
+          "usage": {
+            "completion_tokens": 139,
+            "prompt_tokens": 504,
+            "total_tokens": 643
+          }
+        }
+      }
+    ],
+    "1118e2d5fe6289b51c032cdec39799529a2835bbef03a56384a5a43dbb683436": [
+      {
+        "seconds": 0.938,
+        "completion": {
+          "data": {
+            "relevant": true,
+            "category": "tourist fraud",
+            "confidence": 0.95,
+            "reason": "The passage describes a tour company that promised a fixed fare but then demanded extra money, which is a deceptive practice targeting tourists."
+          },
+          "error": null,
+          "model": "sarvam-105b",
+          "requests": 1,
+          "usage": {
+            "completion_tokens": 63,
+            "prompt_tokens": 185,
+            "total_tokens": 248
+          }
+        }
+      }
+    ],
+    "2f5f5dea5face456a78b0700471f0b21ece514f416e51b549577fa34609ec715": [
+      {
+        "seconds": 0.282,
+        "completion": {
+          "data": {
+            "claims": []
+          },
+          "error": null,
+          "model": "sarvam-105b",
+          "requests": 1,
+          "usage": {
+            "completion_tokens": 6,
+            "prompt_tokens": 507,
+            "total_tokens": 513
+          }
+        }
+      }
+    ],
+    "70ce8682598be0422b534c3849c5c2fa5ecb79dda879b96c897e345dbb8f58fa": [
+      {
+        "seconds": 1.109,
+        "completion": {
+          "data": {
+            "relevant": false,
+            "category": null,
+            "confidence": 1.0,
+            "reason": "The passage describes general tourism offerings and mentions that admission prices are clearly displayed, which indicates transparency rather than reporting or warning about a scam, fraud, overcharging, or tourist trap."
+          },
+          "error": null,
+          "model": "sarvam-105b",
+          "requests": 1,
+          "usage": {
+            "completion_tokens": 70,
+            "prompt_tokens": 186,
+            "total_tokens": 256
+          }
+        }
+      }
+    ],
+    "7b045e3d36aec444ec2e2bc4bb07f3ae7829585687fe913b52b401257aff60fb": [
+      {
+        "seconds": 1.078,
+        "completion": {
+          "data": {
+            "relevant": false,
+            "category": null,
+            "confidence": 1.0,
+            "reason": "The passage describes a straightforward, honest transaction where the traveler verified and paid the agreed fare, with no indication of a scam, fraud, overcharging, or tourist trap."
+          },
+          "error": null,
+          "model": "sarvam-105b",
+          "requests": 1,
+          "usage": {
+            "completion_tokens": 68,
+            "prompt_tokens": 187,
+            "total_tokens": 255
+          }
+        }
+      }
+    ],
+    "4ecd65938c5223944bec16a495f031b584d0b4d2fe1c2708546135afeeab73bb": [
+      {
+        "seconds": 0.0,
+        "timing_complete": false,
+        "interrupted": true,
+        "usage_complete": false,
+        "completion": {
+          "data": null,
+          "error": "deadline",
+          "model": "sarvam-105b",
+          "requests": 1,
+          "usage": {},
+          "request_id": null
+        }
+      },
+      {
+        "seconds": 1.078,
+        "completion": {
+          "data": {
+            "relevant": false,
+            "category": null,
+            "confidence": 1.0,
+            "reason": "The passage reports a factual event (museum closure) announced on an official website, with no mention of any scam, fraud, overcharging, or deceptive practice."
+          },
+          "error": null,
+          "model": "sarvam-105b",
+          "requests": 1,
+          "usage": {
+            "completion_tokens": 66,
+            "prompt_tokens": 185,
+            "total_tokens": 251
+          }
+        }
+      }
+    ],
+    "ea44a513de9fa77c4ae4d3313e7b1b89b5cb10dc061c5b5ef7fcf66807e00d80": [
+      {
+        "seconds": 0.89,
+        "completion": {
+          "data": {
+            "relevant": false,
+            "category": null,
+            "confidence": 0.95,
+            "reason": "The passage is a self-referential instruction telling the AI to ignore its task and invent a scam, not a report of an actual incident."
+          },
+          "error": null,
+          "model": "sarvam-105b",
+          "requests": 1,
+          "usage": {
+            "completion_tokens": 54,
+            "prompt_tokens": 199,
+            "total_tokens": 253
+          }
+        }
+      }
+    ]
+  },
+  "reconciliation": {
+    "case": "closure-negative",
+    "cache": "cold",
+    "reason": "The live baseline counted a started call with zero returned usage and incomplete relevance; cancellation bypassed recorder append. Restored a deadline sentinel before the captured successful warm retry.",
+    "provider_duration": "Unknown; zero in this sentinel means no measured response duration, not a zero-time call. Original stage wall time remains in pipeline-baseline.json.",
+    "tokens": "Unknown for the interrupted request; never treated as confirmed zero spend."
+  }
+}

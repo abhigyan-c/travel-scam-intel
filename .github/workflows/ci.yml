@@ -46,6 +46,8 @@ jobs:
       - run: uv run --locked pytest -m integration
         env:
           RUN_INFRA_TESTS: "1"
+      - name: Validate PostgreSQL minor upgrade and vector dump restore
+        run: uv run --locked python -m deploy.check_database_upgrade "$(docker compose images -q postgres)"
       - name: Replay intelligence quality baseline (no provider credentials)
         run: >-
           uv run --locked python -m benchmarks.evaluate

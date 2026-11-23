@@ -12,8 +12,10 @@ set -a
 source /etc/travel-scam/production.env
 set +a
 export APP_IMAGE="travel-scam-intel:$release"
+export POSTGRES_IMAGE="travel-scam-postgres:$release"
 # Fail before touching healthy services if the selected release is unavailable.
 docker image inspect "$APP_IMAGE" >/dev/null
+docker image inspect "$POSTGRES_IMAGE" >/dev/null
 test -d "$MODEL_CACHE"
 install -d -m 0711 /run/travel-scam
 export SECRETS_PATH="$(mktemp -d /run/travel-scam/export-XXXXXXXX)"

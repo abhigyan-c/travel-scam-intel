@@ -2,6 +2,10 @@
 
 Version 0.1.0 · Updated 22 November 2026
 
+Database update (23 November): releases now ship a separately tagged patched
+PostgreSQL image. See [database repair](database-release-repair.md) for validation,
+residual findings and the `POSTGRES_IMAGE` override for local restore drills.
+
 This guide covers private administration, moderation, deployment and recovery.
 It does not authorize changes to production. Historical PR documents contain
 point-in-time evidence; use this guide and the release checklist for current gates.

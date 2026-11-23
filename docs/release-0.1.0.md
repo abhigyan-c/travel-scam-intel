@@ -1,5 +1,10 @@
 # Release 0.1.0 assessment
 
+Update, 23 November: the [database repair and current validation](database-release-repair.md)
+supersede the original database-image remediation blocker below. Historical scan
+results remain preserved. Residual upstream findings and public-launch gates remain;
+the owner's request to merge code into main is not a production deployment approval.
+
 Assessment date: 22 November 2026. Candidate starts from `develop` commit `c1633ca`.
 Preparation branch: `codex/release-0.1.0-readiness`, targeting `develop`.
 First release PR: **`develop` → `main`**, kept draft until prerequisites are met.

@@ -43,11 +43,21 @@ jobs:
           python-version: "3.12"
       - run: uv sync --locked
       - run: docker compose up --build --wait --wait-timeout 180
+      - name: Audit application, database and Redis images
+        run: bash deploy/scan-images.sh "$(docker compose images -q api)" "$(docker compose images -q postgres)" "$(docker compose images -q redis)"
+      - uses: actions/upload-artifact@v7
+        if: always()
+        with:
+          name: ci-security-inventory
+          path: security-reports/*.json
+          if-no-files-found: error
       - run: uv run --locked pytest -m integration
         env:
           RUN_INFRA_TESTS: "1"
       - name: Validate PostgreSQL minor upgrade and vector dump restore
         run: uv run --locked python -m deploy.check_database_upgrade "$(docker compose images -q postgres)"
+      - name: Validate Redis AOF upgrade and queue persistence
+        run: uv run --locked python -m deploy.check_redis_upgrade "$(docker compose images -q redis)"
       - name: Replay intelligence quality baseline (no provider credentials)
         run: >-
           uv run --locked python -m benchmarks.evaluate

@@ -1,7 +1,8 @@
 FROM python:3.12-slim-trixie@sha256:5e2bdb1b0d542d5039cffb8181c65930093949194a65c365dfb1b0fe13a4fa5b AS base
 # Apply vendor security updates newer than the upstream Python image. Capture the
 # final image digest and rescan on every release; a pinned base alone is not enough.
-RUN apt-get update && apt-get upgrade --yes && rm -rf /var/lib/apt/lists/*
+RUN apt-get -o APT::Update::Error-Mode=any -o Acquire::Retries=3 update \
+    && apt-get upgrade --yes && rm -rf /var/lib/apt/lists/*
 
 FROM base AS dependencies
 COPY --from=ghcr.io/astral-sh/uv:0.13.9 /uv /usr/local/bin/uv
